@@ -60,7 +60,16 @@ static float pressureToTargetVoltage(float bar) {
 
     float spanP = pHigh - pLow;
     float ratio = (bar - pLow) / spanP; // 0..1
-    return vLow + ratio * (vHigh - vLow)
+    return vLow + ratio * (vHigh - vLow);
+}
+
+// ============================================================================
+// Setup
+// ============================================================================
+
+void setup() {
+    Serial.begin(115200);
+    while(!Serial && millis() < 2000) { 
         // Wait for serial port (optional, for debugging)
     }
 
@@ -77,6 +86,44 @@ static float pressureToTargetVoltage(float bar) {
     g_protection.begin();
     g_can.begin(); // stub
 
+    // Configure digital inputs (active low)
+    pinMode(Config::PIN_DIG_IN_1, INPUT_PULLUP);
+    pinMode(Config::PIN_DIG_IN_2, INPUT_PULLUP);
+
+    // Print configuration summary
+    Serial.println(F("Configuration:"));
+    Serial.print(F("  Pressure: ")); 
+    Serial.print(Config::MAP_BAR_LOW_SETPOINT, 2);
+    Serial.print(F("-"));
+    Serial.print(Config::MAP_BAR_HIGH_SETPOINT, 2);
+    Serial.println(F(" bar"));
+    
+    Serial.print(F("  Voltage:  "));
+    Serial.print(Config::OUTPUT_VOLTAGE_MIN, 1);
+    Serial.print(F("-"));
+    Serial.print(Config::OUTPUT_VOLTAGE_MAX, 1);
+    Serial.println(F(" V"));
+    
+    Serial.println();
+    Serial.println(F("Protection thresholds (A):"));
+    Serial.print(F("  WARNING:  ")); Serial.println(Config::CURRENT_THRESHOLD_WARNING, 1);
+    Serial.print(F("  HIGH:     ")); Serial.println(Config::CURRENT_THRESHOLD_HIGH, 1);
+    Serial.print(F("  CRITICAL: ")); Serial.println(Config::CURRENT_THRESHOLD_CRITICAL, 1);
+    Serial.print(F("  FAULT:    ")); Serial.println(Config::CURRENT_THRESHOLD_FAULT, 1);
+    Serial.println();
+    
+    Serial.println(F("System ready"));
+    Serial.println(F("========================================"));
+    Serial.println();
+}
+
+// ============================================================================
+// Main loop
+// ============================================================================
+
+void loop() {
+    unsigned long now = millis();
+    
     // Main control loop - runs at MAIN_LOOP_INTERVAL_MS (20Hz default)
     if (now - g_lastUpdateMs >= Config::MAIN_LOOP_INTERVAL_MS) {
         g_lastUpdateMs = now;
@@ -212,52 +259,5 @@ void printDetailedStatus() {
     Serial.println(F(" s"));
     
     Serial.println(F("----------------------------------------"));
-    Serial.println
-    Serial.println(F("System ready"));
-    Serial.println(F("========================================"));
     Serial.println();
-}
-
-// ============================================================================
-// Main loop
-// ============================================================================   g_power.begin();
-    g_curr1.begin();
-    g_curr2.begin();
-    g_can.begin(); // stub
-
-    pinMode(Config::PIN_DIG_IN_1, INPUT_PULLUP); // ativo em 0V
-    pinMode(Config::PIN_DIG_IN_2, INPUT_PULLUP);
-
-    Serial.println(F("PumpControl iniciado"));
-}
-
-void loop() {
-    unsigned long now = millis();
-    if (now - g_lastUpdateMs >= Config::MAIN_LOOP_INTERVAL_MS) {
-        g_lastUpdateMs = now;
-
-        float pressureBar = g_map.readPressureBar();
-        float targetVoltage = pressureToTargetVoltage(pressureBar);
-        g_power.setOutputVoltage(targetVoltage);
-
-        // Leitura (stub) correntes
-        float i1 = g_curr1.readCurrentA();
-        float i2 = g_curr2.readCurrentA();
-
-        // Estado entradas digitais (ativo LOW)
-        bool dig1Active = (digitalRead(Config::PIN_DIG_IN_1) == LOW);
-        bool dig2Active = (digitalRead(Config::PIN_DIG_IN_2) == LOW);
-
-        // Futuro: VCC sense, CAN poll, proteção sobrecorrente, etc.
-
-        Serial.print(F("P(bar): ")); Serial.print(pressureBar, 3);
-        Serial.print(F(" | Vout(V): ")); Serial.print(targetVoltage, 2);
-        Serial.print(F(" | I1: ")); Serial.print(i1, 2);
-        Serial.print(F(" | I2: ")); Serial.print(i2, 2);
-        Serial.print(F(" | D1: ")); Serial.print(dig1Active ? "ON" : "OFF");
-        Serial.print(F(" | D2: ")); Serial.println(dig2Active ? "ON" : "OFF");
-    }
-
-    // Poll de CAN (stub)
-    g_can.poll();
 }
