@@ -2,6 +2,7 @@
 #include <Arduino.h>
 #include "Config.h"
 #include "CurrentSensor.h"
+#include "PowerProtection.h"
 
 // -----------------------------------------------------------------------------
 // PowerProtection - Multi-level current protection with progressive limiting
@@ -25,13 +26,14 @@
 //   - Never fully disables output
 // -----------------------------------------------------------------------------
 
-class PowerProtection {
+class PowerProtection 
+{
 public:
     // Protection level enumeration
     enum class ProtectionLevel : uint8_t {
         NORMAL = 0,    // No protection active
         WARNING,       // Early warning zone
-        HIGH,          // High current detected
+        HIGH_CURRENT,  // High current detected
         CRITICAL,      // Critical current level
         FAULT          // Fault condition - sensor limit exceeded
     };
@@ -107,7 +109,7 @@ public:
         switch (level) {
             case ProtectionLevel::NORMAL:   return "NORMAL";
             case ProtectionLevel::WARNING:  return "WARNING";
-            case ProtectionLevel::HIGH:     return "HIGH";
+            case ProtectionLevel::HIGH_CURRENT: return "HIGH";
             case ProtectionLevel::CRITICAL: return "CRITICAL";
             case ProtectionLevel::FAULT:    return "FAULT";
             default: return "UNKNOWN";
@@ -142,35 +144,35 @@ private:
                 
             case ProtectionLevel::WARNING:
                 if (current >= Config::CURRENT_THRESHOLD_HIGH) {
-                    return ProtectionLevel::HIGH;
+                    return ProtectionLevel::HIGH_CURRENT;
                 }
                 if (current < Config::CURRENT_THRESHOLD_WARNING - Config::CURRENT_HYSTERESIS) {
                     return ProtectionLevel::NORMAL;
                 }
                 return ProtectionLevel::WARNING;
                 
-            case ProtectionLevel::HIGH:
+            case ProtectionLevel::HIGH_CURRENT:
                 if (current >= Config::CURRENT_THRESHOLD_CRITICAL) {
                     return ProtectionLevel::CRITICAL;
                 }
                 if (current < Config::CURRENT_THRESHOLD_HIGH - Config::CURRENT_HYSTERESIS) {
                     return ProtectionLevel::WARNING;
                 }
-                return ProtectionLevel::HIGH;
+                return ProtectionLevel::HIGH_CURRENT;
                 
             case ProtectionLevel::CRITICAL:
                 if (current >= Config::CURRENT_THRESHOLD_FAULT) {
                     return ProtectionLevel::FAULT;
                 }
                 if (current < Config::CURRENT_THRESHOLD_CRITICAL - Config::CURRENT_HYSTERESIS) {
-                    return ProtectionLevel::HIGH;
+                    return ProtectionLevel::HIGH_CURRENT;
                 }
                 return ProtectionLevel::CRITICAL;
                 
             case ProtectionLevel::FAULT:
                 // Once in fault, need to drop below critical to recover
                 if (current < Config::CURRENT_THRESHOLD_CRITICAL - Config::CURRENT_HYSTERESIS) {
-                    return ProtectionLevel::HIGH;
+                    return ProtectionLevel::HIGH_CURRENT;
                 }
                 return ProtectionLevel::FAULT;
                 
@@ -188,7 +190,7 @@ private:
             case ProtectionLevel::WARNING:
                 return 0.90f;  // 90% - 10% reduction
                 
-            case ProtectionLevel::HIGH:
+            case ProtectionLevel::HIGH_CURRENT:
                 return 0.75f;  // 75% - 25% reduction
                 
             case ProtectionLevel::CRITICAL:
