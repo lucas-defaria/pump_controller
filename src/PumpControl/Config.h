@@ -23,17 +23,18 @@ namespace Config {
     // Pressure setpoints (bar gauge - relative to atmospheric)
     // Negative values = vacuum (intake manifold below atmospheric)
     // Positive values = boost (turbo pressure above atmospheric)
-    // Pressure (bar gauge) where output should be at OUTPUT_VOLTAGE_MIN
-    constexpr float MAP_BAR_LOW_SETPOINT  = -0.3f; // bar gauge (high vacuum)
-    // Pressure (bar gauge) where output should be at OUTPUT_VOLTAGE_MAX
-    constexpr float MAP_BAR_HIGH_SETPOINT = 1.2f;  // bar gauge (moderate boost)
+    // Pressure (bar gauge) where output should be at OUTPUT_PERCENT_MIN
+    constexpr float MAP_BAR_LOW_SETPOINT  = 0.2f; // bar gauge (low pressure)
+    // Pressure (bar gauge) where output should be at OUTPUT_PERCENT_MAX
+    constexpr float MAP_BAR_HIGH_SETPOINT = 0.4f;  // bar gauge (high pressure)
 
-    // Target voltages corresponding to pressure setpoints
-    constexpr float OUTPUT_VOLTAGE_MIN = 4.0f;//9.0f;   // Volts
-    constexpr float OUTPUT_VOLTAGE_MAX = 12.0f;//12.0f;  // Volts
-
-    // Supply voltage to power stage (assumed)
-    constexpr float SUPPLY_VOLTAGE = 12.0f; // Volts
+    // Target output as percentage of measured supply voltage
+    // This makes the system adaptive to voltage variations (8-14.5V automotive range)
+    // Low pressure (?0.2bar): 70% of Vsupply (e.g., 9.8V @ 14V, 8.4V @ 12V)
+    // High pressure (?0.4bar): 100% of Vsupply (e.g., 14V @ 14V, 12V @ 12V)
+    // Intermediate pressures: linear interpolation between 70% and 100%
+    constexpr float OUTPUT_PERCENT_MIN = 0.70f; // 70% of supply voltage
+    constexpr float OUTPUT_PERCENT_MAX = 1.00f; // 100% of supply voltage (full power)
 
     // MAP sensor filter coefficient (EMA)
     constexpr float MAP_FILTER_ALPHA   = 0.15f; // 0<alpha<=1 (smaller = smoother)
@@ -72,7 +73,7 @@ namespace Config {
     constexpr float VOLTAGE_DIVIDER_RATIO = 0.0909f;    // 1/(10+1) = 1/11
     
     // Voltage reading filter coefficient (EMA)
-    constexpr float VOLTAGE_FILTER_ALPHA = 0.20f;        // 0<alpha<=1 (smoother than current)
+    constexpr float VOLTAGE_FILTER_ALPHA = 1.0f;        // 0<alpha<=1 (smoother than current)
     
     // Percentage-based voltage protection (adaptive to actual supply voltage)
     // Instead of fixed thresholds (9V, 12V), use percentage drop from measured voltage
@@ -83,8 +84,11 @@ namespace Config {
     // Hysteresis for voltage protection (Volts)
     constexpr float VOLTAGE_HYSTERESIS = 0.5f;               // 0.5V band to prevent oscillation
     
-    // Minimum valid supply voltage (below this = sensor fault)
-    constexpr float VOLTAGE_MINIMUM_VALID = 7.0f;            // Volts (below normal automotive range)
+    // Voltage sensor validation (for fault detection only)
+    // System now uses percentage-based control, so no voltage drop thresholds needed
+    // Only detect sensor faults (reading outside valid automotive range)
+    constexpr float VOLTAGE_MINIMUM_VALID = 7.0f;    // Volts (below this = sensor fault)
+    constexpr float VOLTAGE_MAXIMUM_VALID = 16.0f;   // Volts (above this = sensor fault)
     
     // =========================================================================
     // CURRENT PROTECTION SYSTEM
@@ -102,16 +106,18 @@ namespace Config {
     // Level changes require crossing threshold � hysteresis
     constexpr float CURRENT_HYSTERESIS = 2.0f;           // Amperes
     
-    // Voltage limiting for protection levels
-    // NORMAL:   100% (1.00) - no limiting
-    // WARNING:   90% (0.90) - 10% reduction
-    // HIGH:      75% (0.75) - 25% reduction
-    // CRITICAL:  60% (0.60) - 40% reduction
-    // FAULT:     50% (0.50) - 50% reduction (minimum safe voltage)
-    
-    // Minimum voltage factor during FAULT (prevents complete shutdown)
-    // Should ensure at least 6V output @ 12V system
-    constexpr float FAULT_MINIMUM_VOLTAGE_FACTOR = 0.50f; // 50% = 6V @ 12V system
+    // Percentage-based voltage limiting for protection levels
+    // These percentages apply to the measured supply voltage (adaptive)
+    // NORMAL:   100% (1.00) - no limiting (full power)
+    // WARNING:   70% (0.70) - 30% reduction (gentle protection)
+    // HIGH:      60% (0.60) - 40% reduction (moderate protection)
+    // CRITICAL:  50% (0.50) - 50% reduction (aggressive protection)
+    // FAULT:     50% (0.50) - 50% reduction (same as critical, minimum safe)
+    constexpr float PROTECTION_PERCENT_NORMAL   = 1.00f;  // 100% - full power
+    constexpr float PROTECTION_PERCENT_WARNING  = 0.70f;  // 70% - reduce by 30%
+    constexpr float PROTECTION_PERCENT_HIGH     = 0.60f;  // 60% - reduce by 40%
+    constexpr float PROTECTION_PERCENT_CRITICAL = 0.50f;  // 50% - reduce by 50%
+    constexpr float PROTECTION_PERCENT_FAULT    = 0.50f;  // 50% - minimum safe level
     
     // Rate limiting for voltage changes (per update cycle)
     // Prevents sudden jumps, reduces stress on pump/electrical system

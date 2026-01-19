@@ -62,7 +62,7 @@ public:
     // Check if sensor reading is valid (within expected automotive range)
     bool isValid() const {
         return _filteredVoltage >= Config::VOLTAGE_MINIMUM_VALID &&
-               _filteredVoltage <= 16.0f;  // Reasonable upper limit
+               _filteredVoltage <= Config::VOLTAGE_MAXIMUM_VALID;
     }
 
 private:

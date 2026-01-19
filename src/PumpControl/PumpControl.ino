@@ -48,23 +48,25 @@ unsigned long g_lastUpdateMs = 0;
 unsigned long g_lastStatusMs = 0;
 
 // ============================================================================
-// Pressure to voltage conversion
+// Pressure to output percentage conversion
 // ============================================================================
 
-// Converts pressure (bar) to target voltage (Volts) based on setpoints
+// Converts pressure (bar) to target output percentage (0.0 to 1.0)
 // Linear interpolation between low and high setpoints
-static float pressureToTargetVoltage(float bar) {
+// Low pressure (?0.2bar): 70% of supply voltage
+// High pressure (?0.4bar): 100% of supply voltage
+static float pressureToTargetPercent(float bar) {
     const float pLow  = Config::MAP_BAR_LOW_SETPOINT;
     const float pHigh = Config::MAP_BAR_HIGH_SETPOINT;
-    const float vLow  = Config::OUTPUT_VOLTAGE_MIN;
-    const float vHigh = Config::OUTPUT_VOLTAGE_MAX;
+    const float percentLow  = Config::OUTPUT_PERCENT_MIN;  // 0.70 (70%)
+    const float percentHigh = Config::OUTPUT_PERCENT_MAX;  // 1.00 (100%)
 
-    if (bar <= pLow)  return vLow;
-    if (bar >= pHigh) return vHigh;
+    if (bar <= pLow)  return percentLow;
+    if (bar >= pHigh) return percentHigh;
 
     float spanP = pHigh - pLow;
     float ratio = (bar - pLow) / spanP; // 0..1
-    return vLow + ratio * (vHigh - vLow);
+    return percentLow + ratio * (percentHigh - percentLow);
 }
 
 // ============================================================================
@@ -105,10 +107,10 @@ void setup() {
     Serial.println(F(" bar"));
     
     Serial.print(F("  Voltage:  "));
-    Serial.print(Config::OUTPUT_VOLTAGE_MIN, 1);
+    Serial.print(Config::OUTPUT_PERCENT_MIN * 100.0f, 0);
     Serial.print(F("-"));
-    Serial.print(Config::OUTPUT_VOLTAGE_MAX, 1);
-    Serial.println(F(" V"));
+    Serial.print(Config::OUTPUT_PERCENT_MAX * 100.0f, 0);
+    Serial.println(F("% of Vsupply"));
     
     Serial.println();
     Serial.println(F("Protection thresholds (A):"));
@@ -140,15 +142,16 @@ void loop() {
         float pressureBar = g_map.readPressureBar();
         
         // ====================================================================
-        // 2. Calculate target voltage based on pressure
-        // ====================================================================
-        float targetVoltage = pressureToTargetVoltage(pressureBar);
-        
-        // ====================================================================
-        // 3. Read supply voltage and update voltage protection
+        // 2. Read supply voltage (used for all percentage calculations)
         // ====================================================================
         float supplyVoltage = g_voltage.readVoltage();
         VoltageProtection::ProtectionLevel voltageLevel = g_voltageProtection.update();
+        
+        // ====================================================================
+        // 3. Calculate target output as percentage of supply voltage
+        // ====================================================================
+        float targetPercent = pressureToTargetPercent(pressureBar);
+        float targetVoltage = targetPercent * supplyVoltage;  // Convert to actual voltage
         
         // ====================================================================
         // 4. Update current protection system (reads current sensors)
@@ -156,10 +159,11 @@ void loop() {
         float voltageLimit = g_protection.update();
         
         // ====================================================================
-        // 5. Apply voltage limit to power outputs
+        // 5. Apply voltage limit and set power output
         // ====================================================================
+        g_power.setSupplyVoltage(supplyVoltage);  // Update measured supply voltage
         g_power.setVoltageLimit(voltageLimit);
-        g_power.setOutputVoltage(targetVoltage);
+        g_power.setOutputPercent(targetPercent);  // Use percentage-based method
         
         // ====================================================================
         // 6. Read current sensors (for logging)
@@ -179,9 +183,11 @@ void loop() {
         // ====================================================================
         Serial.print(F("P:"));
         Serial.print(pressureBar, 2);
-        Serial.print(F("bar | Vt:"));
-        Serial.print(targetVoltage, 1);
-        Serial.print(F("V | Vo:"));
+        Serial.print(F("bar | Vs:"));
+        Serial.print(supplyVoltage, 1);
+        Serial.print(F("V | T%:"));
+        Serial.print(targetPercent * 100.0f, 0);
+        Serial.print(F("% | Vo:"));
         Serial.print(g_power.getActualOutputVoltage(), 1);
         Serial.print(F("V | I1:"));
         Serial.print(current1, 1);
@@ -243,19 +249,8 @@ void printDetailedStatus() {
     Serial.println(F(" V"));
     Serial.print(F("Voltage Status:  ")); 
     Serial.println(g_voltageProtection.getLevelString());
-    Serial.print(F("V Baseline:      ")); 
-    Serial.print(g_voltageProtection.getBaselineVoltage(), 2);
-    Serial.println(F(" V"));
-    Serial.print(F("V Warn Thresh:   ")); 
-    Serial.print(g_voltageProtection.getWarningThreshold(), 2);
-    Serial.print(F(" V (-"));
-    Serial.print(Config::VOLTAGE_DROP_WARNING_PERCENT * 100.0f, 0);
-    Serial.println(F("%)"));
-    Serial.print(F("V Crit Thresh:   ")); 
-    Serial.print(g_voltageProtection.getCriticalThreshold(), 2);
-    Serial.print(F(" V (-"));
-    Serial.print(Config::VOLTAGE_DROP_CRITICAL_PERCENT * 100.0f, 0);
-    Serial.println(F("%)"));
+    Serial.print(F("Sensor Valid:    ")); 
+    Serial.println(g_voltageProtection.isSensorOk() ? "YES" : "NO");
     Serial.print(F("V Fault Count:   ")); 
     Serial.println(g_voltageProtection.getFaultCount());
     Serial.println();
@@ -270,7 +265,11 @@ void printDetailedStatus() {
     Serial.println(g_protection.getFaultCount());
     
     // Output status
-    float targetV = pressureToTargetVoltage(pressure);
+    float targetPercent = pressureToTargetPercent(pressure);
+    float targetV = targetPercent * supplyV;
+    Serial.print(F("Target Percent:  ")); 
+    Serial.print(targetPercent * 100.0f, 1);
+    Serial.println(F(" %"));
     Serial.print(F("Target Voltage:  ")); 
     Serial.print(targetV, 2);
     Serial.println(F(" V"));

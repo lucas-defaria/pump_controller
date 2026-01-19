@@ -13,6 +13,7 @@ public:
         , _pin2(pin2)
         , _currentDuty(0.0f)
         , _voltageLimit(1.0f)
+        , _supplyVoltage(12.0f)  // Initialize to nominal 12V, will be updated dynamically
     {}
 
     void begin() {
@@ -24,17 +25,39 @@ public:
         setDuty(0.0f);
     }
 
-    // Set output voltage in Volts (respects current voltage limit)
-    void setOutputVoltage(float voltage) {
-        if (voltage < 0) voltage = 0;
-        if (voltage > Config::SUPPLY_VOLTAGE) voltage = Config::SUPPLY_VOLTAGE;
-        
-        float duty = voltage / Config::SUPPLY_VOLTAGE; // Convert to 0..1
+    // Set output as percentage of supply voltage (0.0 to 1.0)
+    // Example: 0.70 = 70% of measured supply voltage
+    // Respects current voltage limit from protection system
+    void setOutputPercent(float percent) {
+        if (percent < 0) percent = 0;
+        if (percent > 1) percent = 1;
         
         // Apply voltage limit from protection system
-        duty = duty * _voltageLimit;
+        float duty = percent * _voltageLimit;
         
         setDuty(duty);
+    }
+
+    // Legacy method: Set output voltage in Volts (for backward compatibility)
+    // Internally converts to percentage using current supply voltage
+    void setOutputVoltage(float voltage) {
+        if (voltage < 0) voltage = 0;
+        if (voltage > _supplyVoltage) voltage = _supplyVoltage;
+        
+        float percent = voltage / _supplyVoltage;  // Convert to percentage
+        setOutputPercent(percent);
+    }
+
+    // Update measured supply voltage (call this every cycle with fresh reading)
+    void setSupplyVoltage(float voltage) {
+        if (voltage < 7.0f) voltage = 7.0f;    // Clamp to reasonable minimum
+        if (voltage > 16.0f) voltage = 16.0f;  // Clamp to reasonable maximum
+        _supplyVoltage = voltage;
+    }
+
+    // Get current supply voltage
+    float getSupplyVoltage() const {
+        return _supplyVoltage;
     }
 
     // Set duty cycle directly (0.0 to 1.0)
@@ -71,9 +94,9 @@ public:
         return _currentDuty;
     }
 
-    // Get actual output voltage accounting for limit
+    // Get actual output voltage accounting for limit and measured supply
     float getActualOutputVoltage() const {
-        return _currentDuty * Config::SUPPLY_VOLTAGE * _voltageLimit;
+        return _currentDuty * _voltageLimit * _supplyVoltage;
     }
 
 private:
@@ -81,4 +104,5 @@ private:
     uint8_t _pin2;
     float _currentDuty;      // Current requested duty cycle (before limiting)
     float _voltageLimit;     // Voltage limit factor from protection system
+    float _supplyVoltage;    // Measured supply voltage (updated dynamically)
 };

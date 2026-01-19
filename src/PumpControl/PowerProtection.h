@@ -182,24 +182,23 @@ private:
     }
 
     // Get voltage limit factor for a given protection level
+    // Now uses percentage-based reductions from Config.h (adaptive to supply voltage)
     float getVoltageLimitForLevel(ProtectionLevel level) const {
         switch (level) {
             case ProtectionLevel::NORMAL:
-                return 1.00f;  // 100% - no limiting
+                return Config::PROTECTION_PERCENT_NORMAL;    // 100% - no limiting
                 
             case ProtectionLevel::WARNING:
-                return 0.90f;  // 90% - 10% reduction
+                return Config::PROTECTION_PERCENT_WARNING;   // 70% - reduce by 30%
                 
             case ProtectionLevel::HIGH_CURRENT:
-                return 0.75f;  // 75% - 25% reduction
+                return Config::PROTECTION_PERCENT_HIGH;      // 60% - reduce by 40%
                 
             case ProtectionLevel::CRITICAL:
-                return 0.60f;  // 60% - 40% reduction
+                return Config::PROTECTION_PERCENT_CRITICAL;  // 50% - reduce by 50%
                 
             case ProtectionLevel::FAULT:
-                // Minimum safe voltage: 50% or 6V, whichever is higher
-                // At 12V system: max(0.5, 6/12) = 0.5 = 6V
-                return Config::FAULT_MINIMUM_VOLTAGE_FACTOR;
+                return Config::PROTECTION_PERCENT_FAULT;     // 50% - minimum safe level
                 
             default:
                 return 1.0f;
@@ -262,8 +261,8 @@ private:
         }
         
         // Ensure limits stay in valid range
-        if (_voltageLimit < Config::FAULT_MINIMUM_VOLTAGE_FACTOR) {
-            _voltageLimit = Config::FAULT_MINIMUM_VOLTAGE_FACTOR;
+        if (_voltageLimit < Config::PROTECTION_PERCENT_FAULT) {
+            _voltageLimit = Config::PROTECTION_PERCENT_FAULT;
         }
         if (_voltageLimit > 1.0f) {
             _voltageLimit = 1.0f;
