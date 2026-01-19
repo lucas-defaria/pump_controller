@@ -3,11 +3,16 @@
 #include "Config.h"
 
 // -----------------------------------------------------------------------------
-// MapSensor - Leitura e conversão do sensor MPX5700ASX para pressão (bar)
-// Fórmula típica (datasheet): Vout = Vs * (0.00125 * P(kPa) + 0.04)
+// MapSensor - Leitura e conversão do sensor MPX5700AP para pressão MAP (bar gauge)
+// 
+// MPX5700AP: Absolute pressure sensor (15-700 kPa absolute)
+// Fórmula datasheet: Vout = Vs * (0.00125 * P(kPa) + 0.04)
 // => P(kPa) = (Vout/Vs - 0.04) / 0.00125
-// => P(bar) = P(kPa) / 100
-// Assumimos Vs = 5V (alimentação Arduino). Ajuste se diferente.
+// => P(bar absolute) = P(kPa) / 100
+// => P(bar gauge) = P(bar absolute) - ATMOSPHERIC_PRESSURE_BAR
+// 
+// Verificado: 833mV @ atmosfera = 1.013 bar abs = 0 bar gauge
+// Vs = 5V (alimentação Arduino)
 // -----------------------------------------------------------------------------
 class MapSensor {
 public:
@@ -42,8 +47,15 @@ private:
 
     float voltageToBar(float v) const {
         float ratio = v / VS; // Vout/Vs
-        float p_kPa = (ratio - 0.04f) / 0.00125f; // inversão
-        if (p_kPa < 0) p_kPa = 0; // proteção contra valores negativos
-        return p_kPa / 100.0f;    // kPa -> bar
+        float p_kPa = (ratio - 0.04f) / 0.00125f; // inversão da fórmula do datasheet
+        float p_bar_absolute = p_kPa / 100.0f;    // kPa -> bar (pressão absoluta)
+        
+        // Converter de pressão absoluta para gauge (relativa à atmosfera)
+        // Gauge = Absoluto - Atmosférico
+        // Valores negativos = vácuo (abaixo da pressão atmosférica)
+        // Valores positivos = boost (acima da pressão atmosférica)
+        float p_bar_gauge = p_bar_absolute - Config::ATMOSPHERIC_PRESSURE_BAR;
+        
+        return p_bar_gauge; // Retorna pressão gauge (pode ser negativa)
     }
 };

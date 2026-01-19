@@ -27,6 +27,8 @@
 #include "PowerOutputs.h"
 #include "CurrentSensor.h"
 #include "PowerProtection.h"
+#include "VoltageSensor.h"
+#include "VoltageProtection.h"
 #include "CanInterface.h"
 
 // ============================================================================
@@ -38,6 +40,8 @@ PowerOutputs   g_power(Config::PIN_PWM_OUT_1, Config::PIN_PWM_OUT_2);
 CurrentSensor  g_curr1(Config::PIN_CURRENT_1);
 CurrentSensor  g_curr2(Config::PIN_CURRENT_2);
 PowerProtection g_protection(g_curr1, g_curr2);
+VoltageSensor  g_voltage(Config::PIN_VCC_SENSE);
+VoltageProtection g_voltageProtection(g_voltage);
 CanInterface   g_can;  // stub for future CAN bus integration
 
 unsigned long g_lastUpdateMs = 0;
@@ -84,6 +88,8 @@ void setup() {
     g_curr1.begin();
     g_curr2.begin();
     g_protection.begin();
+    g_voltage.begin();
+    g_voltageProtection.begin();
     g_can.begin(); // stub
 
     // Configure digital inputs (active low)
@@ -139,31 +145,37 @@ void loop() {
         float targetVoltage = pressureToTargetVoltage(pressureBar);
         
         // ====================================================================
-        // 3. Update protection system (reads current sensors)
+        // 3. Read supply voltage and update voltage protection
+        // ====================================================================
+        float supplyVoltage = g_voltage.readVoltage();
+        VoltageProtection::ProtectionLevel voltageLevel = g_voltageProtection.update();
+        
+        // ====================================================================
+        // 4. Update current protection system (reads current sensors)
         // ====================================================================
         float voltageLimit = g_protection.update();
         
         // ====================================================================
-        // 4. Apply voltage limit to power outputs
+        // 5. Apply voltage limit to power outputs
         // ====================================================================
         g_power.setVoltageLimit(voltageLimit);
         g_power.setOutputVoltage(targetVoltage);
         
         // ====================================================================
-        // 5. Read current sensors (for logging)
+        // 6. Read current sensors (for logging)
         // ====================================================================
         float current1 = g_curr1.readCurrentA();
         float current2 = g_curr2.readCurrentA();
         float maxCurrent = max(current1, current2);
         
         // ====================================================================
-        // 6. Read digital inputs (active low)
+        // 7. Read digital inputs (active low)
         // ====================================================================
         bool dig1Active = (digitalRead(Config::PIN_DIG_IN_1) == LOW);
         bool dig2Active = (digitalRead(Config::PIN_DIG_IN_2) == LOW);
         
         // ====================================================================
-        // 7. Compact status output (every cycle)
+        // 8. Compact status output (every cycle)
         // ====================================================================
         Serial.print(F("P:"));
         Serial.print(pressureBar, 2);
@@ -224,7 +236,31 @@ void printDetailedStatus() {
     Serial.print(max(i1, i2), 2);
     Serial.println(F(" A"));
     
-    // Protection status
+    // Supply voltage status
+    float supplyV = g_voltage.readVoltage();
+    Serial.print(F("Supply Voltage:  ")); 
+    Serial.print(supplyV, 2);
+    Serial.println(F(" V"));
+    Serial.print(F("Voltage Status:  ")); 
+    Serial.println(g_voltageProtection.getLevelString());
+    Serial.print(F("V Baseline:      ")); 
+    Serial.print(g_voltageProtection.getBaselineVoltage(), 2);
+    Serial.println(F(" V"));
+    Serial.print(F("V Warn Thresh:   ")); 
+    Serial.print(g_voltageProtection.getWarningThreshold(), 2);
+    Serial.print(F(" V (-"));
+    Serial.print(Config::VOLTAGE_DROP_WARNING_PERCENT * 100.0f, 0);
+    Serial.println(F("%)"));
+    Serial.print(F("V Crit Thresh:   ")); 
+    Serial.print(g_voltageProtection.getCriticalThreshold(), 2);
+    Serial.print(F(" V (-"));
+    Serial.print(Config::VOLTAGE_DROP_CRITICAL_PERCENT * 100.0f, 0);
+    Serial.println(F("%)"));
+    Serial.print(F("V Fault Count:   ")); 
+    Serial.println(g_voltageProtection.getFaultCount());
+    Serial.println();
+    
+    // Current protection status
     Serial.print(F("Protection:      ")); 
     Serial.println(g_protection.getLevelString());
     Serial.print(F("Voltage Limit:   ")); 

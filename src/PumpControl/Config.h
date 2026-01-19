@@ -12,14 +12,25 @@ namespace Config {
     // MAP SENSOR & PRESSURE CONTROL
     // =========================================================================
     
-    // Pressure (bar) where output should be at OUTPUT_VOLTAGE_MIN
-    constexpr float MAP_BAR_LOW_SETPOINT  = 0.9f; // bar
-    // Pressure (bar) where output should be at OUTPUT_VOLTAGE_MAX
-    constexpr float MAP_BAR_HIGH_SETPOINT = 1.0f; // bar
+    // MPX5700AP - Absolute pressure sensor (15-700 kPa absolute)
+    // Sensor reads absolute pressure, converted to gauge (relative to atmosphere)
+    // Gauge pressure = Absolute pressure - Atmospheric pressure
+    // Verified: 833mV @ atmospheric conditions = 1.013 bar absolute = 0 bar gauge
+    
+    // Atmospheric pressure at sea level (for absolute?gauge conversion)
+    constexpr float ATMOSPHERIC_PRESSURE_BAR = 1.013f; // bar (101.3 kPa)
+    
+    // Pressure setpoints (bar gauge - relative to atmospheric)
+    // Negative values = vacuum (intake manifold below atmospheric)
+    // Positive values = boost (turbo pressure above atmospheric)
+    // Pressure (bar gauge) where output should be at OUTPUT_VOLTAGE_MIN
+    constexpr float MAP_BAR_LOW_SETPOINT  = -0.3f; // bar gauge (high vacuum)
+    // Pressure (bar gauge) where output should be at OUTPUT_VOLTAGE_MAX
+    constexpr float MAP_BAR_HIGH_SETPOINT = 1.2f;  // bar gauge (moderate boost)
 
     // Target voltages corresponding to pressure setpoints
-    constexpr float OUTPUT_VOLTAGE_MIN = 9.0f;   // Volts
-    constexpr float OUTPUT_VOLTAGE_MAX = 12.0f;  // Volts
+    constexpr float OUTPUT_VOLTAGE_MIN = 4.0f;//9.0f;   // Volts
+    constexpr float OUTPUT_VOLTAGE_MAX = 12.0f;//12.0f;  // Volts
 
     // Supply voltage to power stage (assumed)
     constexpr float SUPPLY_VOLTAGE = 12.0f; // Volts
@@ -48,6 +59,32 @@ namespace Config {
     // Higher alpha = faster response, more noise
     // Lower alpha = slower response, smoother
     constexpr float CURRENT_FILTER_ALPHA = 0.25f;       // 0<alpha<=1
+    
+    // =========================================================================
+    // VOLTAGE MONITORING - Supply voltage measurement with percentage-based protection
+    // =========================================================================
+    
+    // Voltage divider configuration: R1=10K (to GND), R2=1K (to VCC)
+    // Divider ratio: R2/(R1+R2) = 1K/(10K+1K) = 1/11 = 0.0909
+    // At 12V input: ADC sees 12V � 0.0909 = 1.09V ? (safe)
+    // At 14.5V input: ADC sees 14.5V � 0.0909 = 1.32V ? (safe)
+    // At 8V input: ADC sees 8V � 0.0909 = 0.73V ? (safe)
+    constexpr float VOLTAGE_DIVIDER_RATIO = 0.0909f;    // 1/(10+1) = 1/11
+    
+    // Voltage reading filter coefficient (EMA)
+    constexpr float VOLTAGE_FILTER_ALPHA = 0.20f;        // 0<alpha<=1 (smoother than current)
+    
+    // Percentage-based voltage protection (adaptive to actual supply voltage)
+    // Instead of fixed thresholds (9V, 12V), use percentage drop from measured voltage
+    // This adapts automatically to automotive voltage variations (8-14.5V)
+    constexpr float VOLTAGE_DROP_WARNING_PERCENT = 0.30f;   // 15% drop triggers warning
+    constexpr float VOLTAGE_DROP_CRITICAL_PERCENT = 0.50f;  // 30% drop triggers critical protection
+    
+    // Hysteresis for voltage protection (Volts)
+    constexpr float VOLTAGE_HYSTERESIS = 0.5f;               // 0.5V band to prevent oscillation
+    
+    // Minimum valid supply voltage (below this = sensor fault)
+    constexpr float VOLTAGE_MINIMUM_VALID = 7.0f;            // Volts (below normal automotive range)
     
     // =========================================================================
     // CURRENT PROTECTION SYSTEM
@@ -86,7 +123,7 @@ namespace Config {
     // =========================================================================
     
     // Main sensors and outputs
-    constexpr uint8_t PIN_MAP_SENSOR   = A4; // MPX5700ASX pressure sensor
+    constexpr uint8_t PIN_MAP_SENSOR   = A4; // MPX5700AP pressure sensor (absolute)
     constexpr uint8_t PIN_PWM_OUT_1    = 3;  // D3 (SSR channel 1)
     constexpr uint8_t PIN_PWM_OUT_2    = 5;  // D5 (SSR channel 2)
 
