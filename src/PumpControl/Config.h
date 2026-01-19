@@ -13,9 +13,9 @@ namespace Config {
     // =========================================================================
     
     // Pressure (bar) where output should be at OUTPUT_VOLTAGE_MIN
-    constexpr float MAP_BAR_LOW_SETPOINT  = 0.20f; // bar
+    constexpr float MAP_BAR_LOW_SETPOINT  = 0.9f; // bar
     // Pressure (bar) where output should be at OUTPUT_VOLTAGE_MAX
-    constexpr float MAP_BAR_HIGH_SETPOINT = 0.40f; // bar
+    constexpr float MAP_BAR_HIGH_SETPOINT = 1.0f; // bar
 
     // Target voltages corresponding to pressure setpoints
     constexpr float OUTPUT_VOLTAGE_MIN = 9.0f;   // Volts
@@ -28,13 +28,18 @@ namespace Config {
     constexpr float MAP_FILTER_ALPHA   = 0.15f; // 0<alpha<=1 (smaller = smoother)
 
     // =========================================================================
-    // CURRENT SENSING - ACS772LCB-100U
+    // CURRENT SENSING - ACS772LCB-050 (UNIDIRECTIONAL MODE)
     // =========================================================================
     
-    // ACS772LCB-100U Hall-effect current sensor specifications
-    constexpr float ACS772_SENSITIVITY = 0.020f;        // V/A (20mV/A)
-    constexpr float ACS772_ZERO_CURRENT_V = 2.5f;       // Volts (Vcc/2 @ 5V supply)
-    constexpr float ACS772_MAX_CURRENT = 100.0f;        // Amperes (sensor absolute max)
+    // ACS772LCB-050 Hall-effect current sensor specifications
+    // Configured for UNIDIRECTIONAL operation (0 to +50A only)
+    // Physical chip marked as 050B, but behaving as unidirectional variant
+    constexpr float ACS772_SENSITIVITY = 0.040f;        // V/A (40mV/A)
+    constexpr float ACS772_ZERO_CURRENT_V = 0.6f;      // Volts (measured: 0.6V @ 0A - confirmed)
+    constexpr float ACS772_MAX_CURRENT = 50.0f;         // Amperes (sensor absolute max)
+    
+    // Note: Standard bidirectional 050B should have zero at 2.5V
+    // This configuration uses measured zero point for unidirectional operation
     
     // ADC configuration
     constexpr float ADC_REFERENCE_VOLTAGE = 5.0f;       // Volts (Arduino Uno default)
@@ -57,7 +62,7 @@ namespace Config {
     
     // Hysteresis band (Amperes)
     // Prevents chattering/oscillation between protection levels
-    // Level changes require crossing threshold ± hysteresis
+    // Level changes require crossing threshold ï¿½ hysteresis
     constexpr float CURRENT_HYSTERESIS = 2.0f;           // Amperes
     
     // Voltage limiting for protection levels
