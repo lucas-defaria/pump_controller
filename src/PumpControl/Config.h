@@ -40,26 +40,33 @@ namespace Config {
     constexpr float MAP_FILTER_ALPHA   = 0.15f; // 0<alpha<=1 (smaller = smoother)
 
     // =========================================================================
-    // CURRENT SENSING - ACS772LCB-050 (UNIDIRECTIONAL MODE)
+    // CURRENT SENSING - ACS772LCB-050B (UNIDIRECTIONAL MODE)
     // =========================================================================
     
-    // ACS772LCB-050 Hall-effect current sensor specifications
+    // ACS772LCB-050B Hall-effect current sensor specifications
     // Configured for UNIDIRECTIONAL operation (0 to +50A only)
-    // Physical chip marked as 050B, but behaving as unidirectional variant
-    constexpr float ACS772_SENSITIVITY = 0.040f;        // V/A (40mV/A)
+    // Measured characteristics:
+    //   - 0A input = 0.6V output (confirmed)
+    //   - 2.65A input = ~0.706V expected (0.6 + 2.65*0.04)
+    // Note: PWM load causes noise - using multi-sample averaging
+    constexpr float ACS772_SENSITIVITY = 0.06f;        // V/A (40mV/A for 050B)
     constexpr float ACS772_ZERO_CURRENT_V = 0.6f;      // Volts (measured: 0.6V @ 0A - confirmed)
     constexpr float ACS772_MAX_CURRENT = 50.0f;         // Amperes (sensor absolute max)
     
-    // Note: Standard bidirectional 050B should have zero at 2.5V
-    // This configuration uses measured zero point for unidirectional operation
-    
     // ADC configuration
-    constexpr float ADC_REFERENCE_VOLTAGE = 5.0f;       // Volts (Arduino Uno default)
+    constexpr float ADC_REFERENCE_VOLTAGE = 4.9f;       // Volts (Arduino Uno default)
+    
+    // Multi-sample averaging to filter PWM noise
+    // PWM at 977Hz creates ~1.02ms period
+    // Taking 10 samples with small delays helps average out PWM cycles
+    constexpr uint8_t CURRENT_ADC_SAMPLES = 10;         // Number of ADC samples to average
+    constexpr uint8_t CURRENT_ADC_DELAY_US = 50;        // Delay between samples (microseconds)
     
     // Current reading filter coefficient (EMA)
     // Higher alpha = faster response, more noise
     // Lower alpha = slower response, smoother
-    constexpr float CURRENT_FILTER_ALPHA = 0.25f;       // 0<alpha<=1
+    // Reduced alpha due to PWM interference
+    constexpr float CURRENT_FILTER_ALPHA = 0.15f;       // 0<alpha<=1 (reduced for PWM)
     
     // =========================================================================
     // VOLTAGE MONITORING - Supply voltage measurement with percentage-based protection
@@ -101,28 +108,92 @@ namespace Config {
     constexpr float CURRENT_THRESHOLD_CRITICAL = 35.0f;  // CRITICAL zone starts
     constexpr float CURRENT_THRESHOLD_FAULT    = 40.0f;  // FAULT zone starts
     
+    // EMERGENCY: Absolute maximum current (sensor hardware limit)
+    // ACS772LCB-050B saturates at ~50A - readings near this indicate:
+    // 1. Actual current >= 50A (short circuit, severe overload)
+    // 2. Sensor at maximum capability
+    // Action: IMMEDIATE shutdown to prevent component damage
+    constexpr float CURRENT_THRESHOLD_EMERGENCY = 45.0f;  // Emergency shutdown (90% of sensor max)
+    
+    // Emergency shutdown enable flag
+    // WARNING: Set to true for safety, false only for testing/pump-critical applications
+    // When true: System shuts down completely at EMERGENCY threshold
+    // When false: System reduces to minimum (50%) but never fully shuts down
+    constexpr bool ENABLE_EMERGENCY_SHUTDOWN = true;  // Set true for production with hardware protection
+    
     // Hysteresis band (Amperes)
     // Prevents chattering/oscillation between protection levels
     // Level changes require crossing threshold � hysteresis
-    constexpr float CURRENT_HYSTERESIS = 2.0f;           // Amperes
+    constexpr float CURRENT_HYSTERESIS = 2.5f;           // Amperes
     
     // Percentage-based voltage limiting for protection levels
     // These percentages apply to the measured supply voltage (adaptive)
-    // NORMAL:   100% (1.00) - no limiting (full power)
-    // WARNING:   70% (0.70) - 30% reduction (gentle protection)
-    // HIGH:      60% (0.60) - 40% reduction (moderate protection)
-    // CRITICAL:  50% (0.50) - 50% reduction (aggressive protection)
-    // FAULT:     50% (0.50) - 50% reduction (same as critical, minimum safe)
+    // NORMAL:    100% (1.00) - no limiting (full power)
+    // WARNING:    70% (0.70) - 30% reduction (gentle protection)
+    // HIGH:       60% (0.60) - 40% reduction (moderate protection)
+    // CRITICAL:   50% (0.50) - 50% reduction (aggressive protection)
+    // FAULT:      50% (0.50) - 50% reduction (same as critical, minimum safe)
+    // EMERGENCY:   0% (0.00) - COMPLETE SHUTDOWN (short circuit protection)
     constexpr float PROTECTION_PERCENT_NORMAL   = 1.00f;  // 100% - full power
     constexpr float PROTECTION_PERCENT_WARNING  = 0.70f;  // 70% - reduce by 30%
     constexpr float PROTECTION_PERCENT_HIGH     = 0.60f;  // 60% - reduce by 40%
     constexpr float PROTECTION_PERCENT_CRITICAL = 0.50f;  // 50% - reduce by 50%
     constexpr float PROTECTION_PERCENT_FAULT    = 0.50f;  // 50% - minimum safe level
+    constexpr float PROTECTION_PERCENT_EMERGENCY = 0.00f; // 0% - EMERGENCY SHUTDOWN (if enabled)
     
     // Rate limiting for voltage changes (per update cycle)
     // Prevents sudden jumps, reduces stress on pump/electrical system
     // At 20Hz update (50ms), this allows 0.05 per cycle = 1.0s for full range
-    constexpr float VOLTAGE_LIMIT_RATE_MAX = 0.05f;      // Max change per cycle
+    constexpr float VOLTAGE_LIMIT_RATE_MAX = 0.05f;      // Max change per cycle (normal)
+    
+    // EMERGENCY rate limiting (bypass normal rate limiting in critical situations)
+    // When entering EMERGENCY level, apply immediate reduction without rate limiting
+    constexpr float VOLTAGE_LIMIT_RATE_EMERGENCY = 1.0f; // Instant shutdown (no rate limiting)
+    
+    // =========================================================================
+    // PWM CONFIGURATION
+    // =========================================================================
+    
+    // Hardware PWM inversion compensation
+    // The driver circuit (BC817 NPN + BC807 PNP) inverts the PWM signal:
+    //   Arduino PWM HIGH ? BC817 ON ? BC807 OFF ? Gate LOW ? MOSFET OFF
+    //   Arduino PWM LOW  ? BC817 OFF ? BC807 ON ? Gate HIGH ? MOSFET ON
+    // Set to true to compensate for this inversion in software
+    constexpr bool PWM_INVERTED_BY_HARDWARE = true;
+    
+    // =========================================================================
+    // PWM FREQUENCY CONFIGURATION
+    // =========================================================================
+    
+    // High-frequency PWM configuration for motor control
+    // Default Arduino PWM: ~490 Hz (audible whine, EMI issues, poor current sensing)
+    // Target: 31.25 kHz (ultrasonic, cleaner for current sensor, no audible noise)
+    //
+    // CRITICAL: Timer 0 prescaler modification affects system timing functions!
+    // When ENABLE_HIGH_FREQ_PWM = true:
+    // - millis() runs 64x faster (prescaler changed from 64 to 1)
+    // - delay() runs 64x faster (prescaler changed from 64 to 1)
+    // - delayMicroseconds() is NOT affected (uses different mechanism)
+    //
+    // Timer configuration for 31.25 kHz PWM:
+    // - Timer 0 (D5, D6): Phase-Correct PWM, prescaler 64?1, affects millis()/delay()
+    // - Timer 2 (D3, D11): Phase-Correct PWM, prescaler 64?1, independent
+    // - Formula: 16MHz / 512 / 1 = 31.25 kHz (Phase-Correct counts up and down)
+    //
+    // ALL timing code must be compensated using TIMER0_PRESCALER_FACTOR
+    // This is done automatically using MILLIS_COMPENSATED() macro
+    //
+    constexpr bool ENABLE_HIGH_FREQ_PWM = true;  // Enable 31.25 kHz PWM
+    
+    // Timer 0 prescaler compensation factor (64?1 = 64x faster)
+    // All millis() comparisons and delay() calls must multiply by this factor
+    // Example: delay(1000) becomes delay(1000*64) when Timer 0 prescaler changes
+    constexpr uint8_t TIMER0_PRESCALER_FACTOR = 64;
+    
+    // Timing compensation macro for millis() comparisons
+    // Use this macro for all time intervals to ensure accurate timing
+    // Example: if (millis() < MILLIS_COMPENSATED(2000)) // 2 seconds actual time
+    #define MILLIS_COMPENSATED(ms) ((ms) * Config::TIMER0_PRESCALER_FACTOR)
     
     // =========================================================================
     // PIN ASSIGNMENTS

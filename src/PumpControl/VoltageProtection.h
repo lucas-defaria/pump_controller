@@ -75,8 +75,15 @@ public:
     }
 
     // Get total fault count
-    uint16_t getFaultCount() const {
+    // Using uint32_t to prevent overflow (max ~4.3 billion events)
+    uint32_t getFaultCount() const {
         return _faultCount;
+    }
+
+    // Get time since last level change in milliseconds (compensated for Timer 0)
+    // COMPENSATED: millis() runs 64x faster, divide by prescaler factor for real time
+    unsigned long getTimeSinceLastChange() const {
+        return (unsigned long)(millis() - _lastLevelChangeMs) / Config::TIMER0_PRESCALER_FACTOR;
     }
 
     // Convert protection level to string (for logging)
@@ -102,11 +109,14 @@ private:
     VoltageSensor& _sensor;
     ProtectionLevel _currentLevel;
     unsigned long _lastLevelChangeMs;
-    uint16_t _faultCount;
+    uint32_t _faultCount;         // uint32_t prevents overflow
 
     // Handle protection level changes (logging and fault counting)
     void handleLevelChange(ProtectionLevel newLevel) {
-        unsigned long timeSinceLast = millis() - _lastLevelChangeMs;
+        // Safe millis() rollover: subtraction is always valid for unsigned types
+        // COMPENSATED: millis() runs 64x faster due to Timer 0 prescaler change
+        // Divide by TIMER0_PRESCALER_FACTOR to get actual elapsed time
+        unsigned long timeSinceLast = (unsigned long)(millis() - _lastLevelChangeMs) / Config::TIMER0_PRESCALER_FACTOR;
         float voltage = _sensor.readVoltage();
         
         // Log level change

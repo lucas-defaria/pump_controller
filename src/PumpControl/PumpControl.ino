@@ -75,7 +75,9 @@ static float pressureToTargetPercent(float bar) {
 
 void setup() {
     Serial.begin(115200);
-    while(!Serial && millis() < 2000) { 
+    // COMPENSATED: millis() runs 64x faster due to Timer 0 prescaler change for PWM
+    // 2000ms actual time = 2000 * 64 ticks with modified Timer 0
+    while(!Serial && millis() < MILLIS_COMPENSATED(2000)) { 
         // Wait for serial port (optional, for debugging)
     }
 
@@ -85,8 +87,12 @@ void setup() {
     Serial.println();
 
     // Initialize all subsystems
+    // CRITICAL: Power outputs initialized FIRST to ensure motor starts OFF
+    Serial.println(F("Initializing power outputs (motor OFF)..."));
+    g_power.begin();  // This sets motor to OFF state with safety delays
+    
+    Serial.println(F("Initializing sensors..."));
     g_map.begin();
-    g_power.begin();
     g_curr1.begin();
     g_curr2.begin();
     g_protection.begin();
@@ -123,6 +129,16 @@ void setup() {
     Serial.println(F("System ready"));
     Serial.println(F("========================================"));
     Serial.println();
+    
+    // Additional safety: Keep motor OFF for 2 seconds after full initialization
+    // Allows all sensors to stabilize before motor operation begins
+    Serial.println(F("Safety delay: Motor OFF for 2 seconds..."));
+    g_power.setDuty(0.0f);  // Ensure motor is OFF
+    // Using delayMicroseconds because it's NOT affected by Timer 0 prescaler change
+    // delay() would require dividing by 64, not multiplying
+    delayMicroseconds(2000000UL);  // 2 seconds = 2,000,000 microseconds
+    Serial.println(F("Starting normal operation"));
+    Serial.println();
 }
 
 // ============================================================================
@@ -133,7 +149,9 @@ void loop() {
     unsigned long now = millis();
     
     // Main control loop - runs at MAIN_LOOP_INTERVAL_MS (20Hz default)
-    if (now - g_lastUpdateMs >= Config::MAIN_LOOP_INTERVAL_MS) {
+    // Safe millis() rollover handling: subtraction is always safe for unsigned types
+    // COMPENSATED: millis() runs 64x faster, so interval must be 64x larger
+    if ((unsigned long)(now - g_lastUpdateMs) >= MILLIS_COMPENSATED(Config::MAIN_LOOP_INTERVAL_MS)) {
         g_lastUpdateMs = now;
 
         // ====================================================================
@@ -202,7 +220,9 @@ void loop() {
     // ========================================================================
     // Detailed status report - runs at STATUS_REPORT_INTERVAL_MS (1Hz default)
     // ========================================================================
-    if (now - g_lastStatusMs >= Config::STATUS_REPORT_INTERVAL_MS) {
+    // Safe millis() rollover handling: subtraction is always safe for unsigned types
+    // COMPENSATED: millis() runs 64x faster, so interval must be 64x larger
+    if ((unsigned long)(now - g_lastStatusMs) >= MILLIS_COMPENSATED(Config::STATUS_REPORT_INTERVAL_MS)) {
         g_lastStatusMs = now;
         
         printDetailedStatus();
@@ -229,7 +249,7 @@ void printDetailedStatus() {
     Serial.print(pressure, 3);
     Serial.println(F(" bar"));
     
-    // Current readings
+    // Current readings (filtered)
     float i1 = g_curr1.readCurrentA();
     float i2 = g_curr2.readCurrentA();
     Serial.print(F("Current Ch1:     ")); 
@@ -241,6 +261,18 @@ void printDetailedStatus() {
     Serial.print(F("Max Current:     ")); 
     Serial.print(max(i1, i2), 2);
     Serial.println(F(" A"));
+    
+    // Diagnostic: raw voltage readings
+    Serial.print(F("Ch1 Voltage:     ")); 
+    Serial.print(g_curr1.getFilteredVoltage(), 3);
+    Serial.print(F(" V (filtered), "));
+    Serial.print(g_curr1.readVoltageRaw(), 3);
+    Serial.println(F(" V (raw avg)"));
+    Serial.print(F("Ch2 Voltage:     ")); 
+    Serial.print(g_curr2.getFilteredVoltage(), 3);
+    Serial.print(F(" V (filtered), "));
+    Serial.print(g_curr2.readVoltageRaw(), 3);
+    Serial.println(F(" V (raw avg)"));
     
     // Supply voltage status
     float supplyV = g_voltage.readVoltage();
@@ -289,8 +321,9 @@ void printDetailedStatus() {
     Serial.println(d2 ? "ACTIVE" : "inactive");
     
     // Runtime
+    // COMPENSATED: millis() runs 64x faster, divide by prescaler factor for real time
     Serial.print(F("Uptime:          ")); 
-    Serial.print(millis() / 1000);
+    Serial.print(millis() / (1000UL * Config::TIMER0_PRESCALER_FACTOR));
     Serial.println(F(" s"));
     
     Serial.println(F("----------------------------------------"));
