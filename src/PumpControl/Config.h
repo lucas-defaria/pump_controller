@@ -141,6 +141,21 @@ namespace Config {
     constexpr float PROTECTION_PERCENT_FAULT    = 0.50f;  // 50% - minimum safe level
     constexpr float PROTECTION_PERCENT_EMERGENCY = 0.00f; // 0% - EMERGENCY SHUTDOWN (if enabled)
     
+    // =========================================================================
+    // EXTERNAL SAFETY INPUT (EMERGENCY SHUTDOWN VIA D7)
+    // =========================================================================
+    
+    // External safety input configuration
+    // When D7 receives HIGH signal, immediately shutdown outputs (same as EMERGENCY protection)
+    // This allows external systems (ECU, safety relay, etc.) to force pump shutdown
+    // WARNING: Unlike internal protection, external shutdown is IMMEDIATE (no rate limiting)
+    constexpr bool ENABLE_EXTERNAL_SAFETY = true;  // Enable external safety shutdown via D7
+    
+    // Signal polarity: true = HIGH triggers shutdown, false = LOW triggers shutdown
+    // Set to true for active-high safety signal (HIGH = shutdown, LOW = normal)
+    // Set to false for active-low safety signal (LOW = shutdown, HIGH = normal)
+    constexpr bool EXTERNAL_SAFETY_ACTIVE_HIGH = true;  // HIGH = emergency shutdown
+    
     // Rate limiting for voltage changes (per update cycle)
     // Prevents sudden jumps, reduces stress on pump/electrical system
     // At 20Hz update (50ms), this allows 0.05 per cycle = 1.0s for full range
@@ -167,28 +182,28 @@ namespace Config {
     
     // High-frequency PWM configuration for motor control
     // Default Arduino PWM: ~490 Hz (audible whine, EMI issues, poor current sensing)
-    // Target: 31.25 kHz (ultrasonic, cleaner for current sensor, no audible noise)
+    // Target: 3.9 kHz (reduced from 31.25 kHz due to heating issues)
     //
     // CRITICAL: Timer 0 prescaler modification affects system timing functions!
     // When ENABLE_HIGH_FREQ_PWM = true:
-    // - millis() runs 64x faster (prescaler changed from 64 to 1)
-    // - delay() runs 64x faster (prescaler changed from 64 to 1)
+    // - millis() runs 8x faster (prescaler changed from 64 to 8)
+    // - delay() runs 8x faster (prescaler changed from 64 to 8)
     // - delayMicroseconds() is NOT affected (uses different mechanism)
     //
-    // Timer configuration for 31.25 kHz PWM:
-    // - Timer 0 (D5, D6): Phase-Correct PWM, prescaler 64?1, affects millis()/delay()
-    // - Timer 2 (D3, D11): Phase-Correct PWM, prescaler 64?1, independent
-    // - Formula: 16MHz / 512 / 1 = 31.25 kHz (Phase-Correct counts up and down)
+    // Timer configuration for 3.9 kHz PWM:
+    // - Timer 0 (D5, D6): Phase-Correct PWM, prescaler 64?8, affects millis()/delay()
+    // - Timer 2 (D3, D11): Phase-Correct PWM, prescaler 64?8, independent
+    // - Formula: 16MHz / 512 / 8 = 3906.25 Hz ? 3.9 kHz (Phase-Correct counts up and down)
     //
     // ALL timing code must be compensated using TIMER0_PRESCALER_FACTOR
     // This is done automatically using MILLIS_COMPENSATED() macro
     //
-    constexpr bool ENABLE_HIGH_FREQ_PWM = true;  // Enable 31.25 kHz PWM
+    constexpr bool ENABLE_HIGH_FREQ_PWM = true;  // Enable 3.9 kHz PWM
     
-    // Timer 0 prescaler compensation factor (64?1 = 64x faster)
+    // Timer 0 prescaler compensation factor (64?8 = 8x faster)
     // All millis() comparisons and delay() calls must multiply by this factor
-    // Example: delay(1000) becomes delay(1000*64) when Timer 0 prescaler changes
-    constexpr uint8_t TIMER0_PRESCALER_FACTOR = 64;
+    // Example: delay(1000) becomes delay(1000*8) when Timer 0 prescaler changes
+    constexpr uint8_t TIMER0_PRESCALER_FACTOR = 8;
     
     // Timing compensation macro for millis() comparisons
     // Use this macro for all time intervals to ensure accurate timing

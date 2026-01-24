@@ -42,23 +42,27 @@ public:
         // CRITICAL: This modifies Timer 0 and Timer 2 to Phase-Correct PWM mode
         // Timer 0 modification affects millis() and delay() - they run 64x faster!
         // All timing code has been compensated using MILLIS_COMPENSATED() macro
+        // Step 4: Configure high-frequency PWM (3.9 kHz)
+        // CRITICAL: This modifies Timer 0 and Timer 2 to Phase-Correct PWM mode
+        // Timer 0 modification affects millis() and delay() - they run 8x faster!
+        // All timing code has been compensated using MILLIS_COMPENSATED() macro
         if (Config::ENABLE_HIGH_FREQ_PWM) {
-            // Configure Timer 2 (pins D3, D11) for 31.25 kHz Phase-Correct PWM
-            // Phase-Correct PWM: 16MHz / 512 / 1 = 31.25 kHz (counts up and down)
+            // Configure Timer 2 (pins D3, D11) for 3.9 kHz Phase-Correct PWM
+            // Phase-Correct PWM: 16MHz / 512 / 8 = 3906.25 Hz ? 3.9 kHz (counts up and down)
             // Set WGM22=0, WGM21=0, WGM20=1 for Phase-Correct PWM, TOP=0xFF
             TCCR2A = (TCCR2A & 0xFC) | 0x01;  // WGM21=0, WGM20=1
             TCCR2B = (TCCR2B & 0xF7);         // WGM22=0
-            // Set prescaler to 1 (CS22=0, CS21=0, CS20=1)
-            TCCR2B = (TCCR2B & 0xF8) | 0x01;
+            // Set prescaler to 8 (CS22=0, CS21=1, CS20=0)
+            TCCR2B = (TCCR2B & 0xF8) | 0x02;
             
-            // Configure Timer 0 (pins D5, D6) for 31.25 kHz Phase-Correct PWM
-            // WARNING: This makes millis() and delay() run 64x faster!
-            // Phase-Correct PWM: 16MHz / 512 / 1 = 31.25 kHz
+            // Configure Timer 0 (pins D5, D6) for 3.9 kHz Phase-Correct PWM
+            // WARNING: This makes millis() and delay() run 8x faster!
+            // Phase-Correct PWM: 16MHz / 512 / 8 = 3906.25 Hz
             // Set WGM02=0, WGM01=0, WGM00=1 for Phase-Correct PWM, TOP=0xFF
             TCCR0A = (TCCR0A & 0xFC) | 0x01;  // WGM01=0, WGM00=1
             TCCR0B = (TCCR0B & 0xF7);         // WGM02=0
-            // Set prescaler to 1 (CS02=0, CS01=0, CS00=1)
-            TCCR0B = (TCCR0B & 0xF8) | 0x01;  // Prescaler 1 (64x faster timing!)
+            // Set prescaler to 8 (CS02=0, CS01=1, CS00=0)
+            TCCR0B = (TCCR0B & 0xF8) | 0x02;  // Prescaler 8 (8x faster timing!)
         }
         
         // Step 5: Set initial duty cycle to 0% (motor OFF)
