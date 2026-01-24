@@ -218,7 +218,12 @@ namespace Config {
     constexpr uint8_t PIN_MAP_SENSOR   = A4; // MPX5700AP pressure sensor (absolute)
     constexpr uint8_t PIN_PWM_OUT_1    = 3;  // D3 (SSR channel 1)
     constexpr uint8_t PIN_PWM_OUT_2    = 5;  // D5 (SSR channel 2)
-
+    
+    // Status LED NeoPixel
+    constexpr uint8_t PIN_STATUS_LED   = 2;  // D2 - NeoPixel RGB LED
+    constexpr uint16_t STATUS_LED_COUNT = 1; // Número de LEDs NeoPixel
+    constexpr uint8_t LED_BRIGHTNESS   = 50; // Brilho do LED (0-255, 50 = ~20%)
+    
     // Current sensors (ACS772LCB-100U)
     constexpr uint8_t PIN_CURRENT_1    = A2; // Current sensor channel 1
     constexpr uint8_t PIN_CURRENT_2    = A3; // Current sensor channel 2

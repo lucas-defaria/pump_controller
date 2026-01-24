@@ -30,6 +30,7 @@
 #include "VoltageSensor.h"
 #include "VoltageProtection.h"
 #include "CanInterface.h"
+#include "StatusLed.h"
 
 // ============================================================================
 // Global instances
@@ -43,6 +44,7 @@ PowerProtection g_protection(g_curr1, g_curr2);
 VoltageSensor  g_voltage(Config::PIN_VCC_SENSE);
 VoltageProtection g_voltageProtection(g_voltage);
 CanInterface   g_can;  // stub for future CAN bus integration
+StatusLed      g_statusLed(Config::PIN_STATUS_LED, Config::STATUS_LED_COUNT);
 
 unsigned long g_lastUpdateMs = 0;
 unsigned long g_lastStatusMs = 0;
@@ -99,6 +101,9 @@ void setup() {
     g_voltage.begin();
     g_voltageProtection.begin();
     g_can.begin(); // stub
+    
+    Serial.println(F("Initializing status LED..."));
+    g_statusLed.begin();
 
     // Configure digital inputs (active low)
     pinMode(Config::PIN_DIG_IN_1, INPUT);
@@ -181,19 +186,24 @@ void loop() {
         float pressureBar = g_map.readPressureBar();
         
         // ====================================================================
-        // 3. Read supply voltage (used for all percentage calculations)
+        // 3. Update status LED based on pressure
+        // ====================================================================
+        g_statusLed.updateFromPressure(pressureBar);
+        
+        // ====================================================================
+        // 4. Read supply voltage (used for all percentage calculations)
         // ====================================================================
         float supplyVoltage = g_voltage.readVoltage();
         VoltageProtection::ProtectionLevel voltageLevel = g_voltageProtection.update();
         
         // ====================================================================
-        // 4. Calculate target output as percentage of supply voltage
+        // 5. Calculate target output as percentage of supply voltage
         // ====================================================================
         float targetPercent = pressureToTargetPercent(pressureBar);
         float targetVoltage = targetPercent * supplyVoltage;  // Convert to actual voltage
         
         // ====================================================================
-        // 5. Update current protection system (reads current sensors)
+        // 6. Update current protection system (reads current sensors)
         // ====================================================================
         float voltageLimit = g_protection.update();
         
