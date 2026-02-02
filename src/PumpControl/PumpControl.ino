@@ -6,7 +6,14 @@
    - Dual ACS772LCB-100U current sensors (A2, A3)
    - Multi-level progressive current protection (never fully shuts down)
    - Two PWM outputs (D3, D5) for SSR control
+   - NeoPixel RGB LED indicating current level and protection state
    - Serial logging of all parameters
+   
+   LED Status Indication:
+   - NORMAL (0-25A):           Green solid
+   - WARNING-CRITICAL (25-40A): Gradual transition green?yellow?orange?red
+   - FAULT (>40A):             Blinking red (1Hz)
+   - EMERGENCY (>45A):         Fast blinking red (5Hz)
    
    Protection Strategy:
    - NORMAL (0-25A):     Full voltage available
@@ -106,7 +113,7 @@ void setup() {
     g_statusLed.begin();
 
     // Configure digital inputs (active low)
-    pinMode(Config::PIN_DIG_IN_1, INPUT);
+    pinMode(Config::PIN_DIG_IN_1, INPUT_PULLUP);
     pinMode(Config::PIN_DIG_IN_2, INPUT_PULLUP);
 
     // Print configuration summary
@@ -164,7 +171,7 @@ void loop() {
         // ====================================================================
         bool externalSafetyActive = false;
         if (Config::ENABLE_EXTERNAL_SAFETY) {
-            int safetyInput = digitalRead(Config::PIN_DIG_IN_1);  // D7
+            int safetyInput = digitalRead(Config::PIN_DIG_IN_2);  // D8
             if (Config::EXTERNAL_SAFETY_ACTIVE_HIGH) {
                 externalSafetyActive = (safetyInput == HIGH);  // HIGH = shutdown
             } else {
@@ -174,6 +181,7 @@ void loop() {
             // If external safety triggered, immediately shutdown and skip normal control
             if (externalSafetyActive) {
                 g_power.setDuty(0.0f);  // IMMEDIATE shutdown (no rate limiting)
+                g_statusLed.updateExternalSafetyBlink();  // Blue blinking LED
                 Serial.println(F("*** EXTERNAL SAFETY ACTIVE - OUTPUT FORCED OFF ***"));
                 // Skip rest of control loop - safety has priority
                 return;
@@ -186,45 +194,46 @@ void loop() {
         float pressureBar = g_map.readPressureBar();
         
         // ====================================================================
-        // 3. Update status LED based on pressure
-        // ====================================================================
-        g_statusLed.updateFromPressure(pressureBar);
-        
-        // ====================================================================
-        // 4. Read supply voltage (used for all percentage calculations)
+        // 3. Read supply voltage (used for all percentage calculations)
         // ====================================================================
         float supplyVoltage = g_voltage.readVoltage();
         VoltageProtection::ProtectionLevel voltageLevel = g_voltageProtection.update();
         
         // ====================================================================
-        // 5. Calculate target output as percentage of supply voltage
+        // 4. Calculate target output as percentage of supply voltage
         // ====================================================================
         float targetPercent = pressureToTargetPercent(pressureBar);
         float targetVoltage = targetPercent * supplyVoltage;  // Convert to actual voltage
         
         // ====================================================================
-        // 6. Update current protection system (reads current sensors)
+        // 5. Update current protection system (reads current sensors)
         // ====================================================================
         float voltageLimit = g_protection.update();
         
         // ====================================================================
-        // 6. Apply voltage limit and set power output
+        // 6. Read current sensors and update status LED
+        // ====================================================================
+        float current1 = g_curr1.readCurrentA();
+        float current2 = g_curr2.readCurrentA();
+        float maxCurrent = max(current1, current2);
+        
+        // Update LED based on current level and protection state
+        PowerProtection::ProtectionLevel protLevel = g_protection.getLevel();
+        bool inFault = (protLevel == PowerProtection::ProtectionLevel::FAULT);
+        bool inEmergency = (protLevel == PowerProtection::ProtectionLevel::EMERGENCY);
+        g_statusLed.updateFromCurrent(maxCurrent, inFault, inEmergency);
+        
+        // ====================================================================
+        // 7. Apply voltage limit and set power output
         // ====================================================================
         g_power.setSupplyVoltage(supplyVoltage);  // Update measured supply voltage
         g_power.setVoltageLimit(voltageLimit);
         g_power.setOutputPercent(targetPercent);  // Use percentage-based method
         
         // ====================================================================
-        // 7. Read current sensors (for logging)
-        // ====================================================================
-        float current1 = g_curr1.readCurrentA();
-        float current2 = g_curr2.readCurrentA();
-        float maxCurrent = max(current1, current2);
-        
-        // ====================================================================
         // 8. Read digital inputs (active low) - for logging only
         // ====================================================================
-        // Note: PIN_DIG_IN_1 (D7) is now used for external safety (checked at start of loop)
+        // Note: PIN_DIG_IN_2 (D8) is now used for external safety (checked at start of loop)
         bool dig1Active = (digitalRead(Config::PIN_DIG_IN_1) == LOW);
         bool dig2Active = (digitalRead(Config::PIN_DIG_IN_2) == LOW);
         
@@ -346,7 +355,7 @@ void printDetailedStatus() {
     
     // External safety status
     if (Config::ENABLE_EXTERNAL_SAFETY) {
-        int safetyInput = digitalRead(Config::PIN_DIG_IN_1);
+        int safetyInput = digitalRead(Config::PIN_DIG_IN_2);
         bool safetyActive = Config::EXTERNAL_SAFETY_ACTIVE_HIGH ? 
                            (safetyInput == HIGH) : (safetyInput == LOW);
         Serial.print(F("External Safety: ")); 

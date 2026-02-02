@@ -24,9 +24,9 @@ namespace Config {
     // Negative values = vacuum (intake manifold below atmospheric)
     // Positive values = boost (turbo pressure above atmospheric)
     // Pressure (bar gauge) where output should be at OUTPUT_PERCENT_MIN
-    constexpr float MAP_BAR_LOW_SETPOINT  = 0.2f; // bar gauge (low pressure)
+    constexpr float MAP_BAR_LOW_SETPOINT  = 0.4f; // bar gauge (low pressure)
     // Pressure (bar gauge) where output should be at OUTPUT_PERCENT_MAX
-    constexpr float MAP_BAR_HIGH_SETPOINT = 0.4f;  // bar gauge (high pressure)
+    constexpr float MAP_BAR_HIGH_SETPOINT = 0.6f;  // bar gauge (high pressure)
 
     // Target output as percentage of measured supply voltage
     // This makes the system adaptive to voltage variations (8-14.5V automotive range)
@@ -221,8 +221,8 @@ namespace Config {
     
     // Status LED NeoPixel
     constexpr uint8_t PIN_STATUS_LED   = 2;  // D2 - NeoPixel RGB LED
-    constexpr uint16_t STATUS_LED_COUNT = 1; // Número de LEDs NeoPixel
-    constexpr uint8_t LED_BRIGHTNESS   = 50; // Brilho do LED (0-255, 50 = ~20%)
+    constexpr uint16_t STATUS_LED_COUNT = 1; // NÃºmero de LEDs NeoPixel
+    constexpr uint8_t LED_BRIGHTNESS   = 200; // Brilho do LED (0-255, 50 = ~20%)
     
     // Current sensors (ACS772LCB-100U)
     constexpr uint8_t PIN_CURRENT_1    = A2; // Current sensor channel 1
