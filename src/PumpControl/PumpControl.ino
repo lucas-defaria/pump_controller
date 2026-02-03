@@ -38,6 +38,7 @@
 #include "VoltageProtection.h"
 #include "CanInterface.h"
 #include "StatusLed.h"
+#include "PwmInput.h"
 
 // ============================================================================
 // Global instances
@@ -52,6 +53,7 @@ VoltageSensor  g_voltage(Config::PIN_VCC_SENSE);
 VoltageProtection g_voltageProtection(g_voltage);
 CanInterface   g_can;  // stub for future CAN bus integration
 StatusLed      g_statusLed(Config::PIN_STATUS_LED, Config::STATUS_LED_COUNT);
+PwmInput       g_pwmInput(Config::PIN_PWM_INPUT);  // External PWM input for slave mode
 
 unsigned long g_lastUpdateMs = 0;
 unsigned long g_lastStatusMs = 0;
@@ -108,13 +110,20 @@ void setup() {
     g_voltage.begin();
     g_voltageProtection.begin();
     g_can.begin(); // stub
+    g_pwmInput.begin(); // External PWM input for slave mode - configures PIN_DIG_IN_1 as INPUT (no pullup)
+    
+    // Enable PWM debug for first 10 seconds (for troubleshooting)
+    // Comment out after confirming PWM detection works
+    g_pwmInput.setDebug(true);
     
     Serial.println(F("Initializing status LED..."));
     g_statusLed.begin();
 
     // Configure digital inputs (active low)
-    pinMode(Config::PIN_DIG_IN_1, INPUT_PULLUP);
-    pinMode(Config::PIN_DIG_IN_2, INPUT_PULLUP);
+    // NOTE: PIN_DIG_IN_1 (D7) is used for PWM input and configured by g_pwmInput.begin()
+    // Do NOT reconfigure it here as INPUT_PULLUP or it will interfere with PWM signal
+    // pinMode(Config::PIN_DIG_IN_1, INPUT_PULLUP);  // REMOVED - conflicts with PWM input
+    pinMode(Config::PIN_DIG_IN_2, INPUT_PULLUP);     // D8 for external safety (active low)
 
     // Print configuration summary
     Serial.println(F("Configuration:"));
@@ -167,7 +176,14 @@ void loop() {
         g_lastUpdateMs = now;
 
         // ====================================================================
-        // 1. Check external safety input (D7) - HIGHEST PRIORITY
+        // 1. Update PWM input reading (uses pulseIn, may block ~40-100ms)
+        // ====================================================================
+        if (Config::ENABLE_PWM_SLAVE_MODE) {
+            g_pwmInput.update();
+        }
+
+        // ====================================================================
+        // 2. Check external safety input (D8) - HIGHEST PRIORITY
         // ====================================================================
         bool externalSafetyActive = false;
         if (Config::ENABLE_EXTERNAL_SAFETY) {
@@ -189,73 +205,113 @@ void loop() {
         }
         
         // ====================================================================
-        // 2. Read pressure sensor
+        // 3. Check for PWM slave mode (SECOND PRIORITY)
         // ====================================================================
-        float pressureBar = g_map.readPressureBar();
+        bool slaveMode = (Config::ENABLE_PWM_SLAVE_MODE && g_pwmInput.isSignalValid());
         
-        // ====================================================================
-        // 3. Read supply voltage (used for all percentage calculations)
-        // ====================================================================
-        float supplyVoltage = g_voltage.readVoltage();
-        VoltageProtection::ProtectionLevel voltageLevel = g_voltageProtection.update();
-        
-        // ====================================================================
-        // 4. Calculate target output as percentage of supply voltage
-        // ====================================================================
-        float targetPercent = pressureToTargetPercent(pressureBar);
-        float targetVoltage = targetPercent * supplyVoltage;  // Convert to actual voltage
-        
-        // ====================================================================
-        // 5. Update current protection system (reads current sensors)
-        // ====================================================================
-        float voltageLimit = g_protection.update();
-        
-        // ====================================================================
-        // 6. Read current sensors and update status LED
-        // ====================================================================
-        float current1 = g_curr1.readCurrentA();
-        float current2 = g_curr2.readCurrentA();
-        float maxCurrent = max(current1, current2);
-        
-        // Update LED based on current level and protection state
-        PowerProtection::ProtectionLevel protLevel = g_protection.getLevel();
-        bool inFault = (protLevel == PowerProtection::ProtectionLevel::FAULT);
-        bool inEmergency = (protLevel == PowerProtection::ProtectionLevel::EMERGENCY);
-        g_statusLed.updateFromCurrent(maxCurrent, inFault, inEmergency);
-        
-        // ====================================================================
-        // 7. Apply voltage limit and set power output
-        // ====================================================================
-        g_power.setSupplyVoltage(supplyVoltage);  // Update measured supply voltage
-        g_power.setVoltageLimit(voltageLimit);
-        g_power.setOutputPercent(targetPercent);  // Use percentage-based method
-        
-        // ====================================================================
-        // 8. Read digital inputs (active low) - for logging only
-        // ====================================================================
-        // Note: PIN_DIG_IN_2 (D8) is now used for external safety (checked at start of loop)
-        bool dig1Active = (digitalRead(Config::PIN_DIG_IN_1) == LOW);
-        bool dig2Active = (digitalRead(Config::PIN_DIG_IN_2) == LOW);
-        
-        // ====================================================================
-        // 9. Compact status output (every cycle)
-        // ====================================================================
-        Serial.print(F("P:"));
-        Serial.print(pressureBar, 2);
-        Serial.print(F("bar | Vs:"));
-        Serial.print(supplyVoltage, 1);
-        Serial.print(F("V | T%:"));
-        Serial.print(targetPercent * 100.0f, 0);
-        Serial.print(F("% | Vo:"));
-        Serial.print(g_power.getActualOutputVoltage(), 1);
-        Serial.print(F("V | I1:"));
-        Serial.print(current1, 1);
-        Serial.print(F("A | I2:"));
-        Serial.print(current2, 1);
-        Serial.print(F("A | Lim:"));
-        Serial.print(voltageLimit * 100.0f, 0);
-        Serial.print(F("% | "));
-        Serial.println(g_protection.getLevelString());
+        if (slaveMode) {
+            // ================================================================
+            // SLAVE MODE: Replicate input PWM on outputs
+            // ================================================================
+            // Still monitor current and voltage for protection
+            float inputDuty = g_pwmInput.getDutyCycle();
+            
+            // Read sensors for protection
+            float supplyVoltage = g_voltage.readVoltage();
+            float voltageLimit = g_protection.update();
+            
+            // Apply input duty cycle with protection limits
+            // CRITICAL: Use setOutputPercent() to respect voltage limit from protection
+            g_power.setSupplyVoltage(supplyVoltage);
+            g_power.setVoltageLimit(voltageLimit);
+            g_power.setOutputPercent(inputDuty);  // This applies voltageLimit internally
+            
+            // Read current sensors and update status LED
+            float current1 = g_curr1.readCurrentA();
+            float current2 = g_curr2.readCurrentA();
+            float maxCurrent = max(current1, current2);
+            
+            PowerProtection::ProtectionLevel protLevel = g_protection.getLevel();
+            bool inFault = (protLevel == PowerProtection::ProtectionLevel::FAULT);
+            bool inEmergency = (protLevel == PowerProtection::ProtectionLevel::EMERGENCY);
+            g_statusLed.updateFromCurrent(maxCurrent, inFault, inEmergency);
+            
+            // Compact status output for slave mode
+            Serial.print(F("*** SLAVE MODE *** | PWM In:"));
+            Serial.print(inputDuty * 100.0f, 1);
+            Serial.print(F("% @ "));
+            Serial.print(g_pwmInput.getFrequency(), 1);
+            Serial.print(F("Hz | Vs:"));
+            Serial.print(supplyVoltage, 1);
+            Serial.print(F("V | Vo:"));
+            Serial.print(g_power.getActualOutputVoltage(), 1);
+            Serial.print(F("V | I1:"));
+            Serial.print(current1, 1);
+            Serial.print(F("A | I2:"));
+            Serial.print(current2, 1);
+            Serial.print(F("A | Lim:"));
+            Serial.print(voltageLimit * 100.0f, 0);
+            Serial.print(F("% | "));
+            Serial.println(g_protection.getLevelString());
+            
+        } else {
+            // ================================================================
+            // NORMAL MAP-BASED CONTROL MODE (4)
+            // ================================================================
+            
+            // Read pressure sensor
+            float pressureBar = g_map.readPressureBar();
+            
+            // Read supply voltage (used for all percentage calculations)
+            float supplyVoltage = g_voltage.readVoltage();
+            VoltageProtection::ProtectionLevel voltageLevel = g_voltageProtection.update();
+            
+            // Calculate target output as percentage of supply voltage
+            float targetPercent = pressureToTargetPercent(pressureBar);
+            float targetVoltage = targetPercent * supplyVoltage;  // Convert to actual voltage
+            
+            // Update current protection system (reads current sensors)
+            float voltageLimit = g_protection.update();
+            
+            // Read current sensors and update status LED
+            float current1 = g_curr1.readCurrentA();
+            float current2 = g_curr2.readCurrentA();
+            float maxCurrent = max(current1, current2);
+            
+            // Update LED based on current level and protection state
+            PowerProtection::ProtectionLevel protLevel = g_protection.getLevel();
+            bool inFault = (protLevel == PowerProtection::ProtectionLevel::FAULT);
+            bool inEmergency = (protLevel == PowerProtection::ProtectionLevel::EMERGENCY);
+            g_statusLed.updateFromCurrent(maxCurrent, inFault, inEmergency);
+            
+            // Apply voltage limit and set power output
+            g_power.setSupplyVoltage(supplyVoltage);  // Update measured supply voltage
+            g_power.setVoltageLimit(voltageLimit);
+            g_power.setOutputPercent(targetPercent);  // Use percentage-based method
+            
+            // Read digital inputs (active low) - for logging only
+            // Note: PIN_DIG_IN_2 (D8) is now used for external safety (checked at start of loop)
+            bool dig1Active = (digitalRead(Config::PIN_DIG_IN_1) == LOW);
+            bool dig2Active = (digitalRead(Config::PIN_DIG_IN_2) == LOW);
+            
+            // Compact status output (every cycle)
+            Serial.print(F("P:"));
+            Serial.print(pressureBar, 2);
+            Serial.print(F("bar | Vs:"));
+            Serial.print(supplyVoltage, 1);
+            Serial.print(F("V | T%:"));
+            Serial.print(targetPercent * 100.0f, 0);
+            Serial.print(F("% | Vo:"));
+            Serial.print(g_power.getActualOutputVoltage(), 1);
+            Serial.print(F("V | I1:"));
+            Serial.print(current1, 1);
+            Serial.print(F("A | I2:"));
+            Serial.print(current2, 1);
+            Serial.print(F("A | Lim:"));
+            Serial.print(voltageLimit * 100.0f, 0);
+            Serial.print(F("% | "));
+            Serial.println(g_protection.getLevelString());
+        }
     }
     
     // ========================================================================
@@ -283,6 +339,40 @@ void printDetailedStatus() {
     Serial.println(F("----------------------------------------"));
     Serial.println(F("STATUS REPORT"));
     Serial.println(F("----------------------------------------"));
+    
+    // PWM Slave Mode Status
+    if (Config::ENABLE_PWM_SLAVE_MODE) {
+        Serial.print(F("PWM Slave Mode:  "));
+        if (g_pwmInput.isSignalValid()) {
+            Serial.println(F("*** ACTIVE ***"));
+            Serial.print(F("  Input Duty:    "));
+            Serial.print(g_pwmInput.getDutyCycle() * 100.0f, 1);
+            Serial.println(F(" %"));
+            Serial.print(F("  Input Freq:    "));
+            Serial.print(g_pwmInput.getFrequency(), 2);
+            Serial.println(F(" Hz"));
+            Serial.print(F("  Period:        "));
+            Serial.print(g_pwmInput.getPeriodUs() / 1000.0f, 2);
+            Serial.println(F(" ms"));
+            Serial.print(F("  High Time:     "));
+            Serial.print(g_pwmInput.getHighTimeUs() / 1000.0f, 2);
+            Serial.println(F(" ms"));
+        } else {
+            Serial.println(F("Inactive (no signal) - Normal MAP mode"));
+            // Debug information
+            Serial.print(F("  Pin D7 State:  "));
+            Serial.println(g_pwmInput.getCurrentState() == HIGH ? "HIGH" : "LOW");
+            Serial.print(F("  Pulses Det:    "));
+            Serial.println(g_pwmInput.getPulsesDetected());
+            Serial.print(F("  Last Freq:     "));
+            Serial.print(g_pwmInput.getFrequency(), 2);
+            Serial.println(F(" Hz"));
+            Serial.print(F("  Time Since:    "));
+            Serial.print(g_pwmInput.getTimeSinceLastPulseMs());
+            Serial.println(F(" ms"));
+        }
+        Serial.println();
+    }
     
     // Pressure
     float pressure = g_map.readPressureBar();
@@ -363,10 +453,17 @@ void printDetailedStatus() {
     }
     
     // Digital inputs
-    bool d1 = (digitalRead(Config::PIN_DIG_IN_1) == LOW);
+    // Note: D7 (PIN_DIG_IN_1) is used for PWM input when ENABLE_PWM_SLAVE_MODE is true
+    if (Config::ENABLE_PWM_SLAVE_MODE) {
+        Serial.print(F("Digital In 1:    ")); 
+        Serial.println(F("(used for PWM input)"));
+    } else {
+        bool d1 = (digitalRead(Config::PIN_DIG_IN_1) == LOW);
+        Serial.print(F("Digital In 1:    ")); 
+        Serial.println(d1 ? "ACTIVE" : "inactive");
+    }
+    
     bool d2 = (digitalRead(Config::PIN_DIG_IN_2) == LOW);
-    Serial.print(F("Digital In 1:    ")); 
-    Serial.println(d1 ? "ACTIVE" : "inactive");
     Serial.print(F("Digital In 2:    ")); 
     Serial.println(d2 ? "ACTIVE" : "inactive");
     

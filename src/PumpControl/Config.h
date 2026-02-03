@@ -240,6 +240,26 @@ namespace Config {
     constexpr uint8_t PIN_VCC_SENSE    = A5; // Supply voltage sense (voltage divider)
     
     // =========================================================================
+    // PWM INPUT (SLAVE MODE)
+    // =========================================================================
+    
+    // External PWM input configuration for slave mode
+    // When valid PWM signal is detected on PIN_DIG_IN_1 (D7), system enters slave mode
+    // and replicates the input PWM on both outputs (ignoring MAP sensor)
+    // When signal is lost/idle, system returns to normal MAP-based control
+    constexpr uint8_t PIN_PWM_INPUT = PIN_DIG_IN_1;  // D7 - PWM input for slave mode
+    
+    // Expected PWM frequency range (Hz) - typically 25Hz �10Hz tolerance
+    constexpr float PWM_INPUT_FREQ_MIN = 15.0f;      // Minimum valid frequency (Hz)
+    constexpr float PWM_INPUT_FREQ_MAX = 35.0f;      // Maximum valid frequency (Hz)
+    
+    // Signal timeout (milliseconds) - if no valid pulse received in this time, signal is considered lost
+    constexpr unsigned long PWM_INPUT_TIMEOUT_MS = 200; // 200ms timeout (5x period @ 25Hz)
+    
+    // Slave mode enable flag
+    constexpr bool  ENABLE_PWM_SLAVE_MODE = true;     // Enable external PWM slave mode
+    
+    // =========================================================================
     // TIMING
     // =========================================================================
     
