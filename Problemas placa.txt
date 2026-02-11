@@ -1,0 +1,6 @@
+- Invertido CN4 e CN5
+- precisa retirar componentes do pino do reset para gravar
+- pino vout do sensor map invertido, pino correto é o 1.
+- Sensor de corrente montado é o ACS772LCB-050B
+- Falta ligar o pino de vout do sensor de corrente
+- Retirar trilha de saida de 5V do arduino, para não alimentar a placa pelo USB>

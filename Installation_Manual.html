@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual de Instalação - PumpControl</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        h2 {
+            color: #1e3c72;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 3px solid #2a5298;
+            font-size: 1.6em;
+        }
+        
+        h3 {
+            color: #2a5298;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+        
+        p {
+            margin-bottom: 12px;
+            text-align: justify;
+        }
+        
+        ul, ol {
+            margin-left: 25px;
+            margin-bottom: 15px;
+        }
+        
+        li {
+            margin-bottom: 6px;
+        }
+        
+        .warning {
+            background-color: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .warning::before {
+            content: "?? ATENÇÃO: ";
+            font-weight: bold;
+            color: #856404;
+        }
+        
+        .danger {
+            background-color: #f8d7da;
+            border-left: 5px solid #dc3545;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .danger::before {
+            content: "?? PERIGO: ";
+            font-weight: bold;
+            color: #721c24;
+        }
+        
+        .info {
+            background-color: #d1ecf1;
+            border-left: 5px solid #17a2b8;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .info::before {
+            content: "?? ";
+            font-weight: bold;
+            color: #0c5460;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.95em;
+        }
+        
+        th {
+            background-color: #2a5298;
+            color: white;
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: bold;
+        }
+        
+        td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #c7254e;
+        }
+        
+        .specs-box {
+            background-color: #f8f9fa;
+            border: 2px solid #2a5298;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .led-status {
+            display: flex;
+            align-items: center;
+            margin: 8px 0;
+        }
+        
+        .led-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            margin-right: 10px;
+            border: 2px solid #666;
+        }
+        
+        .led-blue { background-color: #007bff; }
+        .led-green { background-color: #28a745; }
+        .led-yellow { background-color: #ffc107; }
+        .led-orange { background-color: #fd7e14; }
+        .led-red { background-color: #dc3545; }
+        
+        .footer {
+            background-color: #1e3c72;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 0.9em;
+        }
+        
+        @media print {
+            body { background-color: white; }
+            .container { box-shadow: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <h1>Manual de Instalação</h1>
+            <p>PumpControl - Controlador de Bomba de Combustível</p>
+            <p style="font-size: 0.9em; margin-top: 10px;">Versão 2.0 | Janeiro 2026</p>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="content">
+            
+            <!-- ESPECIFICAÇÕES -->
+            <h2>1. Especificações do Sistema</h2>
+            
+            <div class="specs-box">
+                <h3 style="margin-top: 0;">Características Principais</h3>
+                <ul>
+                    <li><strong>Tensão de operação:</strong> 8 a 16V DC (12V nominal)</li>
+                    <li><strong>Corrente máxima:</strong> 50A por canal (2 canais independentes)</li>
+                    <li><strong>Controle:</strong> PWM 3.9 kHz (silencioso)</li>
+                    <li><strong>Proteção:</strong> Multinível progressiva (nunca desliga totalmente)</li>
+                    <li><strong>Indicação:</strong> LED RGB de status</li>
+                    <li><strong>Temperatura:</strong> -20°C a +85°C</li>
+                </ul>
+            </div>
+
+            <h3>O que o sistema faz</h3>
+            <ul>
+                <li>? Controla potência da bomba baseado na pressão do motor (sensor MAP)</li>
+                <li>? Reduz automaticamente potência se corrente ficar alta (proteção)</li>
+                <li>? Monitora tensão da bateria e ajusta automaticamente</li>
+                <li>? Indica estado via LED colorido</li>
+                <li>? Permite desligamento remoto (entrada D7)</li>
+            </ul>
+
+            <!-- PINAGEM -->
+            <h2>2. Pinagem e Conexões</h2>
+
+            <h3>Conexões Principais</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Conexão</th>
+                        <th>Descrição</th>
+                        <th>Cabo Recomendado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>+12V (Alimentação)</strong></td>
+                        <td>Positivo da bateria (pós-chave)</td>
+                        <td>4 AWG (25mm²), com fusível 60A</td>
+                    </tr>
+                    <tr>
+                        <td><strong>GND (Terra)</strong></td>
+                        <td>Negativo - chassi limpo</td>
+                        <td>4 AWG (25mm²)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Bomba 1 (+)</strong></td>
+                        <td>Positivo bomba canal 1</td>
+                        <td>10 AWG (6mm²), com fusível 60A</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Bomba 2 (+)</strong></td>
+                        <td>Positivo bomba canal 2</td>
+                        <td>10 AWG (6mm²), com fusível 60A</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Sensores (já soldados na placa)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sensor</th>
+                        <th>Pinos</th>
+                        <th>Conexão</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>MAP Sensor</strong><br>(MPX5700AP)</td>
+                        <td>3 fios</td>
+                        <td>• Vermelho: +5V<br>• Preto: GND<br>• Amarelo: Sinal (para A4)<br>• Mangueira: Coletor admissão</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Corrente Ch1/Ch2</strong><br>(ACS772LCB-050B)</td>
+                        <td>Soldados</td>
+                        <td>Passar cabo da bomba pelo centro<br>(seta indica direção corrente)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Entrada Opcional</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Pino</th>
+                        <th>Função</th>
+                        <th>Uso</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>D7</strong></td>
+                        <td>Desligamento externo</td>
+                        <td>+5V = desliga bomba<br>0V = opera normal<br>(conectar à ECU se disponível)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- PROTEÇÕES -->
+            <h2>3. Sistema de Proteção</h2>
+
+            <h3>Proteção por Corrente</h3>
+            <p>O sistema NUNCA desliga completamente a bomba (perigoso para o motor). Reduz potência progressivamente:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nível</th>
+                        <th>Corrente</th>
+                        <th>Ação</th>
+                        <th>LED</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>NORMAL</strong></td>
+                        <td>0 - 25A</td>
+                        <td>Sem limitação (100%)</td>
+                        <td><div class="led-status"><div class="led-dot led-green"></div>Verde</div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>WARNING</strong></td>
+                        <td>25 - 30A</td>
+                        <td>Reduz para 70%</td>
+                        <td><div class="led-status"><div class="led-dot led-yellow"></div>Amarelo</div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>HIGH</strong></td>
+                        <td>30 - 35A</td>
+                        <td>Reduz para 60%</td>
+                        <td><div class="led-status"><div class="led-dot led-orange"></div>Laranja</div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>CRITICAL</strong></td>
+                        <td>35 - 40A</td>
+                        <td>Reduz para 50%</td>
+                        <td><div class="led-status"><div class="led-dot led-red"></div>Vermelho</div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>FAULT</strong></td>
+                        <td>40 - 45A</td>
+                        <td>Mantém 50% (mínimo)</td>
+                        <td><div class="led-status"><div class="led-dot led-red"></div>Vermelho</div></td>
+                    </tr>
+                    <tr>
+                        <td><strong>EMERGENCY</strong></td>
+                        <td>&gt; 45A</td>
+                        <td>Desliga total (configurável)</td>
+                        <td><div class="led-status"><div class="led-dot led-red"></div>Vermelho</div></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="info">
+                <strong>LED Azul piscando:</strong> Sistema inicializando (primeiros 2 segundos)
+            </div>
+
+            <h3>Proteção por Tensão</h3>
+            <ul>
+                <li>Detecta quedas de tensão da bateria</li>
+                <li>Reduz potência automaticamente para proteger sistema elétrico</li>
+                <li>Se tensão cai 30%: modo WARNING</li>
+                <li>Se tensão cai 50%: modo CRITICAL</li>
+            </ul>
+
+            <!-- INSTALAÇÃO -->
+            <h2>4. Procedimento de Instalação</h2>
+
+            <div class="danger">
+                <strong>Desconecte o terminal NEGATIVO da bateria antes de iniciar!</strong> Aguarde 5 minutos antes de trabalhar no sistema.
+            </div>
+
+            <h3>Passo 1: Montagem Mecânica</h3>
+            <ul>
+                <li>?? Escolha local protegido de calor, água e vibração excessiva</li>
+                <li>?? Distância mínima 50cm de coletor/turbo</li>
+                <li>?? Fixe com 4 parafusos M3/M4</li>
+                <li>?? LED deve ficar visível</li>
+            </ul>
+
+            <h3>Passo 2: Sensor MAP</h3>
+            <ul>
+                <li>?? Instale no coletor de admissão (após borboleta)</li>
+                <li>?? Use mangueira silicone 4-6mm (máx 1 metro)</li>
+                <li>?? Fixe sensor com conector para baixo (evita água)</li>
+                <li>?? Conecte 3 fios: Vermelho (+5V), Preto (GND), Amarelo (sinal)</li>
+            </ul>
+
+            <div class="warning">
+                <strong>PCB v1.0:</strong> Atenção à pinagem! Pino 1 do sensor = Vout (amarelo). Conectores podem estar invertidos - verifique com multímetro.
+            </div>
+
+            <h3>Passo 3: Cabos de Potência</h3>
+            <ul>
+                <li>? <strong>+12V:</strong> Bateria ? Fusível 60A ? Módulo (cabo 4 AWG / 25mm²)</li>
+                <li>? <strong>GND:</strong> Módulo ? Chassi limpo (cabo 4 AWG / 25mm²)</li>
+                <li>? <strong>Bomba 1:</strong> Módulo saída 1 ? Fusível 60A ? Bomba (+)</li>
+                <li>? <strong>Bomba 2:</strong> Módulo saída 2 ? Fusível 60A ? Bomba (+)</li>
+                <li>? <strong>GND Bombas:</strong> Bombas (-) ? Chassi</li>
+            </ul>
+
+            <div class="danger">
+                <strong>OBRIGATÓRIO:</strong> Fusíveis de 60A em TODAS as linhas de potência. Usar terminais e conexões apropriados para corrente.
+            </div>
+
+            <h3>Passo 4: Sensores de Corrente</h3>
+            <ul>
+                <li>Os sensores já estão soldados na placa</li>
+                <li>Passar cabo POSITIVO da bomba pelo centro do sensor</li>
+                <li>Seta no sensor indica direção do fluxo de corrente (bateria ? bomba)</li>
+                <li>Não encostar cabo nas laterais do sensor</li>
+            </ul>
+
+            <div class="warning">
+                <strong>PCB v1.0:</strong> Verificar se pino Vout do sensor de corrente está conectado. Pode estar desconectado - soldar jumper se necessário.
+            </div>
+
+            <h3>Passo 5: Entrada de Segurança (Opcional)</h3>
+            <ul>
+                <li>Conectar pino D7 à saída de segurança da ECU (se disponível)</li>
+                <li>Sinal +5V no D7 = bomba desliga imediatamente</li>
+                <li>Útil para corte de combustível, anti-lag, limitador, etc</li>
+            </ul>
+
+            <!-- VERIFICAÇÃO -->
+            <h2>5. Checklist Pré-Energização</h2>
+
+            <div class="info">
+                <strong>Verificar ANTES de conectar bateria:</strong>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th width="10%">?</th>
+                        <th>Item</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>?</td><td>Todos os cabos com seção adequada (4 AWG alimentação, 10 AWG bombas)</td></tr>
+                    <tr><td>?</td><td>Fusíveis 60A instalados (1x alimentação + 2x bombas = 3 fusíveis)</td></tr>
+                    <tr><td>?</td><td>GND conectado em ponto limpo do chassi (sem tinta/ferrugem)</td></tr>
+                    <tr><td>?</td><td>Polaridade correta em todos os sensores (usar multímetro)</td></tr>
+                    <tr><td>?</td><td>Sensores de corrente na direção correta (seta aponta bateria?bomba)</td></tr>
+                    <tr><td>?</td><td>Sensor MAP: Pino 1 = Vout, conectores verificados</td></tr>
+                    <tr><td>?</td><td>Nenhum fio desencapado encostando em metal</td></tr>
+                    <tr><td>?</td><td>Bombas temporariamente desconectadas (teste sem carga primeiro)</td></tr>
+                </tbody>
+            </table>
+
+            <!-- TESTE -->
+            <h2>6. Primeiro Teste</h2>
+
+            <h3>Teste 1: Energização (sem bombas)</h3>
+            <ol>
+                <li>Com bombas DESCONECTADAS, reconectar bateria</li>
+                <li>LED deve acender <strong>AZUL</strong> por 2 segundos</li>
+                <li>Depois LED muda para outra cor (baseado na pressão detectada)</li>
+                <li>Se LED não acender: verificar alimentação e fusíveis</li>
+            </ol>
+
+            <h3>Teste 2: Sensor MAP</h3>
+            <ul>
+                <li>Soprar levemente na mangueira do MAP</li>
+                <li>LED deve responder (mudar intensidade/cor)</li>
+                <li>Se não responder: verificar conexão do sensor</li>
+            </ul>
+
+            <h3>Teste 3: Com Bomba</h3>
+            <ul>
+                <li>Conectar UMA bomba primeiro (canal 1)</li>
+                <li>Bomba deve operar (ouvir ruído)</li>
+                <li>Potência varia conforme pressão no sensor MAP</li>
+                <li>Se LED ficar vermelho: corrente alta (verificar bomba/fiação)</li>
+            </ul>
+
+            <div class="warning">
+                <strong>Corrente típica:</strong> Bombas normais consomem 8-25A. Se passar de 30A constantemente, há problema (curto, bomba travada, etc).
+            </div>
+
+            <!-- OPERAÇÃO -->
+            <h2>7. Operação Normal</h2>
+
+            <h3>Comportamento Esperado</h3>
+            <ul>
+                <li>Motor desligado/marcha lenta: Bomba em 70% (economia)</li>
+                <li>Acelerando/sob carga: Bomba vai até 100% conforme necessidade</li>
+                <li>LED verde: Tudo normal</li>
+                <li>LED amarelo/laranja ocasional: Normal sob carga alta</li>
+                <li>LED vermelho constante: Problema - investigar</li>
+            </ul>
+
+            <h3>Ajustes (se necessário)</h3>
+            <p>Para alterar faixas de pressão ou thresholds de corrente, editar arquivo <code>Config.h</code> no código e regravar Arduino:</p>
+            <ul>
+                <li><strong>Pressão baixa:</strong> <code>MAP_BAR_LOW_SETPOINT = 0.4</code></li>
+                <li><strong>Pressão alta:</strong> <code>MAP_BAR_HIGH_SETPOINT = 0.6</code></li>
+                <li><strong>Limite corrente WARNING:</strong> <code>CURRENT_THRESHOLD_WARNING = 25.0</code></li>
+            </ul>
+
+            <!-- PROBLEMAS -->
+            <h2>8. Solução de Problemas</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sintoma</th>
+                        <th>Causa Provável</th>
+                        <th>Solução</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>LED não acende</td>
+                        <td>Sem alimentação</td>
+                        <td>Verificar fusíveis, +12V e GND</td>
+                    </tr>
+                    <tr>
+                        <td>Bomba não funciona</td>
+                        <td>Sem sinal PWM ou MOSFET</td>
+                        <td>Verificar conexões de potência da bomba</td>
+                    </tr>
+                    <tr>
+                        <td>LED sempre vermelho</td>
+                        <td>Corrente muito alta</td>
+                        <td>Verificar bomba (travada?) e fiação (curto?)</td>
+                    </tr>
+                    <tr>
+                        <td>Bomba 100% sempre</td>
+                        <td>Sensor MAP desconectado</td>
+                        <td>Verificar 3 fios do sensor e mangueira</td>
+                    </tr>
+                    <tr>
+                        <td>Sistema instável</td>
+                        <td>GND ruim</td>
+                        <td>Refazer conexão GND em ponto limpo</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="danger">
+                <strong>Se LED vermelho constante E bomba quente:</strong> DESLIGUE imediatamente! Curto-circuito ou falha grave.
+            </div>
+
+            <!-- MANUTENÇÃO -->
+            <h2>9. Manutenção</h2>
+
+            <h3>Mensal</h3>
+            <ul>
+                <li>Verificar aperto de terminais</li>
+                <li>Limpar poeira da placa (ar comprimido)</li>
+                <li>Verificar mangueira do MAP (rachaduras/vazamentos)</li>
+                <li>Testar fusíveis com multímetro</li>
+            </ul>
+
+            <h3>Semestral</h3>
+            <ul>
+                <li>Substituir fusíveis preventivamente</li>
+                <li>Verificar aquecimento dos componentes</li>
+                <li>Testar sistema de proteção (simular sobrecarga)</li>
+            </ul>
+
+            <!-- SEGURANÇA -->
+            <h2>10. Avisos de Segurança</h2>
+
+            <div class="danger">
+                <ul style="margin-left: 20px; margin-top: 10px;">
+                    <li>?? Sistema trabalha com correntes LETAIS (até 50A)</li>
+                    <li>?? Instalação incorreta pode causar INCÊNDIO</li>
+                    <li>?? Combustível é ALTAMENTE INFLAMÁVEL</li>
+                    <li>?? Usar SEMPRE fusíveis de 60A (não substituir por maior)</li>
+                    <li>?? GND deve ter baixa impedância (cabo grosso, chassi limpo)</li>
+                </ul>
+                <p style="margin-top: 15px; font-weight: bold;">
+                    Em caso de dúvida, consulte profissional qualificado. Não arrisque sua segurança.
+                </p>
+            </div>
+
+            <h3>Contato para Suporte</h3>
+            <ul>
+                <li>?? Documentação completa: README.md no projeto</li>
+                <li>?? Esquemático: pcb/EvoProject 1.0.pdf</li>
+                <li>?? Dúvidas técnicas: Consultar desenvolvedor</li>
+            </ul>
+
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer">
+            <p><strong>PumpControl v2.0 - Manual de Instalação Simplificado</strong></p>
+            <p>Firmware: Sistema de Proteção Avançado | Janeiro 2026</p>
+            <p style="margin-top: 10px; font-size: 0.85em;">
+                ?? Este equipamento não é certificado para uso em via pública. Uso por sua conta e risco.
+            </p>
+        </div>
+    </div>
+</body>
+</html>
