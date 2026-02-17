@@ -5,25 +5,23 @@
 #include "PowerProtection.h"
 
 // -----------------------------------------------------------------------------
-// PowerProtection - Multi-level current protection with progressive limiting
+// PowerProtection - Current protection with fault limiting
 // -----------------------------------------------------------------------------
 // CRITICAL DESIGN REQUIREMENT:
 //   Cannot fully shut down pump - would damage engine under load!
-//   Protection strategy: Progressive voltage reduction to limit power
+//   Protection strategy: Voltage reduction to limit power on fault
 //
 // Protection Zones:
-//   NORMAL:   0-25A   - No action, full voltage allowed
-//   WARNING:  25-30A  - Reduce voltage by 10% (warn level)
-//   HIGH:     30-35A  - Reduce voltage by 25% (high current)
-//   CRITICAL: 35-40A  - Reduce voltage by 40% (approaching max)
-//   FAULT:    >40A    - Reduce to minimum safe voltage (50% or 6V), log fault
+//   NORMAL:    0-40A  - No action, full voltage allowed
+//   FAULT:     >40A   - Reduce to minimum safe voltage (50%), log fault
+//   EMERGENCY: >45A   - Immediate shutdown if enabled (short circuit)
 //
 // Features:
-//   - Hysteresis: 2A bands to prevent oscillation/chattering
+//   - Hysteresis: 2.5A band to prevent oscillation/chattering
 //   - Dual channel monitoring (triggers on EITHER channel exceeding limit)
 //   - Rate-limited voltage changes for gradual response
 //   - Event logging to Serial
-//   - Never fully disables output
+//   - Never fully disables output (unless EMERGENCY shutdown enabled)
 // -----------------------------------------------------------------------------
 
 class PowerProtection 
@@ -32,10 +30,7 @@ public:
     // Protection level enumeration
     enum class ProtectionLevel : uint8_t {
         NORMAL = 0,    // No protection active
-        WARNING,       // Early warning zone
-        HIGH_CURRENT,  // High current detected
-        CRITICAL,      // Critical current level
-        FAULT,         // Fault condition - sensor limit exceeded
+        FAULT,         // Fault condition - reduce to minimum safe voltage
         EMERGENCY      // EMERGENCY - Short circuit / sensor saturation (immediate shutdown if enabled)
     };
 
@@ -109,11 +104,8 @@ public:
 
     static const char* getLevelString(ProtectionLevel level) {
         switch (level) {
-            case ProtectionLevel::NORMAL:   return "NORMAL";
-            case ProtectionLevel::WARNING:  return "WARNING";
-            case ProtectionLevel::HIGH_CURRENT: return "HIGH";
-            case ProtectionLevel::CRITICAL: return "CRITICAL";
-            case ProtectionLevel::FAULT:    return "FAULT";
+            case ProtectionLevel::NORMAL:    return "NORMAL";
+            case ProtectionLevel::FAULT:     return "FAULT";
             case ProtectionLevel::EMERGENCY: return "*** EMERGENCY ***";
             default: return "UNKNOWN";
         }
@@ -141,89 +133,49 @@ private:
         if (current >= Config::CURRENT_THRESHOLD_EMERGENCY) {
             return ProtectionLevel::EMERGENCY;
         }
-        
+
         // Hysteresis logic: different thresholds for rising vs falling
         // This prevents rapid oscillation between levels
-        
         switch (_currentLevel) {
             case ProtectionLevel::NORMAL:
-                if (current >= Config::CURRENT_THRESHOLD_WARNING) {
-                    return ProtectionLevel::WARNING;
-                }
-                return ProtectionLevel::NORMAL;
-                
-            case ProtectionLevel::WARNING:
-                if (current >= Config::CURRENT_THRESHOLD_HIGH) {
-                    return ProtectionLevel::HIGH_CURRENT;
-                }
-                if (current < Config::CURRENT_THRESHOLD_WARNING - Config::CURRENT_HYSTERESIS) {
-                    return ProtectionLevel::NORMAL;
-                }
-                return ProtectionLevel::WARNING;
-                
-            case ProtectionLevel::HIGH_CURRENT:
-                if (current >= Config::CURRENT_THRESHOLD_CRITICAL) {
-                    return ProtectionLevel::CRITICAL;
-                }
-                if (current < Config::CURRENT_THRESHOLD_HIGH - Config::CURRENT_HYSTERESIS) {
-                    return ProtectionLevel::WARNING;
-                }
-                return ProtectionLevel::HIGH_CURRENT;
-                
-            case ProtectionLevel::CRITICAL:
                 if (current >= Config::CURRENT_THRESHOLD_FAULT) {
                     return ProtectionLevel::FAULT;
                 }
-                if (current < Config::CURRENT_THRESHOLD_CRITICAL - Config::CURRENT_HYSTERESIS) {
-                    return ProtectionLevel::HIGH_CURRENT;
-                }
-                return ProtectionLevel::CRITICAL;
-                
+                return ProtectionLevel::NORMAL;
+
             case ProtectionLevel::FAULT:
-                // Once in fault, need to drop below critical to recover
-                if (current < Config::CURRENT_THRESHOLD_CRITICAL - Config::CURRENT_HYSTERESIS) {
-                    return ProtectionLevel::HIGH_CURRENT;
+                if (current < Config::CURRENT_THRESHOLD_FAULT - Config::CURRENT_HYSTERESIS) {
+                    return ProtectionLevel::NORMAL;
                 }
                 return ProtectionLevel::FAULT;
-                
+
             case ProtectionLevel::EMERGENCY:
-                // Emergency requires current to drop significantly before recovery
-                // Must drop below FAULT threshold to exit emergency mode
+                // Emergency requires current to drop below FAULT threshold to recover
                 if (current < Config::CURRENT_THRESHOLD_FAULT - Config::CURRENT_HYSTERESIS) {
-                    return ProtectionLevel::CRITICAL;
+                    return ProtectionLevel::NORMAL;
                 }
                 return ProtectionLevel::EMERGENCY;
-                
+
             default:
                 return ProtectionLevel::NORMAL;
         }
     }
 
     // Get voltage limit factor for a given protection level
-    // Now uses percentage-based reductions from Config.h (adaptive to supply voltage)
     float getVoltageLimitForLevel(ProtectionLevel level) const {
         switch (level) {
             case ProtectionLevel::NORMAL:
                 return Config::PROTECTION_PERCENT_NORMAL;    // 100% - no limiting
-                
-            case ProtectionLevel::WARNING:
-                return Config::PROTECTION_PERCENT_WARNING;   // 70% - reduce by 30%
-                
-            case ProtectionLevel::HIGH_CURRENT:
-                return Config::PROTECTION_PERCENT_HIGH;      // 60% - reduce by 40%
-                
-            case ProtectionLevel::CRITICAL:
-                return Config::PROTECTION_PERCENT_CRITICAL;  // 50% - reduce by 50%
-                
+
             case ProtectionLevel::FAULT:
                 return Config::PROTECTION_PERCENT_FAULT;     // 50% - minimum safe level
-                
+
             case ProtectionLevel::EMERGENCY:
                 // Emergency shutdown: 0% if enabled, otherwise 50% (fail-safe)
-                return Config::ENABLE_EMERGENCY_SHUTDOWN ? 
+                return Config::ENABLE_EMERGENCY_SHUTDOWN ?
                        Config::PROTECTION_PERCENT_EMERGENCY :  // 0% - complete shutdown
                        Config::PROTECTION_PERCENT_FAULT;       // 50% - minimum power
-                
+
             default:
                 return 1.0f;
         }

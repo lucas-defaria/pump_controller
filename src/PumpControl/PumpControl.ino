@@ -4,28 +4,24 @@
    Features:
    - MAP sensor-based pressure control (MPX5700ASX on A4)
    - Dual ACS772LCB-100U current sensors (A2, A3)
-   - Multi-level progressive current protection (never fully shuts down)
+   - Current fault protection (never fully shuts down under normal fault)
    - Two PWM outputs (D3, D5) for SSR control
    - NeoPixel RGB LED indicating current level and protection state
    - Serial logging of all parameters
-   
+
    LED Status Indication:
-   - NORMAL (0-25A):           Green solid
-   - WARNING-CRITICAL (25-40A): Gradual transition green?yellow?orange?red
-   - FAULT (>40A):             Blinking red (1Hz)
-   - EMERGENCY (>45A):         Fast blinking red (5Hz)
-   
+   - NORMAL (0-40A):   Green solid (gradient green->red as current rises)
+   - FAULT (>40A):     Blinking red (1Hz)
+   - EMERGENCY (>45A): Fast blinking red (5Hz)
+
    Protection Strategy:
-   - NORMAL (0-25A):     Full voltage available
-   - WARNING (25-30A):   10% voltage reduction
-   - HIGH (30-35A):      25% voltage reduction
-   - CRITICAL (35-40A):  40% voltage reduction
-   - FAULT (>40A):       50% voltage reduction (minimum safe level)
-   
+   - NORMAL (0-40A):   Full voltage available
+   - FAULT (>40A):     50% voltage reduction (minimum safe level)
+   - EMERGENCY (>45A): Complete shutdown (if enabled)
+
    CRITICAL SAFETY REQUIREMENT:
    Pump cannot be fully shut down - would damage engine under load.
-   Protection system progressively reduces power to limit current.
-   
+
    Configuration in Config.h
 ---------------------------------------------------------------------------- */
 #include <Arduino.h>
@@ -141,10 +137,8 @@ void setup() {
     
     Serial.println();
     Serial.println(F("Protection thresholds (A):"));
-    Serial.print(F("  WARNING:  ")); Serial.println(Config::CURRENT_THRESHOLD_WARNING, 1);
-    Serial.print(F("  HIGH:     ")); Serial.println(Config::CURRENT_THRESHOLD_HIGH, 1);
-    Serial.print(F("  CRITICAL: ")); Serial.println(Config::CURRENT_THRESHOLD_CRITICAL, 1);
-    Serial.print(F("  FAULT:    ")); Serial.println(Config::CURRENT_THRESHOLD_FAULT, 1);
+    Serial.print(F("  FAULT:     ")); Serial.println(Config::CURRENT_THRESHOLD_FAULT, 1);
+    Serial.print(F("  EMERGENCY: ")); Serial.println(Config::CURRENT_THRESHOLD_EMERGENCY, 1);
     Serial.println();
     
     Serial.println(F("System ready"));

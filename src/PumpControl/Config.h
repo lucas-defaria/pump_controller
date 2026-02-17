@@ -102,10 +102,6 @@ namespace Config {
     // =========================================================================
     
     // Protection threshold levels (Amperes)
-    // Normal operation: 0-25A (typical fuel pump at full load)
-    constexpr float CURRENT_THRESHOLD_WARNING  = 25.0f;  // WARNING zone starts
-    constexpr float CURRENT_THRESHOLD_HIGH     = 30.0f;  // HIGH zone starts
-    constexpr float CURRENT_THRESHOLD_CRITICAL = 35.0f;  // CRITICAL zone starts
     constexpr float CURRENT_THRESHOLD_FAULT    = 40.0f;  // FAULT zone starts
     
     // EMERGENCY: Absolute maximum current (sensor hardware limit)
@@ -129,15 +125,9 @@ namespace Config {
     // Percentage-based voltage limiting for protection levels
     // These percentages apply to the measured supply voltage (adaptive)
     // NORMAL:    100% (1.00) - no limiting (full power)
-    // WARNING:    70% (0.70) - 30% reduction (gentle protection)
-    // HIGH:       60% (0.60) - 40% reduction (moderate protection)
-    // CRITICAL:   50% (0.50) - 50% reduction (aggressive protection)
-    // FAULT:      50% (0.50) - 50% reduction (same as critical, minimum safe)
+    // FAULT:      50% (0.50) - 50% reduction (minimum safe)
     // EMERGENCY:   0% (0.00) - COMPLETE SHUTDOWN (short circuit protection)
     constexpr float PROTECTION_PERCENT_NORMAL   = 1.00f;  // 100% - full power
-    constexpr float PROTECTION_PERCENT_WARNING  = 0.70f;  // 70% - reduce by 30%
-    constexpr float PROTECTION_PERCENT_HIGH     = 0.60f;  // 60% - reduce by 40%
-    constexpr float PROTECTION_PERCENT_CRITICAL = 0.50f;  // 50% - reduce by 50%
     constexpr float PROTECTION_PERCENT_FAULT    = 0.50f;  // 50% - minimum safe level
     constexpr float PROTECTION_PERCENT_EMERGENCY = 0.00f; // 0% - EMERGENCY SHUTDOWN (if enabled)
     
