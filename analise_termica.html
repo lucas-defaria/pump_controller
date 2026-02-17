@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análise Térmica — Pump Controller</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --surface2: #334155;
+            --border: #475569;
+            --text: #e2e8f0;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --green: #4ade80;
+            --yellow: #facc15;
+            --red: #f87171;
+            --orange: #fb923c;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 2rem;
+        }
+
+        .container { max-width: 1100px; margin: 0 auto; }
+
+        header {
+            text-align: center;
+            padding: 2rem 0 1rem;
+            border-bottom: 2px solid var(--accent);
+            margin-bottom: 2rem;
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        header p {
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .meta-info {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .meta-info span { display: flex; align-items: center; gap: 0.3rem; }
+
+        h2 {
+            font-size: 1.4rem;
+            color: var(--accent);
+            margin: 2.5rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--surface2);
+        }
+
+        h3 {
+            font-size: 1.1rem;
+            color: var(--text);
+            margin: 1.5rem 0 0.75rem;
+        }
+
+        h4 {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin: 1.2rem 0 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        p, li { color: var(--text); margin-bottom: 0.5rem; }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin: 1rem 0;
+        }
+
+        .card-accent {
+            border-left: 4px solid var(--accent);
+        }
+
+        .card-warn {
+            border-left: 4px solid var(--orange);
+            background: rgba(251, 146, 60, 0.05);
+        }
+
+        .card-danger {
+            border-left: 4px solid var(--red);
+            background: rgba(248, 113, 113, 0.05);
+        }
+
+        .card-success {
+            border-left: 4px solid var(--green);
+            background: rgba(74, 222, 128, 0.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            padding: 0.6rem 0.8rem;
+            text-align: center;
+            border: 1px solid var(--surface2);
+        }
+
+        th {
+            background: var(--surface2);
+            color: var(--accent);
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        td { background: var(--surface); }
+
+        tr:hover td { background: var(--surface2); }
+
+        td:first-child, th:first-child { text-align: left; }
+
+        .best { color: var(--green); font-weight: 700; }
+        .good { color: var(--green); }
+        .ok { color: var(--yellow); }
+        .bad { color: var(--orange); }
+        .danger { color: var(--red); font-weight: 700; }
+        .muted { color: var(--text-muted); }
+        .bold { font-weight: 700; }
+
+        .tag {
+            display: inline-block;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .tag-green { background: rgba(74, 222, 128, 0.15); color: var(--green); }
+        .tag-yellow { background: rgba(250, 204, 21, 0.15); color: var(--yellow); }
+        .tag-red { background: rgba(248, 113, 113, 0.15); color: var(--red); }
+        .tag-blue { background: rgba(56, 189, 248, 0.15); color: var(--accent); }
+
+        .formula {
+            background: var(--surface2);
+            border-radius: 6px;
+            padding: 0.75rem 1rem;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.85rem;
+            margin: 0.75rem 0;
+            border-left: 3px solid var(--accent);
+            overflow-x: auto;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .diagram {
+            background: var(--surface2);
+            border-radius: 6px;
+            padding: 1rem;
+            font-family: 'Consolas', monospace;
+            font-size: 0.8rem;
+            line-height: 1.4;
+            white-space: pre;
+            overflow-x: auto;
+            margin: 0.75rem 0;
+        }
+
+        .ranking {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .rank-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem 1rem;
+            background: var(--surface);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .rank-number {
+            font-size: 1.4rem;
+            font-weight: 800;
+            min-width: 2rem;
+            text-align: center;
+        }
+
+        .rank-bar {
+            height: 6px;
+            border-radius: 3px;
+            margin-top: 0.4rem;
+        }
+
+        .section-divider {
+            border: none;
+            border-top: 2px dashed var(--surface2);
+            margin: 3rem 0;
+        }
+
+        ul { padding-left: 1.5rem; margin: 0.5rem 0; }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .summary-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .summary-card .value {
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin: 0.25rem 0;
+        }
+
+        .summary-card .label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 1rem; }
+            .grid-2 { grid-template-columns: 1fr; }
+            table { font-size: 0.8rem; }
+            th, td { padding: 0.4rem; }
+        }
+
+        @media print {
+            body { background: #fff; color: #000; }
+            .card, td { background: #f8f8f8; }
+            th { background: #e0e0e0; color: #000; }
+            h2, header h1 { color: #0066cc; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <header>
+            <h1>Análise Térmica &mdash; Pump Controller</h1>
+            <p>Comparação de MOSFETs, diodos e dimensionamento de dissipador</p>
+            <div class="meta-info">
+                <span>Projeto: pump_controller</span>
+                <span>Data: 17/02/2026</span>
+                <span>Rev: 1.0</span>
+            </div>
+        </header>
+
+        <!-- ============================================================ -->
+        <!-- CENÁRIO DE OPERAÇÃO -->
+        <!-- ============================================================ -->
+
+        <h2>1. Cenário de Operação</h2>
+
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="label">Corrente por canal</div>
+                <div class="value" style="color: var(--accent);">20A</div>
+                <div class="label">2 canais simultâneos</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">Tensão bateria</div>
+                <div class="value" style="color: var(--accent);">13.8V</div>
+                <div class="label">motor ligado</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">PWM</div>
+                <div class="value" style="color: var(--accent);">3.9kHz</div>
+                <div class="label">Phase-Correct</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">Temp. ambiente máx.</div>
+                <div class="value" style="color: var(--orange);">60°C</div>
+                <div class="label">compartimento motor</div>
+            </div>
+        </div>
+
+        <div class="card card-accent">
+            <strong>Duty cycle mínimo:</strong> 70% (Config: <code>OUTPUT_PERCENT_MIN = 0.70</code>)<br>
+            O pior caso térmico ocorre no menor duty, pois o diodo de freewheeling conduz mais tempo.
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- COMPARAÇÃO DE MOSFETs -->
+        <!-- ============================================================ -->
+
+        <h2>2. Comparação de MOSFETs &mdash; Especificações</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Parâmetro</th>
+                    <th>BSC070N10NS3<br><span class="muted" style="font-weight:400; text-transform:none;">(atual)</span></th>
+                    <th>STP75NF75</th>
+                    <th>IRF3710</th>
+                    <th>IRF1405</th>
+                    <th>IRFB3077</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Vds</td>
+                    <td class="good">100V</td>
+                    <td>75V</td>
+                    <td class="good">100V</td>
+                    <td class="bad">55V</td>
+                    <td>75V</td>
+                </tr>
+                <tr>
+                    <td>Rds(on) @10Vgs</td>
+                    <td>7 m&Omega;</td>
+                    <td class="bad">11 m&Omega;</td>
+                    <td class="danger">23 m&Omega;</td>
+                    <td class="good">5.3 m&Omega;</td>
+                    <td class="best">3.3 m&Omega;</td>
+                </tr>
+                <tr>
+                    <td>Id max</td>
+                    <td>70A</td>
+                    <td>80A</td>
+                    <td class="bad">57A</td>
+                    <td class="good">169A</td>
+                    <td class="best">210A</td>
+                </tr>
+                <tr>
+                    <td>Package</td>
+                    <td class="muted">SuperSO8</td>
+                    <td>TO-220</td>
+                    <td>TO-220</td>
+                    <td>TO-220</td>
+                    <td>TO-220</td>
+                </tr>
+                <tr>
+                    <td>Rth(j-c)</td>
+                    <td class="bad">2.0 °C/W</td>
+                    <td>0.83 °C/W</td>
+                    <td>1.0 °C/W</td>
+                    <td class="best">0.45 °C/W</td>
+                    <td class="good">0.50 °C/W</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Perdas por condução (P = I&sup2; &times; Rds(on) @20A)</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>MOSFET</th>
+                    <th>P @20A</th>
+                    <th>vs. BSC070</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>BSC070N10NS3</td>
+                    <td>2.80W</td>
+                    <td class="muted">referência</td>
+                    <td><span class="tag tag-yellow">REF</span></td>
+                </tr>
+                <tr>
+                    <td>STP75NF75</td>
+                    <td class="bad">4.40W</td>
+                    <td class="bad">+57%</td>
+                    <td><span class="tag tag-red">PIOR</span></td>
+                </tr>
+                <tr>
+                    <td>IRF3710</td>
+                    <td class="danger">9.20W</td>
+                    <td class="danger">+229%</td>
+                    <td><span class="tag tag-red">INVIÁVEL</span></td>
+                </tr>
+                <tr>
+                    <td>IRF1405</td>
+                    <td class="good">2.12W</td>
+                    <td class="good">&minus;24%</td>
+                    <td><span class="tag tag-green">BOM</span></td>
+                </tr>
+                <tr>
+                    <td>IRFB3077</td>
+                    <td class="best">1.32W</td>
+                    <td class="best">&minus;53%</td>
+                    <td><span class="tag tag-green">MELHOR</span></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p class="muted" style="font-size:0.85rem;">Perdas de chaveamento a 3.9 kHz: ~0.17W (desprezíveis para todos).</p>
+
+        <!-- MARGEM DE TENSÃO -->
+
+        <h3>Margem de tensão (Vds) &mdash; Segurança automotiva</h3>
+
+        <div class="card card-warn">
+            Em sistemas automotivos 12V, transientes de load dump (alternador) podem atingir 40-80V (ISO 7637).
+            Com diodo Schottky clamping, Vds_max &asymp; Vbat + Vf &asymp; 15V em operação normal.
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>MOSFET</th>
+                    <th>Vds</th>
+                    <th>Margem c/ clamp</th>
+                    <th>Margem load dump</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>BSC070N10NS3</td>
+                    <td class="good">100V</td>
+                    <td class="good">85V</td>
+                    <td><span class="tag tag-green">ADEQUADA</span></td>
+                </tr>
+                <tr>
+                    <td>IRF3710</td>
+                    <td class="good">100V</td>
+                    <td class="good">85V</td>
+                    <td><span class="tag tag-green">ADEQUADA</span></td>
+                </tr>
+                <tr>
+                    <td>STP75NF75</td>
+                    <td>75V</td>
+                    <td>60V</td>
+                    <td><span class="tag tag-yellow">OK (c/ clamp)</span></td>
+                </tr>
+                <tr>
+                    <td>IRFB3077</td>
+                    <td>75V</td>
+                    <td>60V</td>
+                    <td><span class="tag tag-yellow">OK (c/ clamp)</span></td>
+                </tr>
+                <tr>
+                    <td>IRF1405</td>
+                    <td class="bad">55V</td>
+                    <td class="bad">40V</td>
+                    <td><span class="tag tag-red">MARGINAL</span></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- RANKING -->
+
+        <h3>Ranking final de MOSFETs</h3>
+
+        <div class="ranking">
+            <div class="rank-item" style="border-left: 4px solid var(--green);">
+                <div class="rank-number best">1°</div>
+                <div>
+                    <strong>IRFB3077</strong> &mdash; 75V / 3.3m&Omega; / 210A
+                    <div class="rank-bar" style="width: 100%; background: var(--green);"></div>
+                    <div class="muted" style="font-size: 0.85rem;">Menor dissipação (1.32W @20A), 75V Vds adequado com clamp, TO-220</div>
+                </div>
+            </div>
+            <div class="rank-item" style="border-left: 4px solid var(--yellow);">
+                <div class="rank-number ok">2°</div>
+                <div>
+                    <strong>IRF1405</strong> &mdash; 55V / 5.3m&Omega; / 169A
+                    <div class="rank-bar" style="width: 72%; background: var(--yellow);"></div>
+                    <div class="muted" style="font-size: 0.85rem;">Bom Rds(on), mas 55V Vds marginal para automotivo</div>
+                </div>
+            </div>
+            <div class="rank-item" style="border-left: 4px solid var(--orange);">
+                <div class="rank-number bad">3°</div>
+                <div>
+                    <strong>STP75NF75</strong> &mdash; 75V / 11m&Omega; / 80A
+                    <div class="rank-bar" style="width: 40%; background: var(--orange);"></div>
+                    <div class="muted" style="font-size: 0.85rem;">Dissipa mais que o BSC070 atual (4.4W vs 2.8W). Única vantagem: TO-220</div>
+                </div>
+            </div>
+            <div class="rank-item" style="border-left: 4px solid var(--red);">
+                <div class="rank-number danger">4°</div>
+                <div>
+                    <strong>IRF3710</strong> &mdash; 100V / 23m&Omega; / 57A
+                    <div class="rank-bar" style="width: 15%; background: var(--red);"></div>
+                    <div class="muted" style="font-size: 0.85rem;">Descartado. 9.2W @20A inviável termicamente</div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="section-divider">
+
+        <!-- ============================================================ -->
+        <!-- ANÁLISE DO DIODO -->
+        <!-- ============================================================ -->
+
+        <h2>3. Análise do Diodo &mdash; SK810L vs MBRF30100CT</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Parâmetro</th>
+                    <th>SK810L<br><span class="muted" style="font-weight:400; text-transform:none;">(atual)</span></th>
+                    <th>MBRF30100CT</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>If contínuo</td>
+                    <td class="danger">8A</td>
+                    <td class="best">30A (2&times;15A dual)</td>
+                </tr>
+                <tr>
+                    <td>Vrrm</td>
+                    <td>100V</td>
+                    <td>100V</td>
+                </tr>
+                <tr>
+                    <td>Vf @20A</td>
+                    <td class="bad">~1.0V (fora da spec)</td>
+                    <td class="good">~0.7V</td>
+                </tr>
+                <tr>
+                    <td>Package</td>
+                    <td class="muted">SMA (SMD)</td>
+                    <td>TO-220 (tab isolada)</td>
+                </tr>
+                <tr>
+                    <td>Rth(j-c)</td>
+                    <td class="danger">— (sem dissipação)</td>
+                    <td class="good">~1.5 °C/W</td>
+                </tr>
+                <tr>
+                    <td>Rth(j-a)</td>
+                    <td class="danger">~90 °C/W</td>
+                    <td class="good">~40 °C/W</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="card card-danger">
+            <strong>Problema crítico:</strong> O SK810L é rated para 8A contínuo. A 20A de carga, opera a <strong>250% da capacidade nominal</strong>.
+            Mesmo com duty alto (80%), os picos de 20A causam Vf elevado e estresse térmico severo no encapsulamento SMA.
+            <strong>O SK810L é o gargalo térmico do design atual.</strong>
+        </div>
+
+        <div class="card card-success">
+            <strong>MBRF30100CT:</strong> Diodo duplo com catodo comum. Ambas as pernas em paralelo = 30A de capacidade.
+            Tab isolada permite montagem direta no dissipador sem isolador. Ideal para esta aplicação.
+        </div>
+
+        <hr class="section-divider">
+
+        <!-- ============================================================ -->
+        <!-- ANÁLISE TÉRMICA TO-220 -->
+        <!-- ============================================================ -->
+
+        <h2>4. Cálculo do Dissipador &mdash; Design TO-220 (IRFB3077 + MBRF30100CT)</h2>
+
+        <h3>Dissipação por duty cycle (por canal, @20A)</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Duty</th>
+                    <th>P<sub>MOSFET</sub><br>(I²&times;Rds&times;D)</th>
+                    <th>P<sub>Diodo</sub><br>(Vf&times;I&times;(1-D))</th>
+                    <th>P<sub>canal</sub></th>
+                    <th>P<sub>total</sub> (&times;2)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>100%</td>
+                    <td>1.32W</td>
+                    <td>0W</td>
+                    <td>1.32W</td>
+                    <td>2.64W</td>
+                </tr>
+                <tr>
+                    <td>80%</td>
+                    <td>1.06W</td>
+                    <td>2.80W</td>
+                    <td>3.86W</td>
+                    <td>7.72W</td>
+                </tr>
+                <tr style="background: rgba(56, 189, 248, 0.05);">
+                    <td class="bold">70% (pior caso)</td>
+                    <td class="bold">0.92W</td>
+                    <td class="bold">4.20W</td>
+                    <td class="bold">5.12W</td>
+                    <td class="bold" style="color: var(--accent);">10.25W</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Resistências térmicas</h3>
+
+        <div class="card card-warn">
+            <strong>Atenção:</strong> O IRFB3077 tem tab = drain. Como os drains dos 2 canais são diferentes,
+            é necessário <strong>isolador térmico</strong> (silicone pad + bucha plástica) entre cada MOSFET e o dissipador.
+            O MBRF30100CT tem tab isolada — monta direto.
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Componente</th>
+                    <th>Rth(j-c)</th>
+                    <th>Rth(c-s)</th>
+                    <th>Montagem</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>IRFB3077</td>
+                    <td>0.50 °C/W</td>
+                    <td>1.00 °C/W</td>
+                    <td>com isolador (silicone pad)</td>
+                </tr>
+                <tr>
+                    <td>MBRF30100CT</td>
+                    <td>1.50 °C/W</td>
+                    <td>0.30 °C/W</td>
+                    <td>direto no dissipador (tab isolada)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Cálculo do dissipador necessário</h3>
+
+        <div class="formula">
+Tj = Ta + P_total × Rth(s-a) + P_dispositivo × (Rth(j-c) + Rth(c-s))
+
+<strong>Limitado pelo diodo</strong> (pior caso, 70% duty):
+125 = 60 + 10.25 × Rth(s-a) + 4.20 × (1.5 + 0.3)
+125 = 60 + 10.25 × Rth(s-a) + 7.56
+
+<strong style="color: var(--accent);">Rth(s-a) ≤ 5.6 °C/W</strong>
+
+<strong>Limitado pelo MOSFET:</strong>
+125 = 60 + 10.25 × Rth(s-a) + 0.92 × (0.5 + 1.0)
+125 = 60 + 10.25 × Rth(s-a) + 1.38
+
+<strong>Rth(s-a) ≤ 6.2 °C/W</strong>
+        </div>
+
+        <div class="card card-accent">
+            <strong>Requisito:</strong> Rth(s-a) &le; <strong>5.6 °C/W</strong> (limitado pelo diodo MBRF30100CT)
+        </div>
+
+        <h3>Temperaturas resultantes por tipo de dissipador</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Rth(s-a)</th>
+                    <th>T<sub>dissipador</sub></th>
+                    <th>Tj MOSFET</th>
+                    <th>Tj Diodo</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>5.0 °C/W</td>
+                    <td>111°C</td>
+                    <td>112°C</td>
+                    <td class="ok">119°C</td>
+                    <td><span class="tag tag-yellow">LIMITE</span></td>
+                </tr>
+                <tr>
+                    <td>3.0 °C/W</td>
+                    <td>91°C</td>
+                    <td>92°C</td>
+                    <td class="good">98°C</td>
+                    <td><span class="tag tag-green">BOM</span></td>
+                </tr>
+                <tr style="background: rgba(74, 222, 128, 0.05);">
+                    <td class="bold">2.0 °C/W</td>
+                    <td class="bold">81°C</td>
+                    <td class="bold">82°C</td>
+                    <td class="best">88°C</td>
+                    <td><span class="tag tag-green">EXCELENTE</span></td>
+                </tr>
+                <tr>
+                    <td>1.0 °C/W</td>
+                    <td>70°C</td>
+                    <td>72°C</td>
+                    <td class="good">78°C</td>
+                    <td><span class="tag tag-green">ÓTIMO</span></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Guia de seleção do dissipador</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Tipo</th>
+                    <th>Dimensões aprox.</th>
+                    <th>Rth natural</th>
+                    <th>Rth forçado (~2 m/s)</th>
+                    <th>Atende?</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Clip-on pequeno</td>
+                    <td>10&times;15mm</td>
+                    <td>15-20 °C/W</td>
+                    <td>8-12 °C/W</td>
+                    <td><span class="tag tag-red">NÃO</span></td>
+                </tr>
+                <tr style="background: rgba(74, 222, 128, 0.05);">
+                    <td class="bold">Aletado médio</td>
+                    <td class="bold">40&times;40&times;20mm</td>
+                    <td>6-8 °C/W</td>
+                    <td class="best">3-4 °C/W</td>
+                    <td><span class="tag tag-green">SIM</span></td>
+                </tr>
+                <tr>
+                    <td>Aletado grande</td>
+                    <td>60&times;50&times;30mm</td>
+                    <td>3-5 °C/W</td>
+                    <td class="best">1.5-2.5 °C/W</td>
+                    <td><span class="tag tag-green">SIM (folga)</span></td>
+                </tr>
+                <tr>
+                    <td>Perfil extrudado</td>
+                    <td>100mm+</td>
+                    <td>1-3 °C/W</td>
+                    <td class="good">0.5-1.5 °C/W</td>
+                    <td><span class="tag tag-green">SOBRA</span></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Montagem no dissipador</h3>
+
+        <div class="diagram">┌─────────────────────────────────────────────────┐
+│              DISSIPADOR ÚNICO                   │
+│                                                 │
+│   ┌──────────┐          ┌──────────────┐        │
+│   │IRFB3077  │          │ MBRF30100CT  │        │
+│   │  CH 1    │          │    CH 1      │        │
+│   │+isolador │          │  direto      │        │
+│   └──────────┘          └──────────────┘        │
+│                                                 │
+│   ┌──────────┐          ┌──────────────┐        │
+│   │IRFB3077  │          │ MBRF30100CT  │        │
+│   │  CH 2    │          │    CH 2      │        │
+│   │+isolador │          │  direto      │        │
+│   └──────────┘          └──────────────┘        │
+│                                                 │
+└─────────────────────────────────────────────────┘
+
+  IRFB3077:     isolador (silicone pad) + bucha plástica
+  MBRF30100CT:  direto no dissipador (tab isolada)
+  Pasta térmica em TODOS os componentes</div>
+
+        <hr class="section-divider">
+
+        <!-- ============================================================ -->
+        <!-- LIMITAÇÕES DO DESIGN ATUAL -->
+        <!-- ============================================================ -->
+
+        <h2>5. Limitações do Design Atual (PCB &mdash; BSC070N10NS3 + SK810L)</h2>
+
+        <h3>Estimativa de Rth a partir dos dados medidos</h3>
+
+        <div class="card card-accent">
+            <strong>Dados medidos:</strong> T_dissipador = 60°C, Ta = 25°C, carga = 20A por canal, ~80% duty
+        </div>
+
+        <div class="formula">
+P_mosfet = 2 × (20² × 7mΩ × 0.8) = 4.48W
+P_diodo  = 2 × (0.65V × 20A × 0.2) = 5.20W
+P_total  ≈ 9.7W
+
+Rth(dissipador→ar) = (60 − 25) / 9.7 = <strong>3.6 °C/W</strong>
+        </div>
+
+        <p>O dissipador em si é razoável. <strong>O problema está no caminho térmico do componente SMD ao dissipador.</strong></p>
+
+        <h3>Resistências térmicas estimadas (SMD → PCB 2oz → dissipador)</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Componente</th>
+                    <th>Rth(j-c)</th>
+                    <th>Rth(c→dissipador)*</th>
+                    <th>Rth total (j→dissipador)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>BSC070N10NS3 (SuperSO8)</td>
+                    <td>2.0 °C/W</td>
+                    <td>~7 °C/W</td>
+                    <td class="ok">~9 °C/W</td>
+                </tr>
+                <tr>
+                    <td>SK810L (SMA)</td>
+                    <td>~5 °C/W</td>
+                    <td class="danger">~25 °C/W</td>
+                    <td class="danger">~30 °C/W</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p class="muted" style="font-size:0.85rem;">*Via PCB 2oz copper, ~4cm² de copper pour com thermal vias.</p>
+
+        <h3>Temperaturas de junção reais</h3>
+
+        <h4>A 25°C ambiente (T_dissipador = 60°C medido)</h4>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Componente</th>
+                    <th>P (80% duty)</th>
+                    <th>&Delta;T acima do dissipador</th>
+                    <th>Tj</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>BSC070N10NS3</td>
+                    <td>2.24W</td>
+                    <td>20°C</td>
+                    <td class="ok">80°C</td>
+                    <td><span class="tag tag-green">OK</span></td>
+                </tr>
+                <tr>
+                    <td>SK810L</td>
+                    <td>2.60W</td>
+                    <td class="danger">78°C</td>
+                    <td class="danger">138°C</td>
+                    <td><span class="tag tag-red">CRÍTICO (max 150°C)</span></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h4>A 60°C ambiente (pior caso operacional)</h4>
+
+        <div class="formula">T_dissipador = 60 + 9.7 × 3.6 = <strong class="danger">95°C</strong></div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Componente</th>
+                    <th>P (80% duty)</th>
+                    <th>&Delta;T acima do dissipador</th>
+                    <th>Tj</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>BSC070N10NS3</td>
+                    <td>2.24W</td>
+                    <td>20°C</td>
+                    <td class="ok">115°C</td>
+                    <td><span class="tag tag-yellow">MARGINAL</span></td>
+                </tr>
+                <tr>
+                    <td>SK810L</td>
+                    <td>2.60W</td>
+                    <td class="danger">78°C</td>
+                    <td class="danger">173°C</td>
+                    <td><span class="tag tag-red">DESTRUIÇÃO</span></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="card card-danger">
+            <strong>O SK810L é o gargalo térmico!</strong><br>
+            Mesmo a 25°C ambiente, a junção do SK810L já opera a 138°C — apenas 12°C abaixo do máximo absoluto (150°C).
+            A 60°C ambiente, ultrapassa 170°C e será destruído.
+        </div>
+
+        <h3>Corrente máxima segura no design atual</h3>
+
+        <div class="formula">
+Para Tj_SK810L ≤ 125°C:
+
+<strong>A 25°C ambiente</strong> (T_dissipador ≈ 60°C):
+  125 = 60 + P_diode × 30
+  P_diode_max = 2.17W
+  I_avg = 2.17 / 0.65 = 3.3A
+  I_load = 3.3 / (1−D) = 3.3 / 0.2 = <strong>16.7A máx/canal</strong>
+
+<strong>A 60°C ambiente</strong> (T_dissipador ≈ 95°C):
+  125 = 95 + P_diode × 30
+  P_diode_max = 1.0W
+  I_avg = 1.0 / 0.65 = 1.54A
+  I_load = 1.54 / 0.2 = <strong>7.7A máx/canal</strong>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Ta ambiente</th>
+                    <th>T_dissipador</th>
+                    <th>I_max/canal (80% duty)</th>
+                    <th>I_max/canal (70% duty)</th>
+                    <th>Status @20A</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>25°C</td>
+                    <td>60°C</td>
+                    <td class="ok">16.7A</td>
+                    <td class="bad">12.4A</td>
+                    <td><span class="tag tag-red">INSUFICIENTE</span></td>
+                </tr>
+                <tr>
+                    <td>40°C</td>
+                    <td>76°C</td>
+                    <td class="bad">11.3A</td>
+                    <td class="danger">8.4A</td>
+                    <td><span class="tag tag-red">INSUFICIENTE</span></td>
+                </tr>
+                <tr>
+                    <td>60°C</td>
+                    <td>95°C</td>
+                    <td class="danger">7.7A</td>
+                    <td class="danger">5.7A</td>
+                    <td><span class="tag tag-red">INVIÁVEL</span></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <hr class="section-divider">
+
+        <!-- ============================================================ -->
+        <!-- CONCLUSÃO -->
+        <!-- ============================================================ -->
+
+        <h2>6. Conclusão</h2>
+
+        <h3>Comparativo final</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Parâmetro</th>
+                    <th>Design Atual (PCB)</th>
+                    <th>Design TO-220</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>MOSFET</td>
+                    <td>BSC070N10NS3 (7m&Omega;)</td>
+                    <td class="best">IRFB3077 (3.3m&Omega;)</td>
+                </tr>
+                <tr>
+                    <td>Diodo</td>
+                    <td class="danger">SK810L (8A, SMA)</td>
+                    <td class="best">MBRF30100CT (30A, TO-220)</td>
+                </tr>
+                <tr>
+                    <td>P_total @20A&times;2, 70% duty</td>
+                    <td>~12W</td>
+                    <td class="good">~10.25W</td>
+                </tr>
+                <tr>
+                    <td>Gargalo térmico</td>
+                    <td class="danger">SK810L (Tj&asymp;138°C!)</td>
+                    <td class="good">Diodo (Tj&asymp;88°C)</td>
+                </tr>
+                <tr>
+                    <td>I_max @25°C ambiente</td>
+                    <td class="bad">~17A</td>
+                    <td class="best">20A+ (com folga)</td>
+                </tr>
+                <tr>
+                    <td>I_max @60°C ambiente</td>
+                    <td class="danger">~8A (inviável)</td>
+                    <td class="best">20A (Tj=88°C)</td>
+                </tr>
+                <tr>
+                    <td>Dissipador necessário</td>
+                    <td class="muted">PCB 2oz (insuficiente)</td>
+                    <td class="good">&le; 5.6 °C/W (fácil c/ ventilação)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="card card-success" style="margin-top: 1.5rem;">
+            <h3 style="color: var(--green); margin-top: 0;">Recomendação</h3>
+            <p><strong>Combinação ideal: IRFB3077 + MBRF30100CT</strong></p>
+            <ul>
+                <li>Dissipador aletado ~50&times;50&times;20mm com ventilação forçada (Rth &asymp; 2 °C/W)</li>
+                <li>Tj máxima = 88°C a 60°C ambiente — margem de 37°C</li>
+                <li>Redução de ~47% na dissipação total vs design atual</li>
+                <li>Sem necessidade de alterações no firmware</li>
+            </ul>
+            <p style="margin-top: 0.75rem;"><strong>Correções de hardware pendentes:</strong></p>
+            <ul>
+                <li>Resistor 10K Gate-Source no MOSFET (proteção power-down) — <span class="tag tag-green">já adicionado</span></li>
+                <li>Pull-up 10K nos pinos D3/D5 para +5V (correção boot-on)</li>
+            </ul>
+        </div>
+
+        <div style="text-align: center; margin-top: 3rem; padding: 1rem; color: var(--text-muted); font-size: 0.8rem; border-top: 1px solid var(--surface2);">
+            Análise gerada para o projeto pump_controller &mdash; 17/02/2026
+        </div>
+
+    </div>
+</body>
+</html>
