@@ -30,10 +30,10 @@ namespace Config {
 
     // Target output as percentage of measured supply voltage
     // This makes the system adaptive to voltage variations (8-14.5V automotive range)
-    // Low pressure (?0.2bar): 70% of Vsupply (e.g., 9.8V @ 14V, 8.4V @ 12V)
+    // Low pressure (?0.2bar): 50% of Vsupply (e.g., 7V @ 14V, 6V @ 12V)
     // High pressure (?0.4bar): 100% of Vsupply (e.g., 14V @ 14V, 12V @ 12V)
-    // Intermediate pressures: linear interpolation between 70% and 100%
-    constexpr float OUTPUT_PERCENT_MIN = 0.70f; // 70% of supply voltage
+    // Intermediate pressures: linear interpolation between 50% and 100%
+    constexpr float OUTPUT_PERCENT_MIN = 0.50f; // 50% of supply voltage
     constexpr float OUTPUT_PERCENT_MAX = 1.00f; // 100% of supply voltage (full power)
 
     // MAP sensor filter coefficient (EMA)
