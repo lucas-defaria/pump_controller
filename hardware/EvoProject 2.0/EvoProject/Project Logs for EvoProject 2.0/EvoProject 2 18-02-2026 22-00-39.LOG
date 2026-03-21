@@ -1,0 +1,6 @@
+Added Pin To Net: NetName=uC_IOUT1 Pin=C20-1
+Added Pin To Net: NetName=uC_IOUT2 Pin=C21-1
+Added Pin To Net: NetName=uC_IOUT1 Pin=R24-1
+Added Pin To Net: NetName=uC_IOUT2 Pin=R25-1
+Change Net Name : Old Net Name=NetR24_2 New Net Name=I_OUT1
+Change Net Name : Old Net Name=NetR25_2 New Net Name=I_OUT2

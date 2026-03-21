@@ -1,7 +1,7 @@
 #pragma once
 
 // -----------------------------------------------------------------------------
-// Config.h - Compile-time configuration constants for Pump Control project
+// Config.h - Compile-time configuration constants for Fan Control project
 // -----------------------------------------------------------------------------
 // Adjust setpoints, thresholds, and operational parameters here.
 // Nothing is user-configurable at runtime.
@@ -9,35 +9,39 @@
 
 namespace Config {
     // =========================================================================
-    // MAP SENSOR & PRESSURE CONTROL
+    // TEMPERATURE CONTROL - Transmission Oil Temperature
     // =========================================================================
-    
-    // MPX5700AP - Absolute pressure sensor (15-700 kPa absolute)
-    // Sensor reads absolute pressure, converted to gauge (relative to atmosphere)
-    // Gauge pressure = Absolute pressure - Atmospheric pressure
-    // Verified: 833mV @ atmospheric conditions = 1.013 bar absolute = 0 bar gauge
-    
-    // Atmospheric pressure at sea level (for absolute?gauge conversion)
-    constexpr float ATMOSPHERIC_PRESSURE_BAR = 1.013f; // bar (101.3 kPa)
-    
-    // Pressure setpoints (bar gauge - relative to atmospheric)
-    // Negative values = vacuum (intake manifold below atmospheric)
-    // Positive values = boost (turbo pressure above atmospheric)
-    // Pressure (bar gauge) where output should be at OUTPUT_PERCENT_MIN
-    constexpr float MAP_BAR_LOW_SETPOINT  = 0.4f; // bar gauge (low pressure)
-    // Pressure (bar gauge) where output should be at OUTPUT_PERCENT_MAX
-    constexpr float MAP_BAR_HIGH_SETPOINT = 0.6f;  // bar gauge (high pressure)
 
-    // Target output as percentage of measured supply voltage
-    // This makes the system adaptive to voltage variations (8-14.5V automotive range)
-    // Low pressure (?0.2bar): 50% of Vsupply (e.g., 7V @ 14V, 6V @ 12V)
-    // High pressure (?0.4bar): 100% of Vsupply (e.g., 14V @ 14V, 12V @ 12V)
-    // Intermediate pressures: linear interpolation between 50% and 100%
-    constexpr float OUTPUT_PERCENT_MIN = 0.50f; // 50% of supply voltage
-    constexpr float OUTPUT_PERCENT_MAX = 1.00f; // 100% of supply voltage (full power)
+    // Fan control based on transmission oil temperature (from CAN bus)
+    // Below TEMP_FAN_OFF_C:  fan OFF (0% PWM)
+    // Between OFF and FULL:  linear ramp
+    // Above TEMP_FAN_FULL_C: fan FULL (100% PWM)
 
-    // MAP sensor filter coefficient (EMA)
-    constexpr float MAP_FILTER_ALPHA   = 0.15f; // 0<alpha<=1 (smaller = smoother)
+    constexpr float TEMP_FAN_OFF_C   = 95.0f;  // °C - below this = fan OFF
+    constexpr float TEMP_FAN_FULL_C  = 100.0f; // °C - above this = fan 100%
+
+    // Output percent range for temperature control
+    constexpr float OUTPUT_PERCENT_MIN = 0.00f; // 0% at/below TEMP_FAN_OFF_C
+    constexpr float OUTPUT_PERCENT_MAX = 1.00f; // 100% at/above TEMP_FAN_FULL_C
+
+    // =========================================================================
+    // CAN BUS - MCP2515 via SPI
+    // =========================================================================
+
+    // MCP2515 SPI pins (SPI: MOSI=D11, MISO=D12, SCK=D13)
+    constexpr uint8_t PIN_CAN_CS  = 10; // D10 - MCP2515 chip select (SS)
+    constexpr uint8_t PIN_CAN_INT = 4;  // D4  - MCP2515 interrupt
+
+    // CAN message IDs and byte mapping (extensible - add new IDs here)
+    constexpr uint32_t CAN_ID_GEARBOX      = 0x418; // Gearbox message (temp, gear, sport)
+    constexpr uint8_t  CAN_BYTE_TRANS_TEMP  = 2;    // Byte 2 = transmission temp (°F, 1-253)
+
+    // Timeout: no CAN temp message received -> fan forced to 100% (safety)
+    constexpr unsigned long CAN_TEMP_TIMEOUT_MS = 3000; // 3 seconds
+
+    // Valid raw temperature range (Fahrenheit as received from CAN)
+    constexpr uint8_t CAN_TEMP_RAW_MIN = 1;
+    constexpr uint8_t CAN_TEMP_RAW_MAX = 253;
 
     // =========================================================================
     // CURRENT SENSING - ACS772LCB-050B (UNIDIRECTIONAL MODE)
@@ -204,15 +208,17 @@ namespace Config {
     // PIN ASSIGNMENTS
     // =========================================================================
     
-    // Main sensors and outputs
-    constexpr uint8_t PIN_MAP_SENSOR   = A4; // MPX5700AP pressure sensor (absolute)
+    // Main outputs
     constexpr uint8_t PIN_PWM_OUT_1    = 3;  // D3 (SSR channel 1)
     constexpr uint8_t PIN_PWM_OUT_2    = 5;  // D5 (SSR channel 2)
     
     // Status LED NeoPixel
     constexpr uint8_t PIN_STATUS_LED   = 2;  // D2 - NeoPixel RGB LED
     constexpr uint16_t STATUS_LED_COUNT = 1; // Número de LEDs NeoPixel
-    constexpr uint8_t LED_BRIGHTNESS   = 200; // Brilho do LED (0-255, 50 = ~20%)
+    constexpr uint8_t LED_BRIGHTNESS   = 200; // Brilho do LED (0-255)
+
+    // NTC temperature sensor (future - analog input, curve TBD)
+    constexpr uint8_t PIN_NTC_SENSOR   = A4; // Reserved for future NTC sensor
     
     // Current sensors (ACS772LCB-100U)
     constexpr uint8_t PIN_CURRENT_1    = A2; // Current sensor channel 1
@@ -235,8 +241,8 @@ namespace Config {
     
     // External PWM input configuration for slave mode
     // When valid PWM signal is detected on PIN_DIG_IN_1 (D7), system enters slave mode
-    // and replicates the input PWM on both outputs (ignoring MAP sensor)
-    // When signal is lost/idle, system returns to normal MAP-based control
+    // and replicates the input PWM on both outputs (ignoring temperature control)
+    // When signal is lost/idle, system returns to normal temperature-based control
     constexpr uint8_t PIN_PWM_INPUT = PIN_DIG_IN_1;  // D7 - PWM input for slave mode
     
     // Expected PWM frequency range (Hz) - typically 25Hz �10Hz tolerance

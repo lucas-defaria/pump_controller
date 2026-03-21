@@ -1,0 +1,27 @@
+----------------------------------------------------------------------------------------------------------------------------------
+NCDrill File Report For: EvoProject 1.0.PcbDoc   17/11/2025  19:50:20
+----------------------------------------------------------------------------------------------------------------------------------
+
+Layer Pair : Top Layer to Bottom Layer
+ASCII Plated RoundHoles File : NC Drill Files GB EvoProject 1.0-RoundHoles-Plated.TXT
+ASCII Non-Plated RoundHoles File : NC Drill Files GB EvoProject 1.0-RoundHoles-NonPlated.TXT
+ASCII Plated SlotHoles File : NC Drill Files GB EvoProject 1.0-SlotHoles-Plated.TXT
+EIA File   : NC Drill Files GB EvoProject 1.0.DRL
+
+Tool       Hole Size               Hole Tolerance               Hole Type       Hole Count   Plated         Tool Travel
+----------------------------------------------------------------------------------------------------------------------------------
+T1      16mil (0.406mm)                                           Round             457       PTH        74.52inch (1892.82mm)
+T2      20mil (0.5mm)                                             Round             64        PTH        5.48inch (139.11mm)
+T3      32mil (0.8mm)                                             Round             6         PTH        2.18inch (55.32mm)
+T4      40mil (1.016mm)                                           Round             33        PTH        6.18inch (156.93mm)
+T5      40mil (1.016mm)                                           Slot              24        PTH        11.86inch (301.13mm)
+T6      40mil (1.021mm)                                           Round             16        PTH        2.01inch (51.00mm)
+T7      41mil (1.049mm)                                           Round             6         PTH        0.50inch (12.70mm)
+T8      79mil (1.999mm)                                           Slot              4         PTH        5.94inch (151.00mm)
+T9      118mil (3mm)                                              Round             2         NPTH       0.66inch (16.70mm)
+T10     158mil (4.001mm)                                          Round             2         NPTH       0.91inch (23.20mm)
+T11     177mil (4.501mm)                                          Round             2         NPTH       0.51inch (13.00mm)
+----------------------------------------------------------------------------------------------------------------------------------
+Totals                                                                              616
+
+Total Processing Time (hh:mm:ss) : 00:00:00
