@@ -206,7 +206,7 @@ namespace Config {
     
     // Main sensors and outputs
     constexpr uint8_t PIN_MAP_SENSOR   = A4; // MPX5700AP pressure sensor (absolute)
-    constexpr uint8_t PIN_PWM_OUT_1    = 3;  // D3 (SSR channel 1)
+    constexpr uint8_t PIN_PWM_OUT_1    = 6;  // D6 (SSR channel 1) // Modificado para D6 para evitar conflito com Timer 0
     constexpr uint8_t PIN_PWM_OUT_2    = 5;  // D5 (SSR channel 2)
     
     // Status LED NeoPixel
