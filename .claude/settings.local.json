@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /c/Users/lucas.faria/Documents/Arduino/libraries/Adafruit_NeoPixel -name *.cpp -o -name *.h)"
+    ]
+  }
+}

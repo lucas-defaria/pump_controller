@@ -17,7 +17,7 @@ namespace Config {
     // Between OFF and FULL:  linear ramp
     // Above TEMP_FAN_FULL_C: fan FULL (100% PWM)
 
-    constexpr float TEMP_FAN_OFF_C   = 95.0f;  // °C - below this = fan OFF
+    constexpr float TEMP_FAN_OFF_C   = 80.0f;  // °C - below this = fan OFF
     constexpr float TEMP_FAN_FULL_C  = 100.0f; // °C - above this = fan 100%
 
     // Output percent range for temperature control
@@ -29,7 +29,7 @@ namespace Config {
     // =========================================================================
 
     // MCP2515 SPI pins (SPI: MOSI=D11, MISO=D12, SCK=D13)
-    constexpr uint8_t PIN_CAN_CS  = 10; // D10 - MCP2515 chip select (SS)
+    constexpr uint8_t PIN_CAN_CS  = 9;  // D9 - MCP2515 chip select
     constexpr uint8_t PIN_CAN_INT = 4;  // D4  - MCP2515 interrupt
 
     // CAN message IDs and byte mapping (extensible - add new IDs here)
@@ -208,11 +208,13 @@ namespace Config {
     // PIN ASSIGNMENTS
     // =========================================================================
     
-    // Main outputs
-    constexpr uint8_t PIN_PWM_OUT_1    = 3;  // D3 (SSR channel 1)
-    constexpr uint8_t PIN_PWM_OUT_2    = 5;  // D5 (SSR channel 2)
+    // Main outputs (both on Timer 0 - no SPI conflict)
+    constexpr uint8_t PIN_PWM_OUT_1    = 6;  // D6 - OC0A (Timer 0)
+    constexpr uint8_t PIN_PWM_OUT_2    = 5;  // D5 - OC0B (Timer 0)
     
     // Status LED NeoPixel
+    // DEBUG: Set to false to disable NeoPixel updates (test SPI/Timer2 conflict isolation)
+    constexpr bool ENABLE_STATUS_LED = false;
     constexpr uint8_t PIN_STATUS_LED   = 2;  // D2 - NeoPixel RGB LED
     constexpr uint16_t STATUS_LED_COUNT = 1; // Número de LEDs NeoPixel
     constexpr uint8_t LED_BRIGHTNESS   = 200; // Brilho do LED (0-255)

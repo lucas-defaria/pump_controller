@@ -6,7 +6,7 @@
    - Temperature-based fan PWM control (95-100°C ramp)
    - Dual ACS772LCB-100U current sensors (A2, A3)
    - Current fault protection with multi-level response
-   - Two PWM outputs (D3, D5) for MOSFET driver
+   - Two PWM outputs (D6, D5) for MOSFET driver
    - CAN timeout safety: fan forced to 100% if no data received
 
    Temperature Control:
@@ -81,10 +81,16 @@ void setup() {
     Serial.println(F("========================================"));
     Serial.println();
 
-    // Initialize all subsystems
-    // CRITICAL: Power outputs initialized FIRST to ensure fan starts OFF
+    // Initialize CAN FIRST - before PowerOutputs changes Timer 0 prescaler
+    // mcp_can library uses delay() internally, which breaks if Timer 0 is modified
+    Serial.println(F("Initializing CAN bus (MCP2515)..."));
+    if (!g_can.begin()) {
+        Serial.println(F("*** WARNING: CAN init failed - fan will run at 100% (safety) ***"));
+    }
+
+    // Power outputs init changes Timer 0 prescaler (millis/delay run 8x faster after this)
     Serial.println(F("Initializing power outputs (fan OFF)..."));
-    g_power.begin();  // This sets outputs to OFF state with safety delays
+    g_power.begin();
 
     Serial.println(F("Initializing sensors..."));
     g_curr1.begin();
@@ -96,15 +102,8 @@ void setup() {
 
     // Enable PWM debug for first 10 seconds (for troubleshooting)
     g_pwmInput.setDebug(true);
-
     Serial.println(F("Initializing status LED..."));
     g_statusLed.begin();
-
-    Serial.println(F("Initializing CAN bus (MCP2515)..."));
-    if (!g_can.begin()) {
-        Serial.println(F("*** WARNING: CAN init failed - fan will run at 100% (safety) ***"));
-    }
-
     // Configure digital inputs
     pinMode(Config::PIN_DIG_IN_2, INPUT_PULLUP);     // D8 for external safety
 

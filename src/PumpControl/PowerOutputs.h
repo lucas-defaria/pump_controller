@@ -3,8 +3,13 @@
 #include "Config.h"
 
 // -----------------------------------------------------------------------------
-// PowerOutputs - Manages two main PWM outputs (simulating SSRs)
+// PowerOutputs - Manages two main PWM outputs for MOSFET driver
 // with voltage limiting capability for protection system
+// -----------------------------------------------------------------------------
+// Both outputs use Timer 0 hardware PWM (D5=OC0B, D6=OC0A).
+// Timer 0 has NO pin overlap with SPI, so CAN bus (MCP2515) doesn't interfere.
+// Previously D3 (Timer 2 OC2B) was used, but SPI shares D11 (OC2A) with Timer 2,
+// causing periodic PWM glitches on D3 when CAN was active.
 // -----------------------------------------------------------------------------
 class PowerOutputs {
 public:
@@ -37,38 +42,25 @@ public:
         // Step 3: Configure as OUTPUT (pins already in safe state)
         pinMode(_pin1, OUTPUT);
         pinMode(_pin2, OUTPUT);
-        
-        // Step 4: Configure high-frequency PWM (31.25 kHz)
-        // CRITICAL: This modifies Timer 0 and Timer 2 to Phase-Correct PWM mode
-        // Timer 0 modification affects millis() and delay() - they run 64x faster!
-        // All timing code has been compensated using MILLIS_COMPENSATED() macro
+
         // Step 4: Configure high-frequency PWM (3.9 kHz)
-        // CRITICAL: This modifies Timer 0 and Timer 2 to Phase-Correct PWM mode
+        // Both D5 (OC0B) and D6 (OC0A) are on Timer 0 — no SPI conflict.
         // Timer 0 modification affects millis() and delay() - they run 8x faster!
-        // All timing code has been compensated using MILLIS_COMPENSATED() macro
+        // All timing code compensated using MILLIS_COMPENSATED() macro.
         if (Config::ENABLE_HIGH_FREQ_PWM) {
-            // Configure Timer 2 (pins D3, D11) for 3.9 kHz Phase-Correct PWM
-            // Phase-Correct PWM: 16MHz / 512 / 8 = 3906.25 Hz ? 3.9 kHz (counts up and down)
-            // Set WGM22=0, WGM21=0, WGM20=1 for Phase-Correct PWM, TOP=0xFF
-            TCCR2A = (TCCR2A & 0xFC) | 0x01;  // WGM21=0, WGM20=1
-            TCCR2B = (TCCR2B & 0xF7);         // WGM22=0
-            // Set prescaler to 8 (CS22=0, CS21=1, CS20=0)
-            TCCR2B = (TCCR2B & 0xF8) | 0x02;
-            
             // Configure Timer 0 (pins D5, D6) for 3.9 kHz Phase-Correct PWM
-            // WARNING: This makes millis() and delay() run 8x faster!
-            // Phase-Correct PWM: 16MHz / 512 / 8 = 3906.25 Hz
+            // Phase-Correct PWM: 16MHz / (2 * 256 * 8) = 3906.25 Hz ≈ 3.9 kHz
             // Set WGM02=0, WGM01=0, WGM00=1 for Phase-Correct PWM, TOP=0xFF
             TCCR0A = (TCCR0A & 0xFC) | 0x01;  // WGM01=0, WGM00=1
             TCCR0B = (TCCR0B & 0xF7);         // WGM02=0
             // Set prescaler to 8 (CS02=0, CS01=1, CS00=0)
             TCCR0B = (TCCR0B & 0xF8) | 0x02;  // Prescaler 8 (8x faster timing!)
         }
-        
+
         // Step 5: Set initial duty cycle to 0% (motor OFF)
         // This will write PWM=255 (HIGH) which keeps motor OFF with inverted circuit
         setDuty(0.0f);
-        
+
         // Step 6: Additional safety delay before normal operation
         // Using delayMicroseconds because it's not affected by Timer 0 prescaler change
         delayMicroseconds(100000);  // 100ms grace period
@@ -92,7 +84,7 @@ public:
     void setOutputVoltage(float voltage) {
         if (voltage < 0) voltage = 0;
         if (voltage > _supplyVoltage) voltage = _supplyVoltage;
-        
+
         float percent = voltage / _supplyVoltage;  // Convert to percentage
         setOutputPercent(percent);
     }
@@ -120,20 +112,17 @@ public:
         
         // Convert duty cycle to PWM value (0-255)
         int pwmValue = static_cast<int>(duty * 255.0f + 0.5f);
-        
+
         // Hardware inversion compensation:
         // If driver circuit inverts signal (NPN+PNP topology), invert PWM in software
-        // This ensures: duty=1.0 ? MOSFET ON (full power), duty=0.0 ? MOSFET OFF
+        // This ensures: duty=1.0 → MOSFET ON (full power), duty=0.0 → MOSFET OFF
         if (Config::PWM_INVERTED_BY_HARDWARE) {
-            pwmValue = 255 - pwmValue;  // Invert: 0?255, 255?0
+            pwmValue = 255 - pwmValue;  // Invert: 0→255, 255→0
         }
-        
-        analogWrite(_pin1, pwmValue);
-        analogWrite(_pin2, pwmValue);
 
-        // Future: Replicate to extra PWM outputs if enabled
-        // analogWrite(Config::PIN_EXTRA_PWM_1, pwmValue);
-        // analogWrite(Config::PIN_EXTRA_PWM_2, pwmValue);
+        // Both outputs on Timer 0 - hardware PWM, no SPI conflict
+        analogWrite(_pin1, pwmValue);  // D6 (OC0A)
+        analogWrite(_pin2, pwmValue);  // D5 (OC0B)
     }
 
     // Set voltage limit factor (0.0 to 1.0)

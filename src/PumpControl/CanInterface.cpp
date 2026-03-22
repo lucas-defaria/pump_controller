@@ -14,15 +14,36 @@ CanInterface::CanInterface()
 }
 
 bool CanInterface::begin() {
-    if (_can.begin(MCP_ANY, CAN_500KBPS, MCP_8MHZ) == CAN_OK) {
-        _can.setMode(MCP_NORMAL);
-        _initialized = true;
-        Serial.println(F("[CAN] MCP2515 initialized OK (500kbps, 8MHz)"));
-    } else {
-        _initialized = false;
-        Serial.println(F("[CAN] *** MCP2515 INIT FAILED ***"));
+    // CRITICAL: D10 (hardware SS) MUST be OUTPUT for SPI master mode on ATmega328P
+    // If D10 goes LOW while set as INPUT, SPI hardware switches to slave mode
+    pinMode(10, OUTPUT);
+    digitalWrite(10, HIGH);
+
+    // MCP2515 needs time after power-on before SPI is ready
+    delay(100);
+
+    // Try up to 3 times (some modules need a reset cycle)
+    for (uint8_t attempt = 1; attempt <= 3; attempt++) {
+        Serial.print(F("[CAN] Init attempt "));
+        Serial.print(attempt);
+        Serial.println(F("/3..."));
+
+        if (_can.begin(MCP_ANY, CAN_500KBPS, MCP_8MHZ) == CAN_OK) {
+            _can.setMode(MCP_NORMAL);
+            _initialized = true;
+            Serial.println(F("[CAN] MCP2515 initialized OK (500kbps, 8MHz)"));
+            return true;
+        }
+
+        Serial.println(F("[CAN] Failed, retrying..."));
+        delay(200);
     }
-    return _initialized;
+
+    _initialized = false;
+    Serial.println(F("[CAN] *** MCP2515 INIT FAILED after 3 attempts ***"));
+    Serial.println(F("[CAN] Check: wiring (MOSI=D11, MISO=D12, SCK=D13, CS=D10, INT=D4)"));
+    Serial.println(F("[CAN] Check: 5V power, 8MHz crystal, module GND"));
+    return false;
 }
 
 void CanInterface::poll() {
