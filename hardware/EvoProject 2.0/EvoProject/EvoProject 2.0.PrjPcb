@@ -44,7 +44,7 @@ CrossRefPorts=3
 CrossRefCrossSheets=1
 CrossRefSheetEntries=0
 CrossRefFollowFromMainSettings=1
-CurrentVariant=Versão Slave
+CurrentVariant=Versão Smart
 
 [Preferences]
 PrefsVaultGUID=
@@ -128,7 +128,48 @@ UniqueId=C2FB2537-6999-485C-83CB-2158820F765D
 Description=Versão Smart
 AllowFabrication=1
 ParameterCount=0
-VariationCount=0
+VariationCount=41
+Variation1=Designator=CN6|UniqueId=\AUWPJTIU|Kind=1|AlternatePart=
+Variation2=Designator=CN5|UniqueId=\WQTGNCCH|Kind=1|AlternatePart=
+Variation3=Designator=CN1|UniqueId=\YQNWRKJD|Kind=1|AlternatePart=
+Variation4=Designator=CN3|UniqueId=\OJODVVFQ|Kind=1|AlternatePart=
+Variation5=Designator=CN2|UniqueId=\NCXBPLWA|Kind=1|AlternatePart=
+Variation6=Designator=U1|UniqueId=\CFABHPNC|Kind=1|AlternatePart=
+Variation7=Designator=U2|UniqueId=\RYCKKQAW|Kind=1|AlternatePart=
+Variation8=Designator=T5|UniqueId=\EHPBLIMV|Kind=1|AlternatePart=
+Variation9=Designator=D5|UniqueId=\WCTXVQOP|Kind=1|AlternatePart=
+Variation10=Designator=TRM7|UniqueId=\RBEHKTFG|Kind=1|AlternatePart=
+Variation11=Designator=TRM3|UniqueId=\TNQNTPHA|Kind=1|AlternatePart=
+Variation12=Designator=TRM2|UniqueId=\QQARZASE|Kind=1|AlternatePart=
+Variation13=Designator=TRM6|UniqueId=\KWVWDWSO|Kind=1|AlternatePart=
+Variation14=Designator=TRM8|UniqueId=\WBMCFRWA|Kind=1|AlternatePart=
+Variation15=Designator=TRM5|UniqueId=\DKDPWVUX|Kind=1|AlternatePart=
+Variation16=Designator=TRM4|UniqueId=\PLZDWDUS|Kind=1|AlternatePart=
+Variation17=Designator=TRM1|UniqueId=\MMONYZSD|Kind=1|AlternatePart=
+Variation18=Designator=T1|UniqueId=\YXUMPPVQ|Kind=1|AlternatePart=
+Variation19=Designator=D4|UniqueId=\STEEDSPN|Kind=1|AlternatePart=
+Variation20=Designator=J1|UniqueId=\ELFSMHEK|Kind=1|AlternatePart=
+Variation21=Designator=B1|UniqueId=\YSFZJTRB|Kind=1|AlternatePart=
+Variation22=Designator=CI1|UniqueId=\BLURSHRS|Kind=1|AlternatePart=
+Variation23=Designator=IND1|UniqueId=\PHZFZLSM|Kind=1|AlternatePart=
+Variation24=Designator=D2|UniqueId=\DHFFQZBN|Kind=1|AlternatePart=
+Variation25=Designator=D1|UniqueId=\JFNGJZBT|Kind=1|AlternatePart=
+Variation26=Designator=CI2|UniqueId=\CRUGKRCR|Kind=1|AlternatePart=
+Variation27=Designator=CI3|UniqueId=\EJVLTREL|Kind=1|AlternatePart=
+Variation28=Designator=TRM11|UniqueId=\KYOJNOUV|Kind=1|AlternatePart=
+Variation29=Designator=TRM9|UniqueId=\DXGKUSPX|Kind=1|AlternatePart=
+Variation30=Designator=TRM12|UniqueId=\GPFDWXOT|Kind=1|AlternatePart=
+Variation31=Designator=TRM10|UniqueId=\BJQZOFUS|Kind=1|AlternatePart=
+Variation32=Designator=NTC2|UniqueId=\MLGFULLK|Kind=1|AlternatePart=
+Variation33=Designator=NTC1|UniqueId=\CZYNIJSW|Kind=1|AlternatePart=
+Variation34=Designator=D3|UniqueId=\FCWWMHPZ|Kind=1|AlternatePart=
+Variation35=Designator=R9|UniqueId=\FGJKFQXU|Kind=1|AlternatePart=
+Variation36=Designator=R10|UniqueId=\CLWBLEHF|Kind=1|AlternatePart=
+Variation37=Designator=PTC2|UniqueId=\LOQRINAN|Kind=1|AlternatePart=
+Variation38=Designator=PTC1|UniqueId=\SGQQIOCS|Kind=1|AlternatePart=
+Variation39=Designator=CN4|UniqueId=\MKIYDMZL|Kind=1|AlternatePart=
+Variation40=Designator=R2|UniqueId=\VYWRNKZR|Kind=1|AlternatePart=
+Variation41=Designator=C11|UniqueId=\BTWACZCZ|Kind=1|AlternatePart=
 ParamVariationCount=0
 
 [ProjectVariant2]
@@ -144,6 +185,10 @@ DocumentPath=Project Outputs for EvoProject 1.0\Design Rule Check - EvoProject 1
 DItemRevisionGUID=
 
 [GeneratedDocument2]
+DocumentPath=Project Outputs for EvoProject 2.0\Design Rule Check - EvoProject 2.html
+DItemRevisionGUID=
+
+[GeneratedDocument3]
 DocumentPath=..\EvoProject 1.0.xlsx
 DItemRevisionGUID=
 
@@ -1747,6 +1792,210 @@ SelectedOnly=0
 UpdateVariants=1
 UpdateToLatestRevision=1
 PartTypes=0
+ComponentLibIdentifierKind0=Library Name And Type
+ComponentLibraryIdentifier0=430451600.IntLib
+ComponentDesignItemID0=430451600
+ComponentSymbolReference0=430451600
+ComponentUpdate0=1
+ComponentIsDeviceSheet0=0
+ComponentLibIdentifierKind1=Library Name And Type
+ComponentLibraryIdentifier1=ACS772LCB-100U-PFF-T.IntLib
+ComponentDesignItemID1=ACS772LCB-100U-PFF-T
+ComponentSymbolReference1=ACS772LCB-100U-PFF-T
+ComponentUpdate1=1
+ComponentIsDeviceSheet1=0
+ComponentLibIdentifierKind2=Library Name And Type
+ComponentLibraryIdentifier2=Inova_2015.IntLib
+ComponentDesignItemID2=MPX5700ASX
+ComponentSymbolReference2=MPX5700ASX
+ComponentUpdate2=1
+ComponentIsDeviceSheet2=0
+ComponentLibIdentifierKind3=Vault Name
+ComponentLibraryIdentifier3=INOVA SISTEMAS ELETRONICOS
+ComponentDesignItemID3=CMPL-001-0020-14
+ComponentSymbolReference3=CAP_P
+ComponentUpdate3=1
+ComponentIsDeviceSheet3=0
+ComponentLibIdentifierKind4=Vault Name
+ComponentLibraryIdentifier4=INOVA SISTEMAS ELETRONICOS
+ComponentDesignItemID4=CMPL-001-0040-11
+ComponentSymbolReference4=CAP_NP
+ComponentUpdate4=1
+ComponentIsDeviceSheet4=0
+ComponentLibIdentifierKind5=Vault Name
+ComponentLibraryIdentifier5=INOVA SISTEMAS ELETRONICOS
+ComponentDesignItemID5=CMPL-001-0047-7
+ComponentSymbolReference5=CAP_P
+ComponentUpdate5=1
+ComponentIsDeviceSheet5=0
+ComponentLibIdentifierKind6=Vault Name
+ComponentLibraryIdentifier6=INOVA SISTEMAS ELETRONICOS
+ComponentDesignItemID6=CMPL-001-0052-11
+ComponentSymbolReference6=CAP_NP
+ComponentUpdate6=1
+ComponentIsDeviceSheet6=0
+ComponentLibIdentifierKind7=Vault Name
+ComponentLibraryIdentifier7=INOVA SISTEMAS ELETRONICOS
+ComponentDesignItemID7=CMPL-001-0071-10
+ComponentSymbolReference7=CAP_NP
+ComponentUpdate7=1
+ComponentIsDeviceSheet7=0
+ComponentLibIdentifierKind8=Vault Name
+ComponentLibraryIdentifier8=INOVA SISTEMAS ELETRONICOS
+ComponentDesignItemID8=CMPL-001-0121-11
+ComponentSymbolReference8=CAP_NP
+ComponentUpdate8=1
+ComponentIsDeviceSheet8=0
+ComponentLibIdentifierKind9=Vault Name
+ComponentLibraryIdentifier9=INOVA SISTEMAS ELETRONICOS
+ComponentDesignItemID9=CMPL-001-0133-6
+ComponentSymbolReference9=CON_2 Vias Simples
+ComponentUpdate9=1
+ComponentIsDeviceSheet9=0
+ComponentLibIdentifierKind10=Vault Name
+ComponentLibraryIdentifier10=INOVA SISTEMAS ELETRONICOS
+ComponentDesignItemID10=CMPL-001-0153-5
+ComponentSymbolReference10=DIO_Schottky
+ComponentUpdate10=1
+ComponentIsDeviceSheet10=0
+ComponentLibIdentifierKind11=Vault Name
+ComponentLibraryIdentifier11=INOVA SISTEMAS ELETRONICOS
+ComponentDesignItemID11=CMPL-001-0162-3
+ComponentSymbolReference11=IND_2 Terminais
+ComponentUpdate11=1
+ComponentIsDeviceSheet11=0
+ComponentLibIdentifierKind12=Vault Name
+ComponentLibraryIdentifier12=INOVA SISTEMAS ELETRONICOS
+ComponentDesignItemID12=CMPL-001-0181-5
+ComponentSymbolReference12=CON_3 Vias Simples
+ComponentUpdate12=1
+ComponentIsDeviceSheet12=0
+ComponentLibIdentifierKind13=Vault Name
+ComponentLibraryIdentifier13=INOVA SISTEMAS ELETRONICOS
+ComponentDesignItemID13=CMPL-001-0186-5
+ComponentSymbolReference13=CON_4 Vias Simples
+ComponentUpdate13=1
+ComponentIsDeviceSheet13=0
+ComponentLibIdentifierKind14=Vault Name
+ComponentLibraryIdentifier14=INOVA SISTEMAS ELETRONICOS
+ComponentDesignItemID14=CMPL-001-0290-5
+ComponentSymbolReference14=RES_Geral
+ComponentUpdate14=1
+ComponentIsDeviceSheet14=0
+ComponentLibIdentifierKind15=Vault Name
+ComponentLibraryIdentifier15=INOVA SISTEMAS ELETRONICOS
+ComponentDesignItemID15=CMPL-001-0308-5
+ComponentSymbolReference15=RES_Geral
+ComponentUpdate15=1
+ComponentIsDeviceSheet15=0
+ComponentLibIdentifierKind16=Vault Name
+ComponentLibraryIdentifier16=INOVA SISTEMAS ELETRONICOS
+ComponentDesignItemID16=CMPL-001-0309-4
+ComponentSymbolReference16=RES_Geral
+ComponentUpdate16=1
+ComponentIsDeviceSheet16=0
+ComponentLibIdentifierKind17=Vault Name
+ComponentLibraryIdentifier17=INOVA SISTEMAS ELETRONICOS
+ComponentDesignItemID17=CMPL-001-0339-5
+ComponentSymbolReference17=RES_Geral
+ComponentUpdate17=1
+ComponentIsDeviceSheet17=0
+ComponentLibIdentifierKind18=Vault Name
+ComponentLibraryIdentifier18=INOVA SISTEMAS ELETRONICOS
+ComponentDesignItemID18=CMPL-001-0354-5
+ComponentSymbolReference18=RES_Geral
+ComponentUpdate18=1
+ComponentIsDeviceSheet18=0
+ComponentLibIdentifierKind19=Vault Name
+ComponentLibraryIdentifier19=INOVA SISTEMAS ELETRONICOS
+ComponentDesignItemID19=CMPL-001-0411-4
+ComponentSymbolReference19=RES_Geral
+ComponentUpdate19=1
+ComponentIsDeviceSheet19=0
+ComponentLibIdentifierKind20=Vault Name
+ComponentLibraryIdentifier20=INOVA SISTEMAS ELETRONICOS
+ComponentDesignItemID20=CMPL-001-0432-3
+ComponentSymbolReference20=RES_PTC
+ComponentUpdate20=1
+ComponentIsDeviceSheet20=0
+ComponentLibIdentifierKind21=Vault Name
+ComponentLibraryIdentifier21=INOVA SISTEMAS ELETRONICOS
+ComponentDesignItemID21=CMPL-001-0442-4
+ComponentSymbolReference21=RES_NTC
+ComponentUpdate21=1
+ComponentIsDeviceSheet21=0
+ComponentLibIdentifierKind22=Vault Name
+ComponentLibraryIdentifier22=INOVA SISTEMAS ELETRONICOS
+ComponentDesignItemID22=CMPL-001-0444-6
+ComponentSymbolReference22=TRA_NPN SOT-23-3L
+ComponentUpdate22=1
+ComponentIsDeviceSheet22=0
+ComponentLibIdentifierKind23=Vault Name
+ComponentLibraryIdentifier23=INOVA SISTEMAS ELETRONICOS
+ComponentDesignItemID23=CMPL-001-0445-7
+ComponentSymbolReference23=TRA_PNP SOT-23-3L
+ComponentUpdate23=1
+ComponentIsDeviceSheet23=0
+ComponentLibIdentifierKind24=Vault Name
+ComponentLibraryIdentifier24=INOVA SISTEMAS ELETRONICOS
+ComponentDesignItemID24=CMPL-001-0475-2
+ComponentSymbolReference24=CON_TERMINAL
+ComponentUpdate24=1
+ComponentIsDeviceSheet24=0
+ComponentLibIdentifierKind25=Vault Name
+ComponentLibraryIdentifier25=INOVA SISTEMAS ELETRONICOS
+ComponentDesignItemID25=CMPL-001-0476-4
+ComponentSymbolReference25=TRA_MOSFET_N-DPAK TO-252-3 TO-220AB
+ComponentUpdate25=1
+ComponentIsDeviceSheet25=0
+ComponentLibIdentifierKind26=Vault Name
+ComponentLibraryIdentifier26=INOVA SISTEMAS ELETRONICOS
+ComponentDesignItemID26=CMPL-001-0739-2
+ComponentSymbolReference26=OPT_4 pinos
+ComponentUpdate26=1
+ComponentIsDeviceSheet26=0
+ComponentLibIdentifierKind27=Vault Name
+ComponentLibraryIdentifier27=INOVA SISTEMAS ELETRONICOS
+ComponentDesignItemID27=CMPL-001-0760-1
+ComponentSymbolReference27=CI_XL7046
+ComponentUpdate27=1
+ComponentIsDeviceSheet27=0
+ComponentLibIdentifierKind28=Vault Name
+ComponentLibraryIdentifier28=INOVA SISTEMAS ELETRONICOS
+ComponentDesignItemID28=CMPL-001-0897-1
+ComponentSymbolReference28=DIO_Comum
+ComponentUpdate28=1
+ComponentIsDeviceSheet28=0
+ComponentLibIdentifierKind29=Vault Name
+ComponentLibraryIdentifier29=INOVA SISTEMAS ELETRONICOS
+ComponentDesignItemID29=CMPL-001-0901-4
+ComponentSymbolReference29=DIO_NUP2105L
+ComponentUpdate29=1
+ComponentIsDeviceSheet29=0
+ComponentLibIdentifierKind30=Vault Name
+ComponentLibraryIdentifier30=INOVA SISTEMAS ELETRONICOS
+ComponentDesignItemID30=CMPL-001-1025-2
+ComponentSymbolReference30=RES_NTC
+ComponentUpdate30=1
+ComponentIsDeviceSheet30=0
+ComponentLibIdentifierKind31=Vault Name
+ComponentLibraryIdentifier31=INOVA SISTEMAS ELETRONICOS
+ComponentDesignItemID31=CMPL-001-1164-2
+ComponentSymbolReference31=CON_9 Vias Simples
+ComponentUpdate31=1
+ComponentIsDeviceSheet31=0
+ComponentLibIdentifierKind32=Vault Name
+ComponentLibraryIdentifier32=INOVA SISTEMAS ELETRONICOS
+ComponentDesignItemID32=CMPL-001-1166-1
+ComponentSymbolReference32=DIO_Schottky Duplo
+ComponentUpdate32=1
+ComponentIsDeviceSheet32=0
+ComponentLibIdentifierKind33=Vault Name
+ComponentLibraryIdentifier33=INOVA SISTEMAS ELETRONICOS
+ComponentDesignItemID33=CMPL-001-1325-5
+ComponentSymbolReference33=CON_6 Vias Simples
+ComponentUpdate33=1
+ComponentIsDeviceSheet33=0
 
 [Comparison Options]
 ComparisonOptions0=Kind=Net|MinPercent=75|MinMatch=3|ShowMatch=-1|UseName=-1|InclAllRules=0

@@ -1,0 +1,2 @@
+Removed Pin From Net: NetName=uC_VMap Pin=J1-12
+Added Pin To Net: NetName=Ext_VMap Pin=J1-12

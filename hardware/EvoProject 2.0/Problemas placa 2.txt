@@ -1,2 +1,0 @@
-- Pinos CAN da espera para módulo, não batem com os headers do MCP2515
-- Uso da saída PWM de potencia ligada ao D3, causam conflito de timers internos ao usar SPI. Foi necessário trocar para D6 na placa 01.
