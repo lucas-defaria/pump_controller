@@ -1,0 +1,9 @@
+Removed Pin From Net: NetName=+12V Pin=R40-2
+Removed Pin From Net: NetName=+12V Pin=R50-2
+Removed Pin From Net: NetName=+12V Pin=T8-3
+Removed Pin From Net: NetName=+12V Pin=T16-3
+Added Pin To Net: NetName=VCC1 Pin=R40-2
+Added Pin To Net: NetName=VCC2 Pin=R50-2
+Added Pin To Net: NetName=VCC1 Pin=T8-3
+Added Pin To Net: NetName=VCC2 Pin=T16-3
+Add Class: Class already exists: Designator

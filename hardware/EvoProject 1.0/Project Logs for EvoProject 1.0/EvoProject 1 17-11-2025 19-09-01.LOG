@@ -1,0 +1,17 @@
+Removed Pin From Net: NetName=uC_PWM5 Pin=CN4-4
+Removed Pin From Net: NetName=uC_PWM6 Pin=CN4-7
+Removed Pin From Net: NetName=uC_PWM4 Pin=CN6-1
+Removed Pin From Net: NetName=uC_PWM3 Pin=CN6-2
+Change Component Description : Designator=J2 Old Description=Microchip CAN Controller 1Mbit/s CAN 2.0B 18-Pin SOIC W New Description=Microchip CAN Controller 1Mbit/s CAN 2.0B 18-Pin SOIC W | Microchip Technology Inc. MCP2515-I/SO
+Added Component: Designator=ID1(MEC RV PCB MN)
+Add component (AddParameter): Name = "Complemento"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ERP"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Etapa"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = ""; VariantName = "[No Variations]"
+Added Pin To Net: NetName=uC_PWM3 Pin=CN4-4
+Added Pin To Net: NetName=uC_PWM4 Pin=CN4-7
+Added Pin To Net: NetName=uC_PWM6 Pin=CN6-1
+Added Pin To Net: NetName=uC_PWM5 Pin=CN6-2
+Add Class: Class already exists: Designator
+Added Member To Class: ClassName=Designator Member=Component ID1

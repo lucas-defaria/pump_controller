@@ -4,3 +4,11 @@
 - Sensor de corrente montado é o ACS772LCB-050B
 - Falta ligar o pino de vout do sensor de corrente
 - Retirar trilha de saida de 5V do arduino, para não alimentar a placa pelo USB>
+- Pull down gate mosfets
+- Pull up saída PWM uC
+- RC na entrada dos sensores de corrente.
+- Problemas no dimensionamento do diodo de roda livre. esquentando demais.
+
+FW CAN
+- Pinos CAN da espera para módulo, não batem com os headers do MCP2515
+- Uso da saída PWM de potencia ligada ao D3, causam conflito de timers internos ao usar SPI. Foi necessário trocar para D6 na placa 01.

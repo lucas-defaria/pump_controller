@@ -1,0 +1,10 @@
+Output: PP_Versão Slave
+Type  : BOM
+From  : Variant [Versão Smart] of Project [EvoProject 2.0.PrjPcb]
+   Generated File[PP_Versão Slave.xlsx]
+
+
+Files Generated   : 1
+Documents Printed : 0
+
+Finished Output Generation At 19:39:26 On 03/03/2026

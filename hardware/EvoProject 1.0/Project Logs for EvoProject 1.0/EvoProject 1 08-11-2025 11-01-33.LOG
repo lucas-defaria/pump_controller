@@ -1,0 +1,106 @@
+Change Component Designator: OldDesignator=C1 NewDesignator=C2
+Change Component Designator: OldDesignator=C2 NewDesignator=C3
+Change Component Designator: OldDesignator=C3 NewDesignator=C4
+Change Component Designator: OldDesignator=C4 NewDesignator=C5
+Change Component Designator: OldDesignator=C5 NewDesignator=C6
+Change Component Designator: OldDesignator=C6 NewDesignator=C7
+Change Component Designator: OldDesignator=C7 NewDesignator=C8
+Change Component Designator: OldDesignator=C8 NewDesignator=C9
+Change Component Designator: OldDesignator=C9 NewDesignator=C10
+Change Component Designator: OldDesignator=C10 NewDesignator=C11
+Change Component Designator: OldDesignator=C11 NewDesignator=C13
+Change Component Designator: OldDesignator=C12 NewDesignator=C14
+Change Component Designator: OldDesignator=C13 NewDesignator=C15
+Change Component Designator: OldDesignator=C14 NewDesignator=C16
+Change Component Designator: OldDesignator=C15 NewDesignator=C17
+Change Component Designator: OldDesignator=C16 NewDesignator=C18
+Change Component Designator: OldDesignator=C17 NewDesignator=C19
+Change Component Designator: OldDesignator=C18 NewDesignator=C20
+Change Component Designator: OldDesignator=C19 NewDesignator=C21
+Change Component Designator: OldDesignator=C20 NewDesignator=C22
+Change Component Designator: OldDesignator=C21 NewDesignator=C23
+Change Component Designator: OldDesignator=C22 NewDesignator=C24
+Change Component Designator: OldDesignator=C23 NewDesignator=C25
+Change Component Designator: OldDesignator=C24 NewDesignator=C26
+Change Component Designator: OldDesignator=C25 NewDesignator=C27
+Change Component Designator: OldDesignator=C26 NewDesignator=C28
+Change Component Designator: OldDesignator=C27 NewDesignator=C29
+Change Component Designator: OldDesignator=C28 NewDesignator=C30
+Change Component Designator: OldDesignator=C29 NewDesignator=C31
+Change Component Designator: OldDesignator=C30 NewDesignator=C32
+Change Component Designator: OldDesignator=C31 NewDesignator=C33
+Change Component Designator: OldDesignator=C32 NewDesignator=C34
+Change Component Designator: OldDesignator=C33 NewDesignator=C35
+Change Component Designator: OldDesignator=C34 NewDesignator=C36
+Change Component Designator: OldDesignator=C35 NewDesignator=C37
+Change Component Designator: OldDesignator=C36 NewDesignator=C38
+Change Component Designator: OldDesignator=C37 NewDesignator=C39
+Change Component Designator: OldDesignator=C38 NewDesignator=C40
+Change Component Designator: OldDesignator=C39 NewDesignator=C41
+Change Component Designator: OldDesignator=C40 NewDesignator=C42
+Change Component Designator: OldDesignator=C41 NewDesignator=C43
+Added Component: Designator=C1(CAP SMD CE 0603 HR)
+Add component (AddParameter): Name = "Custo médio (R$)"; Value = "0.01221"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Custo padrão (R$)"; Value = "0.0072"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet 1"; Value = "https://octopart.com/pt/datasheet/cl10b104kb8nnnc-samsung-9299375"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet 2"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ERP"; Value = "5845"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Etapa"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "HC 1"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "HC 2"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer 1"; Value = "SAMSUNG"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer 2"; Value = "SAMSUNG ELECTRONICS"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Montagem"; Value = "SMD"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Package"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number 1"; Value = "CL10B104KB8NNNC"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number 2"; Value = "CL10B104KB8NNNC"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Status"; Value = "1 - LIBERADO"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 1"; Value = "FUTURE ELECTRONICS CORP."; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 2"; Value = "AVNET ELECTRONICS MARKETING"; VariantName = "[No Variations]"
+Added Component: Designator=C12(CAP SMD CE 0603 HR)
+Add component (AddParameter): Name = "Custo médio (R$)"; Value = "0.01221"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Custo padrão (R$)"; Value = "0.0072"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet 1"; Value = "https://octopart.com/pt/datasheet/cl10b104kb8nnnc-samsung-9299375"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet 2"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ERP"; Value = "5845"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Etapa"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "HC 1"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "HC 2"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer 1"; Value = "SAMSUNG"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer 2"; Value = "SAMSUNG ELECTRONICS"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Montagem"; Value = "SMD"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Package"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number 1"; Value = "CL10B104KB8NNNC"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number 2"; Value = "CL10B104KB8NNNC"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Status"; Value = "1 - LIBERADO"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 1"; Value = "FUTURE ELECTRONICS CORP."; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 2"; Value = "AVNET ELECTRONICS MARKETING"; VariantName = "[No Variations]"
+Added Pin To Net: NetName=+5V Pin=C1-1
+Added Pin To Net: NetName=GNDANALOG Pin=C1-2
+Added Pin To Net: NetName=+5V Pin=C12-1
+Added Pin To Net: NetName=GNDANALOG Pin=C12-2
+Change Net Name : Old Net Name=NetC2_2 New Net Name=NetC3_2
+Change Net Name : Old Net Name=NetC3_1 New Net Name=NetC4_1
+Change Net Name : Old Net Name=NetC5_1 New Net Name=NetC6_1
+Change Net Name : Old Net Name=NetC5_2 New Net Name=NetC6_2
+Change Net Name : Old Net Name=NetC8_1 New Net Name=NetC9_1
+Change Net Name : Old Net Name=NetC10_1 New Net Name=NetC11_1
+Change Net Name : Old Net Name=NetC10_2 New Net Name=NetC11_2
+Change Net Name : Old Net Name=NetC11_2 New Net Name=NetC13_2
+Change Net Name : Old Net Name=NetC13_1 New Net Name=NetC15_1
+Change Net Name : Old Net Name=NetC15_1 New Net Name=NetC17_1
+Change Net Name : Old Net Name=NetC15_2 New Net Name=NetC17_2
+Change Net Name : Old Net Name=NetC18_1 New Net Name=NetC20_1
+Change Net Name : Old Net Name=NetC20_1 New Net Name=NetC22_1
+Change Net Name : Old Net Name=NetC20_2 New Net Name=NetC22_2
+Change Net Name : Old Net Name=NetC26_2 New Net Name=NetC28_2
+Change Net Name : Old Net Name=NetC39_1 New Net Name=NetC41_1
+Add Class: Class already exists: Designator
+Added Member To Class: ClassName=Designator Member=Component C31 100uF/6,3V
+Added Member To Class: ClassName=Designator Member=Component C33 100uF/6,3V
+Added Member To Class: ClassName=Designator Member=Component C34 10nF/50V
+Added Member To Class: ClassName=Designator Member=Component C35 10nF/50V
+Added Member To Class: ClassName=Designator Member=Component C36 100nF/50V
+Added Member To Class: ClassName=Designator Member=Component C42 100nF/50V
+Added Member To Class: ClassName=Designator Member=Component C43 100nF/50V
+Added Member To Class: ClassName=Designator Member=Component CN1 BARRA DE PINOS 1X4

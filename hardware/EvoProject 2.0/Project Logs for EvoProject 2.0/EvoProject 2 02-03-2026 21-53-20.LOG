@@ -1,0 +1,12 @@
+Removed Pin From Net: NetName=uC_CS1 Pin=CN5-2
+Removed Pin From Net: NetName=uC_SCK1 Pin=CN5-3
+Removed Pin From Net: NetName=uC_SI1 Pin=CN5-4
+Removed Pin From Net: NetName=uC_INT1 Pin=CN6-1
+Removed Pin From Net: NetName=uC_SO1 Pin=CN6-2
+Removed Pin From Net: NetName=GND Pin=CN6-3
+Added Pin To Net: NetName=GND Pin=CN5-2
+Added Pin To Net: NetName=uC_CS1 Pin=CN5-3
+Added Pin To Net: NetName=uC_SO1 Pin=CN5-4
+Added Pin To Net: NetName=uC_SI1 Pin=CN6-1
+Added Pin To Net: NetName=uC_SCK1 Pin=CN6-2
+Added Pin To Net: NetName=uC_INT1 Pin=CN6-3

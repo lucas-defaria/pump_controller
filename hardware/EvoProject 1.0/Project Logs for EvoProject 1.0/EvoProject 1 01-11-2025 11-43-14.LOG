@@ -1,0 +1,43 @@
+Change Component Footprint: Designator=C29 Old Footprint=CAP SMD CE 0402 HR New Footprint=CAP SMD CE 0603 HR
+Change Component Footprint: Designator=C30 Old Footprint=CAP SMD CE 0402 HR New Footprint=CAP SMD CE 0603 HR
+Change Component Comment : Designator=C29 Old Comment=10nF/16V New Comment=10nF/50V
+Change Component Comment : Designator=C30 Old Comment=10nF/16V New Comment=10nF/50V
+Change Managed Component Library Link : Designator=C29 Old VaultGUID=6D3AE728-7EFB-4055-B10D-18B16094236A New VaultGUID=6D3AE728-7EFB-4055-B10D-18B16094236A Old ItemGUID=F1347704-1B61-44DE-9018-7E2DDF32D4DE New ItemGUID=1385182A-27AB-4628-8FC4-9ABDC5A1C2BA Old RevisionGUID=790D39DF-2794-4902-80BD-4744E49436E0 New RevisionGUID=926F3C37-5AB1-4DB5-AC76-7D041E365EDB
+Change Managed Component Library Link : Designator=C30 Old VaultGUID=6D3AE728-7EFB-4055-B10D-18B16094236A New VaultGUID=6D3AE728-7EFB-4055-B10D-18B16094236A Old ItemGUID=F1347704-1B61-44DE-9018-7E2DDF32D4DE New ItemGUID=1385182A-27AB-4628-8FC4-9ABDC5A1C2BA Old RevisionGUID=790D39DF-2794-4902-80BD-4744E49436E0 New RevisionGUID=926F3C37-5AB1-4DB5-AC76-7D041E365EDB
+Change component parameters: Designator = "C29" ("C29"); Footprint = "CAP SMD CE 0402 HR"; UniqueID = "\EQZFJFER\PUJVXMPV" ("\EQZFJFER\PUJVXMPV")
+Change component parameters (AddParameter): Name = "Custo médio (R$)"; Value = "0.01383"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Custo padrão (R$)"; Value = "0.008"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Datasheet 1"; Value = "https://octopart.com/pt/datasheet/cl10b103kb8nnnc-samsung-9299374"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Datasheet 2"; Value = "https://octopart.com/pt/datasheet/cl10b103kb8nnnc-samsung-9299374"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "ERP"; Value = "5850"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Etapa"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "HC 1"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "HC 2"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer 1"; Value = "SAMSUNG"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer 2"; Value = "SAMSUNG"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Montagem"; Value = "SMD"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Package"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Part Number 1"; Value = "CL10B103KB8NNNC"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Part Number 2"; Value = "CL10B103KB8NNNC"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Status"; Value = "1 - LIBERADO"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Supplier 1"; Value = "ARROW COMPONENTS MEXICO S.A. DE C.V."; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Supplier 2"; Value = "ARROW ELECTRONICS,INC."; VariantName = "[No Variations]"
+Change component parameters: Designator = "C30" ("C30"); Footprint = "CAP SMD CE 0402 HR"; UniqueID = "\EQZFJFER\TAFVDOLW" ("\EQZFJFER\TAFVDOLW")
+Change component parameters (AddParameter): Name = "Custo médio (R$)"; Value = "0.01383"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Custo padrão (R$)"; Value = "0.008"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Datasheet 1"; Value = "https://octopart.com/pt/datasheet/cl10b103kb8nnnc-samsung-9299374"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Datasheet 2"; Value = "https://octopart.com/pt/datasheet/cl10b103kb8nnnc-samsung-9299374"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "ERP"; Value = "5850"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Etapa"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "HC 1"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "HC 2"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer 1"; Value = "SAMSUNG"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer 2"; Value = "SAMSUNG"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Montagem"; Value = "SMD"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Package"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Part Number 1"; Value = "CL10B103KB8NNNC"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Part Number 2"; Value = "CL10B103KB8NNNC"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Status"; Value = "1 - LIBERADO"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Supplier 1"; Value = "ARROW COMPONENTS MEXICO S.A. DE C.V."; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Supplier 2"; Value = "ARROW ELECTRONICS,INC."; VariantName = "[No Variations]"
+Add Class: Class already exists: Designator

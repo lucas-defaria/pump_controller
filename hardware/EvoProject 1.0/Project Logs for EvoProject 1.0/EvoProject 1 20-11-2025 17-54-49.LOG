@@ -1,0 +1,18 @@
+Removed Parameter Complemento:MOSFET SMD N-CH TDSON-8 100V 90A 114W 7mOhm from Part T22
+Added Parameter Custo médio (R$)= to Part T22
+Added Parameter Custo padrão (R$)= to Part T22
+Added Parameter Datasheet 1= to Part T22
+Added Parameter Datasheet 2= to Part T22
+Added Parameter Etapa= to Part T22
+Added Parameter HC 1= to Part T22
+Added Parameter HC 2= to Part T22
+Added Parameter Manufacturer 1= to Part T22
+Added Parameter Manufacturer 2= to Part T22
+Added Parameter Montagem=SMD to Part T22
+Added Parameter Package= to Part T22
+Added Parameter Part Number 1= to Part T22
+Added Parameter Part Number 2= to Part T22
+Added Parameter Status= to Part T22
+Added Parameter Supplier 1= to Part T22
+Added Parameter Supplier 2= to Part T22
+Update Managed Component T22 From CMPL-001-0663-7[BSC070N10NS3GATMA1] To CMPL-001-0663-7[BSC070N10NS3] in EvoProject 1.0 - Fonte e uC.SchDoc

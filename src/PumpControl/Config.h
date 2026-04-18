@@ -44,33 +44,37 @@ namespace Config {
     constexpr uint8_t CAN_TEMP_RAW_MAX = 253;
 
     // =========================================================================
-    // CURRENT SENSING - ACS772LCB-050B (UNIDIRECTIONAL MODE)
+    // CURRENT SENSING - ACS758LCB-050B (BIDIRECTIONAL)
     // =========================================================================
-    
-    // ACS772LCB-050B Hall-effect current sensor specifications
-    // Configured for UNIDIRECTIONAL operation (0 to +50A only)
-    // Measured characteristics:
-    //   - 0A input = 0.6V output (confirmed)
-    //   - 2.65A input = ~0.706V expected (0.6 + 2.65*0.04)
-    // Note: PWM load causes noise - using multi-sample averaging
-    constexpr float ACS772_SENSITIVITY = 0.06f;        // V/A (40mV/A for 050B)
-    constexpr float ACS772_ZERO_CURRENT_V = 0.6f;      // Volts (measured: 0.6V @ 0A - confirmed)
-    constexpr float ACS772_MAX_CURRENT = 50.0f;         // Amperes (sensor absolute max)
+
+    // ACS758LCB-050B Hall-effect current sensor specifications
+    // Bidirectional variant: ±50A range, nominal zero = Vcc/2, sensitivity = 40mV/A
+    // Calibration on this board — two loaded points on scope (after RC filter):
+    //   - 1.32A input = 2.54V output
+    //   - 2.30A input = 2.58V output
+    // Slope = (2.58-2.54)/(2.30-1.32) = 40.8 mV/A ≈ nominal 40 mV/A ✓
+    // Zero derived from slope (not measured — Voe offset made direct 0A reading ~22mV high):
+    //   Vzero = 2.54 - 1.32*0.04 = 2.488V (matches 2.58 - 2.30*0.04 = 2.488V)
+    // This offset is within the ±60mV Voe spec of the datasheet.
+    // Negative currents (reverse flow) are clamped to 0 in CurrentSensor.
+    constexpr float ACS758_SENSITIVITY = 0.04f;        // V/A (40mV/A for 050B bidirectional)
+    constexpr float ACS758_ZERO_CURRENT_V = 2.49f;    // Volts (derived @ 0A - calibrate per board)
+    constexpr float ACS758_MAX_CURRENT = 50.0f;        // Amperes (sensor absolute max)
     
     // ADC configuration
-    constexpr float ADC_REFERENCE_VOLTAGE = 4.9f;       // Volts (Arduino Uno default)
+    constexpr float ADC_REFERENCE_VOLTAGE = 5.02f;      // Volts (measured at module 5V pin, fed by DCDC)
     
     // Multi-sample averaging to filter PWM noise
-    // PWM at 977Hz creates ~1.02ms period
-    // Taking 10 samples with small delays helps average out PWM cycles
-    constexpr uint8_t CURRENT_ADC_SAMPLES = 10;         // Number of ADC samples to average
+    // PWM at 3.9kHz creates ~256us period
+    // 32 samples with 50us delay ≈ 4.9ms window = ~19 PWM cycles (good averaging)
+    constexpr uint8_t CURRENT_ADC_SAMPLES = 32;         // Number of ADC samples to average
     constexpr uint8_t CURRENT_ADC_DELAY_US = 50;        // Delay between samples (microseconds)
-    
+
     // Current reading filter coefficient (EMA)
     // Higher alpha = faster response, more noise
     // Lower alpha = slower response, smoother
-    // Reduced alpha due to PWM interference
-    constexpr float CURRENT_FILTER_ALPHA = 0.15f;       // 0<alpha<=1 (reduced for PWM)
+    // 0.05 @ 20Hz loop => time constant ~1s (slow but clean for protection use)
+    constexpr float CURRENT_FILTER_ALPHA = 0.05f;       // 0<alpha<=1 (heavy smoothing for PWM ripple)
     
     // =========================================================================
     // VOLTAGE MONITORING - Supply voltage measurement with percentage-based protection
@@ -109,7 +113,7 @@ namespace Config {
     constexpr float CURRENT_THRESHOLD_FAULT    = 40.0f;  // FAULT zone starts
     
     // EMERGENCY: Absolute maximum current (sensor hardware limit)
-    // ACS772LCB-050B saturates at ~50A - readings near this indicate:
+    // ACS758LCB-050B saturates at ~50A - readings near this indicate:
     // 1. Actual current >= 50A (short circuit, severe overload)
     // 2. Sensor at maximum capability
     // Action: IMMEDIATE shutdown to prevent component damage
@@ -159,6 +163,33 @@ namespace Config {
     // When entering EMERGENCY level, apply immediate reduction without rate limiting
     constexpr float VOLTAGE_LIMIT_RATE_EMERGENCY = 1.0f; // Instant shutdown (no rate limiting)
     
+    // =========================================================================
+    // TEMPERATURE SENSOR - NTC 10K (HEATSINK MONITORING)
+    // =========================================================================
+
+    // Hardware configuration (see schematic):
+    //   +5V -- R19(10K/1%) --+-- NTC(GND) ---- GND
+    //                        |
+    //                        +-- R20(10K/1%) -- ADC (PIN_NTC_TEMP)
+    //                        |
+    //                        +-- C16(4.7uF) --- GND
+    //
+    // R20 is high-impedance isolation; ADC reads the divider junction voltage.
+    // Since the divider supply (+5V) and ADC reference are the same rail,
+    // the reference voltage cancels out: R_NTC = R_PULLUP * adc / (1023 - adc).
+    //
+    // NOTE: Schematic also shows NTC2 in parallel with NTC1. If both are
+    // populated, set NTC_R25 to the effective parallel value (e.g. 5000 for
+    // two 10K). Assumption here: only NTC1 populated (10K).
+    constexpr float NTC_R_PULLUP   = 10000.0f;  // R19 pull-up to +5V (Ohms)
+    constexpr float NTC_R25        = 10000.0f;  // NTC nominal resistance @ 25°C (Ohms)
+    constexpr float NTC_BETA       = 3950.0f;   // Beta coefficient (typical 10K NTC)
+    constexpr float NTC_T25_KELVIN = 298.15f;   // 25°C reference in Kelvin
+
+    // Temperature reading filter coefficient (EMA)
+    // Heatsink thermal mass is large -> slow filter is fine and reduces noise
+    constexpr float TEMP_FILTER_ALPHA = 0.10f;  // 0<alpha<=1 (smaller = smoother)
+
     // =========================================================================
     // PWM CONFIGURATION
     // =========================================================================
@@ -222,19 +253,19 @@ namespace Config {
     // NTC temperature sensor (future - analog input, curve TBD)
     constexpr uint8_t PIN_NTC_SENSOR   = A4; // Reserved for future NTC sensor
     
-    // Current sensors (ACS772LCB-100U)
+    // Current sensors (ACS758LCB-050B)
     constexpr uint8_t PIN_CURRENT_1    = A2; // Current sensor channel 1
     constexpr uint8_t PIN_CURRENT_2    = A3; // Current sensor channel 2
     
     // Extra/future pins (stubs)
     constexpr uint8_t PIN_EXTRA_PWM_1  = 1;  // PD1 (TX - careful with Serial)
     constexpr uint8_t PIN_EXTRA_PWM_2  = 0;  // PD0 (RX - careful with Serial)
-    constexpr uint8_t PIN_ANALOG_OUT_1 = 6;  // D6 (0-10V via external circuit)
-    constexpr uint8_t PIN_ANALOG_OUT_2 = 9;  // D9 (0-10V via external circuit)
+    constexpr uint8_t PIN_ANALOG_OUT_1 = 6;  // D6 (0-10V via external circuit) - não tem mais no Hardware, mas mantido como referência
+    constexpr uint8_t PIN_ANALOG_OUT_2 = 9;  // D9 (0-10V via external circuit) - não tem mais no Hardware, mas mantido como referência
     constexpr uint8_t PIN_DIG_IN_1     = 7;  // D7 (active low)
     constexpr uint8_t PIN_DIG_IN_2     = 8;  // D8 (active low)
     constexpr uint8_t PIN_AUX_IN_1     = A0; // Extra analog input
-    constexpr uint8_t PIN_AUX_IN_2     = A1; // Extra analog input
+    constexpr uint8_t PIN_NTC_TEMP     = A1; // NTC 10K thermistor (heatsink temperature)
     constexpr uint8_t PIN_VCC_SENSE    = A5; // Supply voltage sense (voltage divider)
     
     // =========================================================================

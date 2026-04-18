@@ -1,0 +1,15 @@
+Removed Pin From Net: NetName=CANH Pin=CN1-1
+Removed Pin From Net: NetName=CANL Pin=CN1-2
+Removed Pin From Net: NetName=CANL Pin=PTC2-1
+Change Component Description : Designator=J2 Old Description=Microchip CAN Controller 1Mbit/s CAN 2.0B 18-Pin SOIC W New Description=Microchip CAN Controller 1Mbit/s CAN 2.0B 18-Pin SOIC W | Microchip Technology Inc. MCP2515-I/SO
+Added Pin To Net: NetName=CANL Pin=J1-8
+Add Net: Net with name "CANL" already exists
+Added Pin To Net: NetName=NetCN1_1 Pin=CN1-1
+Added Pin To Net: NetName=NetCN1_1 Pin=R70-2
+Added Pin To Net: NetName=NetCN1_1 Pin=U3-7
+Added Net: Name=NetCN1_1
+Added Pin To Net: NetName=NetCN1_2 Pin=CN1-2
+Added Pin To Net: NetName=NetCN1_2 Pin=R72-2
+Added Pin To Net: NetName=NetCN1_2 Pin=U3-6
+Added Net: Name=NetCN1_2
+Add Class: Class already exists: Designator

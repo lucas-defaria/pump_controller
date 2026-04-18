@@ -1,0 +1,5 @@
+Removed Pin From Net: NetName=CN_IN1 Pin=J1-3
+Removed Pin From Net: NetName=CN_IN2 Pin=J1-4
+Added Member To Class: ClassName=EvoProject 2.0 Member=Component R14 10K/1%
+Added Member To Class: ClassName=EvoProject 2.0 Member=Component R15 10K/1%
+Added Member To Class: ClassName=EvoProject 2.0 Member=Component T2 BC817-25

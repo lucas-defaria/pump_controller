@@ -1,0 +1,430 @@
+Removed Pin From Net: NetName=+5V Pin=C17-1
+Removed Pin From Net: NetName=I_OUT1 Pin=C19-1
+Removed Pin From Net: NetName=I_OUT2 Pin=C20-1
+Removed Pin From Net: NetName=NetC16_1 Pin=R12-1
+Removed Pin From Net: NetName=+5V Pin=R12-2
+Removed Pin From Net: NetName=NetC16_1 Pin=R13-2
+Removed Pin From Net: NetName=+12V Pin=R14-2
+Removed Pin From Net: NetName=+5V Pin=R16-2
+Removed Pin From Net: NetName=uC_PWM1 Pin=R18-1
+Removed Pin From Net: NetName=GND Pin=R19-1
+Removed Pin From Net: NetName=I_OUT1 Pin=R20-1
+Removed Pin From Net: NetName=I_OUT2 Pin=R21-1
+Removed Pin From Net: NetName=uC_IN1 Pin=R22-1
+Removed Pin From Net: NetName=+5V Pin=R22-2
+Removed Pin From Net: NetName=+12V Pin=R23-1
+Removed Pin From Net: NetName=CN_IN1 Pin=R23-2
+Removed Pin From Net: NetName=GND Pin=R24-1
+Removed Pin From Net: NetName=CN_IN2 Pin=R24-2
+Removed Pin From Net: NetName=+12V Pin=R25-2
+Removed Pin From Net: NetName=+5V Pin=R27-2
+Removed Pin From Net: NetName=uC_IN2 Pin=R29-1
+Removed Pin From Net: NetName=+5V Pin=R29-2
+Removed Pin From Net: NetName=+12V Pin=R30-1
+Removed Pin From Net: NetName=CN_IN3 Pin=R30-2
+Removed Pin From Net: NetName=uC_PWM2 Pin=R31-1
+Removed Pin From Net: NetName=GND Pin=R32-1
+Removed Pin From Net: NetName=GND Pin=R33-1
+Removed Pin From Net: NetName=CN_IN4 Pin=R33-2
+Change Component Comment : Designator=R17 Old Comment=1K/1% New Comment=10K/1%
+Change Component Comment : Designator=R18 Old Comment=1K/1% New Comment=10K/1%
+Change Component Comment : Designator=R28 Old Comment=1K/1% New Comment=10K/1%
+Change Component Comment : Designator=R31 Old Comment=1K/1% New Comment=100K/1%
+Change Component Comment : Designator=C19 Old Comment=4,7uF/6,3V New Comment=100nF/50V
+Change Component Comment : Designator=R21 Old Comment=10K/1% New Comment=1K/1%
+Change Component Comment : Designator=R22 Old Comment=10K/1% New Comment=1K/1%
+Change Component Comment : Designator=R32 Old Comment=10K/1% New Comment=1K/1%
+Change Component Comment : Designator=R20 Old Comment=10K/1% New Comment=100K/1%
+Change Component Comment : Designator=R19 Old Comment=10K/1% New Comment=100R/1%
+Change Component Comment : Designator=R30 Old Comment=10K/1% New Comment=100R/1%
+Change Component Comment : Designator=R16 Old Comment=100K/1% New Comment=10K/1%
+Change Component Comment : Designator=R27 Old Comment=100K/1% New Comment=10K/1%
+Change Component Comment : Designator=C17 Old Comment=100nF/50V New Comment=4,7uF/6,3V
+Change Component Comment : Designator=R15 Old Comment=100R/1% New Comment=10K/1%
+Change Component Comment : Designator=R26 Old Comment=100R/1% New Comment=10K/1%
+Change Managed Component Library Link : Designator=C17 Old VaultGUID=6D3AE728-7EFB-4055-B10D-18B16094236A New VaultGUID=6D3AE728-7EFB-4055-B10D-18B16094236A Old ItemGUID=93FA68AE-5CD5-4E34-B12A-DCA442C32708 New ItemGUID=58C6212A-5820-4375-8AC0-5647DBAFDC52 Old RevisionGUID=90F87D96-AF43-4988-9850-E4F7B91AB0BC New RevisionGUID=4E8EC02B-8272-416D-9451-D6300B003C8B
+Change Managed Component Library Link : Designator=C19 Old VaultGUID=6D3AE728-7EFB-4055-B10D-18B16094236A New VaultGUID=6D3AE728-7EFB-4055-B10D-18B16094236A Old ItemGUID=58C6212A-5820-4375-8AC0-5647DBAFDC52 New ItemGUID=93FA68AE-5CD5-4E34-B12A-DCA442C32708 Old RevisionGUID=4E8EC02B-8272-416D-9451-D6300B003C8B New RevisionGUID=90F87D96-AF43-4988-9850-E4F7B91AB0BC
+Change Managed Component Library Link : Designator=R15 Old VaultGUID=6D3AE728-7EFB-4055-B10D-18B16094236A New VaultGUID=6D3AE728-7EFB-4055-B10D-18B16094236A Old ItemGUID=C69954C5-F861-41DC-8B38-281D6E3419BD New ItemGUID=5E7A5D2F-08BD-4CC4-9C30-E6DB754B2D81 Old RevisionGUID=1B0C2B2A-EBAB-4EA7-9A9D-648B3A5BA23E New RevisionGUID=366E1227-B46E-4D18-9515-8FD71B70E7F5
+Change Managed Component Library Link : Designator=R16 Old VaultGUID=6D3AE728-7EFB-4055-B10D-18B16094236A New VaultGUID=6D3AE728-7EFB-4055-B10D-18B16094236A Old ItemGUID=018528AE-917B-45A2-8950-F91B8D44CEC0 New ItemGUID=5E7A5D2F-08BD-4CC4-9C30-E6DB754B2D81 Old RevisionGUID=2B68E884-DB1A-44D9-ABC8-32C938548C2A New RevisionGUID=366E1227-B46E-4D18-9515-8FD71B70E7F5
+Change Managed Component Library Link : Designator=R17 Old VaultGUID=6D3AE728-7EFB-4055-B10D-18B16094236A New VaultGUID=6D3AE728-7EFB-4055-B10D-18B16094236A Old ItemGUID=3B4954E6-5719-4940-9286-4637EEC69B2A New ItemGUID=5E7A5D2F-08BD-4CC4-9C30-E6DB754B2D81 Old RevisionGUID=5D0619FA-1D69-4FEB-AB7C-B58C9890BC7F New RevisionGUID=366E1227-B46E-4D18-9515-8FD71B70E7F5
+Change Managed Component Library Link : Designator=R18 Old VaultGUID=6D3AE728-7EFB-4055-B10D-18B16094236A New VaultGUID=6D3AE728-7EFB-4055-B10D-18B16094236A Old ItemGUID=3B4954E6-5719-4940-9286-4637EEC69B2A New ItemGUID=5E7A5D2F-08BD-4CC4-9C30-E6DB754B2D81 Old RevisionGUID=5D0619FA-1D69-4FEB-AB7C-B58C9890BC7F New RevisionGUID=366E1227-B46E-4D18-9515-8FD71B70E7F5
+Change Managed Component Library Link : Designator=R19 Old VaultGUID=6D3AE728-7EFB-4055-B10D-18B16094236A New VaultGUID=6D3AE728-7EFB-4055-B10D-18B16094236A Old ItemGUID=5E7A5D2F-08BD-4CC4-9C30-E6DB754B2D81 New ItemGUID=C69954C5-F861-41DC-8B38-281D6E3419BD Old RevisionGUID=366E1227-B46E-4D18-9515-8FD71B70E7F5 New RevisionGUID=1B0C2B2A-EBAB-4EA7-9A9D-648B3A5BA23E
+Change Managed Component Library Link : Designator=R20 Old VaultGUID=6D3AE728-7EFB-4055-B10D-18B16094236A New VaultGUID=6D3AE728-7EFB-4055-B10D-18B16094236A Old ItemGUID=5E7A5D2F-08BD-4CC4-9C30-E6DB754B2D81 New ItemGUID=018528AE-917B-45A2-8950-F91B8D44CEC0 Old RevisionGUID=366E1227-B46E-4D18-9515-8FD71B70E7F5 New RevisionGUID=2B68E884-DB1A-44D9-ABC8-32C938548C2A
+Change Managed Component Library Link : Designator=R21 Old VaultGUID=6D3AE728-7EFB-4055-B10D-18B16094236A New VaultGUID=6D3AE728-7EFB-4055-B10D-18B16094236A Old ItemGUID=5E7A5D2F-08BD-4CC4-9C30-E6DB754B2D81 New ItemGUID=3B4954E6-5719-4940-9286-4637EEC69B2A Old RevisionGUID=366E1227-B46E-4D18-9515-8FD71B70E7F5 New RevisionGUID=5D0619FA-1D69-4FEB-AB7C-B58C9890BC7F
+Change Managed Component Library Link : Designator=R22 Old VaultGUID=6D3AE728-7EFB-4055-B10D-18B16094236A New VaultGUID=6D3AE728-7EFB-4055-B10D-18B16094236A Old ItemGUID=5E7A5D2F-08BD-4CC4-9C30-E6DB754B2D81 New ItemGUID=3B4954E6-5719-4940-9286-4637EEC69B2A Old RevisionGUID=366E1227-B46E-4D18-9515-8FD71B70E7F5 New RevisionGUID=5D0619FA-1D69-4FEB-AB7C-B58C9890BC7F
+Change Managed Component Library Link : Designator=R26 Old VaultGUID=6D3AE728-7EFB-4055-B10D-18B16094236A New VaultGUID=6D3AE728-7EFB-4055-B10D-18B16094236A Old ItemGUID=C69954C5-F861-41DC-8B38-281D6E3419BD New ItemGUID=5E7A5D2F-08BD-4CC4-9C30-E6DB754B2D81 Old RevisionGUID=1B0C2B2A-EBAB-4EA7-9A9D-648B3A5BA23E New RevisionGUID=366E1227-B46E-4D18-9515-8FD71B70E7F5
+Change Managed Component Library Link : Designator=R27 Old VaultGUID=6D3AE728-7EFB-4055-B10D-18B16094236A New VaultGUID=6D3AE728-7EFB-4055-B10D-18B16094236A Old ItemGUID=018528AE-917B-45A2-8950-F91B8D44CEC0 New ItemGUID=5E7A5D2F-08BD-4CC4-9C30-E6DB754B2D81 Old RevisionGUID=2B68E884-DB1A-44D9-ABC8-32C938548C2A New RevisionGUID=366E1227-B46E-4D18-9515-8FD71B70E7F5
+Change Managed Component Library Link : Designator=R28 Old VaultGUID=6D3AE728-7EFB-4055-B10D-18B16094236A New VaultGUID=6D3AE728-7EFB-4055-B10D-18B16094236A Old ItemGUID=3B4954E6-5719-4940-9286-4637EEC69B2A New ItemGUID=5E7A5D2F-08BD-4CC4-9C30-E6DB754B2D81 Old RevisionGUID=5D0619FA-1D69-4FEB-AB7C-B58C9890BC7F New RevisionGUID=366E1227-B46E-4D18-9515-8FD71B70E7F5
+Change Managed Component Library Link : Designator=R30 Old VaultGUID=6D3AE728-7EFB-4055-B10D-18B16094236A New VaultGUID=6D3AE728-7EFB-4055-B10D-18B16094236A Old ItemGUID=5E7A5D2F-08BD-4CC4-9C30-E6DB754B2D81 New ItemGUID=C69954C5-F861-41DC-8B38-281D6E3419BD Old RevisionGUID=366E1227-B46E-4D18-9515-8FD71B70E7F5 New RevisionGUID=1B0C2B2A-EBAB-4EA7-9A9D-648B3A5BA23E
+Change Managed Component Library Link : Designator=R31 Old VaultGUID=6D3AE728-7EFB-4055-B10D-18B16094236A New VaultGUID=6D3AE728-7EFB-4055-B10D-18B16094236A Old ItemGUID=3B4954E6-5719-4940-9286-4637EEC69B2A New ItemGUID=018528AE-917B-45A2-8950-F91B8D44CEC0 Old RevisionGUID=5D0619FA-1D69-4FEB-AB7C-B58C9890BC7F New RevisionGUID=2B68E884-DB1A-44D9-ABC8-32C938548C2A
+Change Managed Component Library Link : Designator=R32 Old VaultGUID=6D3AE728-7EFB-4055-B10D-18B16094236A New VaultGUID=6D3AE728-7EFB-4055-B10D-18B16094236A Old ItemGUID=5E7A5D2F-08BD-4CC4-9C30-E6DB754B2D81 New ItemGUID=3B4954E6-5719-4940-9286-4637EEC69B2A Old RevisionGUID=366E1227-B46E-4D18-9515-8FD71B70E7F5 New RevisionGUID=5D0619FA-1D69-4FEB-AB7C-B58C9890BC7F
+Change component parameters: Designator = "R17" ("R17"); Footprint = "RES SMD CH 0603 HR"; UniqueID = "\KZQEEHNE" ("\KZQEEHNE")
+Change component parameters (AddParameter): Name = "ERP"; Value = "4426"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "HC 1"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "HC 2"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer 1"; Value = "HOTTECH"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer 2"; Value = "YAGEO"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Package"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Part Number 1"; Value = "RI0603L1002FT"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Part Number 2"; Value = "RC0603FR-0710KL"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Status"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Supplier 1"; Value = "HOTTECH SEMICONDUCTOR TECHNOLOGY (HK) LTDA"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Supplier 2"; Value = "SOLUCAO COMERCIO DE COMP ELE LTDA EPP"; VariantName = "[No Variations]"
+Change component parameters: Designator = "R18" ("R18"); Footprint = "RES SMD CH 0603 HR"; UniqueID = "\LOXOERBK" ("\LOXOERBK")
+Change component parameters (AddParameter): Name = "ERP"; Value = "4426"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "HC 1"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "HC 2"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer 1"; Value = "HOTTECH"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer 2"; Value = "YAGEO"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Package"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Part Number 1"; Value = "RI0603L1002FT"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Part Number 2"; Value = "RC0603FR-0710KL"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Status"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Supplier 1"; Value = "HOTTECH SEMICONDUCTOR TECHNOLOGY (HK) LTDA"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Supplier 2"; Value = "SOLUCAO COMERCIO DE COMP ELE LTDA EPP"; VariantName = "[No Variations]"
+Change component parameters: Designator = "R21" ("R21"); Footprint = "RES SMD CH 0603 HR"; UniqueID = "\LREUEGNA" ("\LREUEGNA")
+Change component parameters (AddParameter): Name = "ERP"; Value = "4459"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "HC 1"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "HC 2"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer 1"; Value = "HOTTECH"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer 2"; Value = "YAGEO"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Package"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Part Number 1"; Value = "RI0603L1001FT"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Part Number 2"; Value = "RC0603FR-071KL"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Status"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Supplier 1"; Value = "HOTTECH SEMICONDUCTOR TECHNOLOGY (HK) LTDA"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Supplier 2"; Value = "SOLUCAO COMERCIO DE COMP ELE LTDA EPP"; VariantName = "[No Variations]"
+Change component parameters: Designator = "R22" ("R22"); Footprint = "RES SMD CH 0603 HR"; UniqueID = "\WEWKARYC" ("\WEWKARYC")
+Change component parameters (AddParameter): Name = "ERP"; Value = "4459"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "HC 1"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "HC 2"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer 1"; Value = "HOTTECH"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer 2"; Value = "YAGEO"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Package"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Part Number 1"; Value = "RI0603L1001FT"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Part Number 2"; Value = "RC0603FR-071KL"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Status"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Supplier 1"; Value = "HOTTECH SEMICONDUCTOR TECHNOLOGY (HK) LTDA"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Supplier 2"; Value = "SOLUCAO COMERCIO DE COMP ELE LTDA EPP"; VariantName = "[No Variations]"
+Change component parameters: Designator = "R28" ("R28"); Footprint = "RES SMD CH 0603 HR"; UniqueID = "\JZWXLJCV" ("\JZWXLJCV")
+Change component parameters (AddParameter): Name = "ERP"; Value = "4426"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "HC 1"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "HC 2"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer 1"; Value = "HOTTECH"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer 2"; Value = "YAGEO"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Package"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Part Number 1"; Value = "RI0603L1002FT"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Part Number 2"; Value = "RC0603FR-0710KL"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Status"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Supplier 1"; Value = "HOTTECH SEMICONDUCTOR TECHNOLOGY (HK) LTDA"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Supplier 2"; Value = "SOLUCAO COMERCIO DE COMP ELE LTDA EPP"; VariantName = "[No Variations]"
+Change component parameters: Designator = "R32" ("R32"); Footprint = "RES SMD CH 0603 HR"; UniqueID = "\DRZNLDGA" ("\DRZNLDGA")
+Change component parameters (AddParameter): Name = "ERP"; Value = "4459"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "HC 1"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "HC 2"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer 1"; Value = "HOTTECH"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer 2"; Value = "YAGEO"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Package"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Part Number 1"; Value = "RI0603L1001FT"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Part Number 2"; Value = "RC0603FR-071KL"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Status"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Supplier 1"; Value = "HOTTECH SEMICONDUCTOR TECHNOLOGY (HK) LTDA"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Supplier 2"; Value = "SOLUCAO COMERCIO DE COMP ELE LTDA EPP"; VariantName = "[No Variations]"
+Change component parameters: Designator = "R15" ("R15"); Footprint = "RES SMD CH 0603 HR"; UniqueID = "\BCOJWXEG" ("\BCOJWXEG")
+Change component parameters (AddParameter): Name = "ERP"; Value = "4426"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "HC 1"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "HC 2"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer 1"; Value = "HOTTECH"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer 2"; Value = "YAGEO"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Package"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Part Number 1"; Value = "RI0603L1002FT"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Part Number 2"; Value = "RC0603FR-0710KL"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Status"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Supplier 1"; Value = "HOTTECH SEMICONDUCTOR TECHNOLOGY (HK) LTDA"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Supplier 2"; Value = "SOLUCAO COMERCIO DE COMP ELE LTDA EPP"; VariantName = "[No Variations]"
+Change component parameters: Designator = "R16" ("R16"); Footprint = "RES SMD CH 0603 HR"; UniqueID = "\DSNRVEYY" ("\DSNRVEYY")
+Change component parameters (AddParameter): Name = "ERP"; Value = "4426"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "HC 1"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "HC 2"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer 1"; Value = "HOTTECH"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer 2"; Value = "YAGEO"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Package"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Part Number 1"; Value = "RI0603L1002FT"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Part Number 2"; Value = "RC0603FR-0710KL"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Status"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Supplier 1"; Value = "HOTTECH SEMICONDUCTOR TECHNOLOGY (HK) LTDA"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Supplier 2"; Value = "SOLUCAO COMERCIO DE COMP ELE LTDA EPP"; VariantName = "[No Variations]"
+Change component parameters: Designator = "R19" ("R19"); Footprint = "RES SMD CH 0603 HR"; UniqueID = "\NCNBXERA" ("\NCNBXERA")
+Change component parameters (AddParameter): Name = "ERP"; Value = "9984"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "HC 1"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "HC 2"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer 1"; Value = "HOTTECH"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer 2"; Value = "ROYALOHM"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Package"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Part Number 1"; Value = "RI0603L1000FT"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Part Number 2"; Value = "0603WAF1000T5E"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Status"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Supplier 1"; Value = "HOTTECH SEMICONDUCTOR TECHNOLOGY (HK) LTDA"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Supplier 2"; Value = "WKS TECHNOLOGY DO BRASIL LTDA"; VariantName = "[No Variations]"
+Change component parameters: Designator = "R20" ("R20"); Footprint = "RES SMD CH 0603 HR"; UniqueID = "\XIVPLUMQ" ("\XIVPLUMQ")
+Change component parameters (AddParameter): Name = "ERP"; Value = "4486"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "HC 1"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "HC 2"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer 1"; Value = "HOTTECH"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer 2"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Package"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Part Number 1"; Value = "RI0603L1003FT"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Part Number 2"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Status"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Supplier 1"; Value = "HOTTECH SEMICONDUCTOR TECHNOLOGY (HK) LTDA"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Supplier 2"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters: Designator = "R26" ("R26"); Footprint = "RES SMD CH 0603 HR"; UniqueID = "\NHXQUPSA" ("\NHXQUPSA")
+Change component parameters (AddParameter): Name = "ERP"; Value = "4426"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "HC 1"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "HC 2"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer 1"; Value = "HOTTECH"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer 2"; Value = "YAGEO"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Package"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Part Number 1"; Value = "RI0603L1002FT"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Part Number 2"; Value = "RC0603FR-0710KL"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Status"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Supplier 1"; Value = "HOTTECH SEMICONDUCTOR TECHNOLOGY (HK) LTDA"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Supplier 2"; Value = "SOLUCAO COMERCIO DE COMP ELE LTDA EPP"; VariantName = "[No Variations]"
+Change component parameters: Designator = "R27" ("R27"); Footprint = "RES SMD CH 0603 HR"; UniqueID = "\DFXHEAUV" ("\DFXHEAUV")
+Change component parameters (AddParameter): Name = "ERP"; Value = "4426"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "HC 1"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "HC 2"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer 1"; Value = "HOTTECH"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer 2"; Value = "YAGEO"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Package"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Part Number 1"; Value = "RI0603L1002FT"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Part Number 2"; Value = "RC0603FR-0710KL"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Status"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Supplier 1"; Value = "HOTTECH SEMICONDUCTOR TECHNOLOGY (HK) LTDA"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Supplier 2"; Value = "SOLUCAO COMERCIO DE COMP ELE LTDA EPP"; VariantName = "[No Variations]"
+Change component parameters: Designator = "R30" ("R30"); Footprint = "RES SMD CH 0603 HR"; UniqueID = "\QBWCZCEE" ("\QBWCZCEE")
+Change component parameters (AddParameter): Name = "ERP"; Value = "9984"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "HC 1"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "HC 2"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer 1"; Value = "HOTTECH"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer 2"; Value = "ROYALOHM"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Package"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Part Number 1"; Value = "RI0603L1000FT"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Part Number 2"; Value = "0603WAF1000T5E"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Status"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Supplier 1"; Value = "HOTTECH SEMICONDUCTOR TECHNOLOGY (HK) LTDA"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Supplier 2"; Value = "WKS TECHNOLOGY DO BRASIL LTDA"; VariantName = "[No Variations]"
+Change component parameters: Designator = "R31" ("R31"); Footprint = "RES SMD CH 0603 HR"; UniqueID = "\XWQYHLWD" ("\XWQYHLWD")
+Change component parameters (AddParameter): Name = "ERP"; Value = "4486"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "HC 1"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "HC 2"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer 1"; Value = "HOTTECH"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer 2"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Package"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Part Number 1"; Value = "RI0603L1003FT"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Part Number 2"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Status"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Supplier 1"; Value = "HOTTECH SEMICONDUCTOR TECHNOLOGY (HK) LTDA"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Supplier 2"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters: Designator = "C17" ("C17"); Footprint = "CAP SMD CE 0603 HR"; UniqueID = "\AHLIGEHC" ("\AHLIGEHC")
+Change component parameters (AddParameter): Name = "Custo médio (R$)"; Value = "0.4575"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Custo padrão (R$)"; Value = "0.4575"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Datasheet 1"; Value = "https://octopart.com/pt/datasheet/cl10a475kq8nnnc-samsung-10525435"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Datasheet 2"; Value = "L:\imagens\9994-1.jpg"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "ERP"; Value = "9994"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Etapa"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "HC 1"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "HC 2"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer 1"; Value = "SAMSUNG"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer 2"; Value = "SAMSUNG"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Montagem"; Value = "SMD"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Package"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Part Number 1"; Value = "CL10A475KQ8NNNC"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Part Number 2"; Value = "CL10A475KQ8NNNC"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Status"; Value = "1 - LIBERADO"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Supplier 1"; Value = "FUTURE ELECTRONICS CORP."; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Supplier 2"; Value = "DIGI-KEY CORPORATION"; VariantName = "[No Variations]"
+Change component parameters: Designator = "C19" ("C19"); Footprint = "CAP SMD CE 0603 HR"; UniqueID = "\VPBNZIQA" ("\VPBNZIQA")
+Change component parameters (AddParameter): Name = "ERP"; Value = "5845"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "HC 1"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "HC 2"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer 1"; Value = "SAMSUNG"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer 2"; Value = "SAMSUNG ELECTRONICS"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Montagem"; Value = "SMD"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Package"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Part Number 1"; Value = "CL10B104KB8NNNC"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Part Number 2"; Value = "CL10B104KB8NNNC"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Status"; Value = "1 - LIBERADO"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Supplier 1"; Value = "FUTURE ELECTRONICS CORP."; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Supplier 2"; Value = "AVNET ELECTRONICS MARKETING"; VariantName = "[No Variations]"
+Added Component: Designator=C21(CAP SMD CE 0603 HR)
+Add component (AddParameter): Name = "Custo médio (R$)"; Value = "0.4575"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Custo padrão (R$)"; Value = "0.4575"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet 1"; Value = "https://octopart.com/pt/datasheet/cl10a475kq8nnnc-samsung-10525435"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet 2"; Value = "L:\imagens\9994-1.jpg"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ERP"; Value = "9994"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Etapa"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "HC 1"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "HC 2"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer 1"; Value = "SAMSUNG"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer 2"; Value = "SAMSUNG"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Montagem"; Value = "SMD"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Package"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number 1"; Value = "CL10A475KQ8NNNC"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number 2"; Value = "CL10A475KQ8NNNC"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Status"; Value = "1 - LIBERADO"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 1"; Value = "FUTURE ELECTRONICS CORP."; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 2"; Value = "DIGI-KEY CORPORATION"; VariantName = "[No Variations]"
+Added Component: Designator=R34(RES SMD CH 0603 HR)
+Add component (AddParameter): Name = "ERP"; Value = "4426"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "HC 1"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "HC 2"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer 1"; Value = "HOTTECH"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer 2"; Value = "YAGEO"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Package"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number 1"; Value = "RI0603L1002FT"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number 2"; Value = "RC0603FR-0710KL"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Status"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 1"; Value = "HOTTECH SEMICONDUCTOR TECHNOLOGY (HK) LTDA"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 2"; Value = "SOLUCAO COMERCIO DE COMP ELE LTDA EPP"; VariantName = "[No Variations]"
+Added Component: Designator=R35(RES SMD CH 0603 HR)
+Add component (AddParameter): Name = "ERP"; Value = "4459"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "HC 1"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "HC 2"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer 1"; Value = "HOTTECH"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer 2"; Value = "YAGEO"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Package"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number 1"; Value = "RI0603L1001FT"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number 2"; Value = "RC0603FR-071KL"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Status"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 1"; Value = "HOTTECH SEMICONDUCTOR TECHNOLOGY (HK) LTDA"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 2"; Value = "SOLUCAO COMERCIO DE COMP ELE LTDA EPP"; VariantName = "[No Variations]"
+Added Component: Designator=R36(RES SMD CH 0603 HR)
+Add component (AddParameter): Name = "ERP"; Value = "4426"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "HC 1"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "HC 2"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer 1"; Value = "HOTTECH"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer 2"; Value = "YAGEO"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Package"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number 1"; Value = "RI0603L1002FT"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number 2"; Value = "RC0603FR-0710KL"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Status"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 1"; Value = "HOTTECH SEMICONDUCTOR TECHNOLOGY (HK) LTDA"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 2"; Value = "SOLUCAO COMERCIO DE COMP ELE LTDA EPP"; VariantName = "[No Variations]"
+Added Component: Designator=R37(RES SMD CH 0603 HR)
+Add component (AddParameter): Name = "ERP"; Value = "4426"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "HC 1"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "HC 2"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer 1"; Value = "HOTTECH"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer 2"; Value = "YAGEO"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Package"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number 1"; Value = "RI0603L1002FT"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number 2"; Value = "RC0603FR-0710KL"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Status"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 1"; Value = "HOTTECH SEMICONDUCTOR TECHNOLOGY (HK) LTDA"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 2"; Value = "SOLUCAO COMERCIO DE COMP ELE LTDA EPP"; VariantName = "[No Variations]"
+Added Pin To Net: NetName=+5V Pin=C19-1
+Added Pin To Net: NetName=I_OUT1 Pin=C20-1
+Added Pin To Net: NetName=I_OUT2 Pin=C21-1
+Added Pin To Net: NetName=GND Pin=C21-2
+Added Pin To Net: NetName=+5V Pin=R12-1
+Added Pin To Net: NetName=NetC16_1 Pin=R13-1
+Added Pin To Net: NetName=+5V Pin=R13-2
+Added Pin To Net: NetName=NetC16_1 Pin=R14-2
+Added Pin To Net: NetName=GND Pin=R17-2
+Added Pin To Net: NetName=+12V Pin=R18-2
+Added Pin To Net: NetName=+5V Pin=R20-2
+Added Pin To Net: NetName=uC_PWM1 Pin=R22-1
+Added Pin To Net: NetName=GND Pin=R23-1
+Added Pin To Net: NetName=I_OUT1 Pin=R24-1
+Added Pin To Net: NetName=I_OUT2 Pin=R25-1
+Added Pin To Net: NetName=uC_IN1 Pin=R26-1
+Added Pin To Net: NetName=+5V Pin=R26-2
+Added Pin To Net: NetName=+12V Pin=R27-1
+Added Pin To Net: NetName=CN_IN1 Pin=R27-2
+Added Pin To Net: NetName=GND Pin=R28-1
+Added Pin To Net: NetName=CN_IN2 Pin=R28-2
+Added Pin To Net: NetName=+12V Pin=R29-2
+Added Pin To Net: NetName=+5V Pin=R31-2
+Added Pin To Net: NetName=uC_IN2 Pin=R33-1
+Added Pin To Net: NetName=+5V Pin=R33-2
+Added Pin To Net: NetName=+12V Pin=R34-1
+Added Pin To Net: NetName=CN_IN3 Pin=R34-2
+Added Pin To Net: NetName=uC_PWM2 Pin=R35-1
+Added Pin To Net: NetName=GND Pin=R36-1
+Added Pin To Net: NetName=GND Pin=R37-1
+Added Pin To Net: NetName=CN_IN4 Pin=R37-2
+Added Pin To Net: NetName=AN1 Pin=C17-1
+Added Pin To Net: NetName=AN1 Pin=R12-2
+Added Pin To Net: NetName=AN1 Pin=R15-1
+Added Pin To Net: NetName=AN1 Pin=R16-2
+Added Pin To Net: NetName=AN1 Pin=R17-1
+Added Net: Name=AN1
+Added Pin To Net: NetName=CN_AN1 Pin=R15-2
+Added Net: Name=CN_AN1
+Added Pin To Net: NetName=NetR18_1 Pin=R18-1
+Added Pin To Net: NetName=NetR18_1 Pin=R21-2
+Added Pin To Net: NetName=NetR18_1 Pin=T2-1
+Added Pin To Net: NetName=NetR18_1 Pin=T3-1
+Added Net: Name=NetR18_1
+Added Pin To Net: NetName=NetR19_1 Pin=R19-1
+Added Pin To Net: NetName=NetR19_1 Pin=T2-2
+Added Pin To Net: NetName=NetR19_1 Pin=T3-2
+Added Net: Name=NetR19_1
+Added Pin To Net: NetName=NetR19_2 Pin=R19-2
+Added Pin To Net: NetName=NetR19_2 Pin=R23-2
+Added Pin To Net: NetName=NetR19_2 Pin=T1-1
+Added Net: Name=NetR19_2
+Added Pin To Net: NetName=NetR20_1 Pin=R20-1
+Added Pin To Net: NetName=NetR20_1 Pin=R22-2
+Added Pin To Net: NetName=NetR20_1 Pin=T4-1
+Added Net: Name=NetR20_1
+Added Pin To Net: NetName=NetR21_1 Pin=R21-1
+Added Pin To Net: NetName=NetR21_1 Pin=T4-3
+Added Net: Name=NetR21_1
+Added Pin To Net: NetName=NetR24_2 Pin=R24-2
+Added Pin To Net: NetName=NetR24_2 Pin=U1-3
+Added Net: Name=NetR24_2
+Added Pin To Net: NetName=NetR25_2 Pin=R25-2
+Added Pin To Net: NetName=NetR25_2 Pin=U2-3
+Added Net: Name=NetR25_2
+Added Pin To Net: NetName=NetR29_1 Pin=R29-1
+Added Pin To Net: NetName=NetR29_1 Pin=R32-2
+Added Pin To Net: NetName=NetR29_1 Pin=T6-1
+Added Pin To Net: NetName=NetR29_1 Pin=T7-1
+Added Net: Name=NetR29_1
+Added Pin To Net: NetName=NetR30_1 Pin=R30-1
+Added Pin To Net: NetName=NetR30_1 Pin=T6-2
+Added Pin To Net: NetName=NetR30_1 Pin=T7-2
+Added Net: Name=NetR30_1
+Added Pin To Net: NetName=NetR30_2 Pin=R30-2
+Added Pin To Net: NetName=NetR30_2 Pin=R36-2
+Added Pin To Net: NetName=NetR30_2 Pin=T5-1
+Added Net: Name=NetR30_2
+Added Pin To Net: NetName=NetR31_1 Pin=R31-1
+Added Pin To Net: NetName=NetR31_1 Pin=R35-2
+Added Pin To Net: NetName=NetR31_1 Pin=T8-1
+Added Net: Name=NetR31_1
+Added Pin To Net: NetName=NetR32_1 Pin=R32-1
+Added Pin To Net: NetName=NetR32_1 Pin=T8-3
+Added Net: Name=NetR32_1
+Added Pin To Net: NetName=uC_AN1 Pin=R16-1
+Added Net: Name=uC_AN1
+Added Pin To Net: NetName=uC_NTC Pin=R14-1
+Added Net: Name=uC_NTC
+Change Class Name : Old Net Name=Designator New Net Name=EvoProject 2.0
+Added Member To Class: ClassName=EvoProject 2.0 Member=Component C21 4,7uF/6,3V
+Added Member To Class: ClassName=EvoProject 2.0 Member=Component R4 10K/1%
+Added Member To Class: ClassName=EvoProject 2.0 Member=Component R18 10K/1%
+Added Member To Class: ClassName=EvoProject 2.0 Member=Component R22 1K/1%
+Added Member To Class: ClassName=EvoProject 2.0 Member=Component R25 10K/1%
+Added Member To Class: ClassName=EvoProject 2.0 Member=Component R31 100K/1%
+Added Member To Class: ClassName=EvoProject 2.0 Member=Component R34 10K/1%
+Added Member To Class: ClassName=EvoProject 2.0 Member=Component R35 1K/1%
+Added Member To Class: ClassName=EvoProject 2.0 Member=Component R36 10K/1%
+Added Member To Class: ClassName=EvoProject 2.0 Member=Component R37 10K/1%
+Added Member To Class: ClassName=EvoProject 2.0 Member=Component T1 IRF830BPBF-BE3
+Added Member To Class: ClassName=EvoProject 2.0 Member=Component T2 BC817-25
+Added Member To Class: ClassName=EvoProject 2.0 Member=Component T3 BC807-25
+Added Member To Class: ClassName=EvoProject 2.0 Member=Component T4 BC817-25
+Added Member To Class: ClassName=EvoProject 2.0 Member=Component T8 BC817-25

@@ -1,0 +1,85 @@
+Removed Pin From Net: NetName=uC_VMap Pin=C15-1
+Change Component Designator: OldDesignator=R11 NewDesignator=R13
+Change Component Designator: OldDesignator=R12 NewDesignator=R15
+Change Component Designator: OldDesignator=R13 NewDesignator=R16
+Change Component Designator: OldDesignator=R14 NewDesignator=R17
+Change Component Designator: OldDesignator=R15 NewDesignator=R18
+Change Component Designator: OldDesignator=R16 NewDesignator=R19
+Change Component Designator: OldDesignator=R17 NewDesignator=R20
+Change Component Designator: OldDesignator=R18 NewDesignator=R21
+Change Component Designator: OldDesignator=R19 NewDesignator=R22
+Change Component Designator: OldDesignator=R20 NewDesignator=R23
+Change Component Designator: OldDesignator=R21 NewDesignator=R24
+Change Component Designator: OldDesignator=R22 NewDesignator=R25
+Change Component Designator: OldDesignator=R23 NewDesignator=R26
+Change Component Designator: OldDesignator=R24 NewDesignator=R27
+Change Component Designator: OldDesignator=R25 NewDesignator=R28
+Change Component Designator: OldDesignator=R26 NewDesignator=R29
+Change Component Designator: OldDesignator=R27 NewDesignator=R30
+Change Component Designator: OldDesignator=R28 NewDesignator=R31
+Change Component Designator: OldDesignator=R29 NewDesignator=R32
+Change Component Designator: OldDesignator=R30 NewDesignator=R33
+Change Component Designator: OldDesignator=R31 NewDesignator=R34
+Change Component Designator: OldDesignator=R32 NewDesignator=R35
+Change Component Designator: OldDesignator=R33 NewDesignator=R36
+Change Component Designator: OldDesignator=R34 NewDesignator=R37
+Change Component Designator: OldDesignator=R35 NewDesignator=R38
+Change Component Designator: OldDesignator=R36 NewDesignator=R39
+Change Component Designator: OldDesignator=R37 NewDesignator=R40
+Change Component Designator: OldDesignator=R38 NewDesignator=R41
+Change Component Designator: OldDesignator=R39 NewDesignator=R42
+Added Component: Designator=R11(RES SMD CH 0603 HR)
+Add component (AddParameter): Name = "ERP"; Value = "4459"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "HC 1"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "HC 2"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer 1"; Value = "HOTTECH"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer 2"; Value = "YAGEO"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Package"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number 1"; Value = "RI0603L1001FT"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number 2"; Value = "RC0603FR-071KL"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Status"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 1"; Value = "HOTTECH SEMICONDUCTOR TECHNOLOGY (HK) LTDA"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 2"; Value = "SOLUCAO COMERCIO DE COMP ELE LTDA EPP"; VariantName = "[No Variations]"
+Added Component: Designator=R12(RES SMD CH 0603 HR)
+Add component (AddParameter): Name = "ERP"; Value = "4426"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "HC 1"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "HC 2"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer 1"; Value = "HOTTECH"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer 2"; Value = "YAGEO"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Package"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number 1"; Value = "RI0603L1002FT"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number 2"; Value = "RC0603FR-0710KL"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Status"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 1"; Value = "HOTTECH SEMICONDUCTOR TECHNOLOGY (HK) LTDA"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 2"; Value = "SOLUCAO COMERCIO DE COMP ELE LTDA EPP"; VariantName = "[No Variations]"
+Added Component: Designator=R14(RES SMD CH 0603 HR)
+Add component (AddParameter): Name = "ERP"; Value = "4426"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "HC 1"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "HC 2"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer 1"; Value = "HOTTECH"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer 2"; Value = "YAGEO"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Package"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number 1"; Value = "RI0603L1002FT"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number 2"; Value = "RC0603FR-0710KL"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Status"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 1"; Value = "HOTTECH SEMICONDUCTOR TECHNOLOGY (HK) LTDA"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 2"; Value = "SOLUCAO COMERCIO DE COMP ELE LTDA EPP"; VariantName = "[No Variations]"
+Added Pin To Net: NetName=NetB1_1 Pin=C15-1
+Added Pin To Net: NetName=NetB1_1 Pin=R11-1
+Added Pin To Net: NetName=+5V Pin=R12-1
+Added Pin To Net: NetName=NetB1_1 Pin=R12-2
+Added Pin To Net: NetName=NetB1_1 Pin=R14-1
+Added Pin To Net: NetName=GND Pin=R14-2
+Change Net Name : Old Net Name=NetR18_1 New Net Name=NetR21_1
+Change Net Name : Old Net Name=NetR19_1 New Net Name=NetR22_1
+Change Net Name : Old Net Name=NetR20_1 New Net Name=NetR23_1
+Change Net Name : Old Net Name=NetR21_1 New Net Name=NetR24_1
+Change Net Name : Old Net Name=NetR30_1 New Net Name=NetR33_1
+Change Net Name : Old Net Name=NetR31_1 New Net Name=NetR34_1
+Change Net Name : Old Net Name=NetR32_1 New Net Name=NetR35_1
+Change Net Name : Old Net Name=NetR33_1 New Net Name=NetR36_1
+Added Pin To Net: NetName=Ext_VMap Pin=R11-2
+Added Net: Name=Ext_VMap
+Added Member To Class: ClassName=EvoProject 2.0 Member=Component R40 10K/1%
+Added Member To Class: ClassName=EvoProject 2.0 Member=Component R41 10K/1%
+Added Member To Class: ClassName=EvoProject 2.0 Member=Component R42 1K/1%

@@ -1,0 +1,129 @@
+Change Component Designator: OldDesignator=TRM1 NewDesignator=TRM2
+Change Component Designator: OldDesignator=TRM2 NewDesignator=TRM3
+Change Component Designator: OldDesignator=TRM3 NewDesignator=TRM6
+Change Component Designator: OldDesignator=TRM4 NewDesignator=TRM7
+Change Component Designator: OldDesignator=TRM5 NewDesignator=TRM11
+Change Component Designator: OldDesignator=TRM6 NewDesignator=TRM12
+Change Component Description : Designator=J2 Old Description=Microchip CAN Controller 1Mbit/s CAN 2.0B 18-Pin SOIC W New Description=Microchip CAN Controller 1Mbit/s CAN 2.0B 18-Pin SOIC W | Microchip Technology Inc. MCP2515-I/SO
+Added Component: Designator=ID1(MEC RV PCB MN)
+Add component (AddParameter): Name = "Complemento"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ERP"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Etapa"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = ""; VariantName = "[No Variations]"
+Added Component: Designator=TRM1(Terminal Faston Macho 180° OBLONGO COM SUPORTE)
+Add component (AddParameter): Name = "Custo médio (R$)"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Custo padrão (R$)"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet 2"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ERP"; Value = "22116"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Etapa"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "HC 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "HC 2"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer 2"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Package"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number 2"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Status"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 2"; Value = ""; VariantName = "[No Variations]"
+Added Component: Designator=TRM4(Terminal Faston Macho 180° OBLONGO COM SUPORTE)
+Add component (AddParameter): Name = "Custo médio (R$)"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Custo padrão (R$)"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet 2"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ERP"; Value = "22116"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Etapa"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "HC 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "HC 2"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer 2"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Package"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number 2"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Status"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 2"; Value = ""; VariantName = "[No Variations]"
+Added Component: Designator=TRM5(Terminal Faston Macho 180° OBLONGO COM SUPORTE)
+Add component (AddParameter): Name = "Custo médio (R$)"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Custo padrão (R$)"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet 2"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ERP"; Value = "22116"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Etapa"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "HC 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "HC 2"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer 2"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Package"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number 2"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Status"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 2"; Value = ""; VariantName = "[No Variations]"
+Added Component: Designator=TRM8(Terminal Faston Macho 180° OBLONGO COM SUPORTE)
+Add component (AddParameter): Name = "Custo médio (R$)"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Custo padrão (R$)"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet 2"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ERP"; Value = "22116"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Etapa"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "HC 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "HC 2"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer 2"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Package"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number 2"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Status"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 2"; Value = ""; VariantName = "[No Variations]"
+Added Component: Designator=TRM9(Terminal Faston Macho 180° OBLONGO COM SUPORTE)
+Add component (AddParameter): Name = "Custo médio (R$)"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Custo padrão (R$)"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet 2"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ERP"; Value = "22116"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Etapa"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "HC 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "HC 2"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer 2"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Package"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number 2"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Status"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 2"; Value = ""; VariantName = "[No Variations]"
+Added Component: Designator=TRM10(Terminal Faston Macho 180° OBLONGO COM SUPORTE)
+Add component (AddParameter): Name = "Custo médio (R$)"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Custo padrão (R$)"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet 2"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ERP"; Value = "22116"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Etapa"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "HC 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "HC 2"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer 2"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Package"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number 2"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Status"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 2"; Value = ""; VariantName = "[No Variations]"
+Added Pin To Net: NetName=VCC1 Pin=TRM1-1
+Added Pin To Net: NetName=VCC1 Pin=TRM1-1
+Added Pin To Net: NetName=PWM_OUT1 Pin=TRM4-1
+Added Pin To Net: NetName=PWM_OUT1 Pin=TRM4-1
+Added Pin To Net: NetName=VCC2 Pin=TRM5-1
+Added Pin To Net: NetName=VCC2 Pin=TRM5-1
+Added Pin To Net: NetName=PWM_OUT2 Pin=TRM8-1
+Added Pin To Net: NetName=PWM_OUT2 Pin=TRM8-1
+Added Pin To Net: NetName=power_GND1 Pin=TRM9-1
+Added Pin To Net: NetName=power_GND1 Pin=TRM9-1
+Added Pin To Net: NetName=power_GND2 Pin=TRM10-1
+Added Pin To Net: NetName=power_GND2 Pin=TRM10-1
+Add Class: Class already exists: Designator
+Added Member To Class: ClassName=Designator Member=Component ID1

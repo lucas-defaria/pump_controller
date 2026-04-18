@@ -1,0 +1,29 @@
+Change Component Designator: OldDesignator=J1 NewDesignator=J2
+Added Component: Designator=J1(MOLEX_430451600)
+Add component (AddParameter): Name = "Check_prices"; Value = "https://www.snapeda.com/parts/430451600/Molex/view-part/?ref=eda"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "MF"; Value = "Molex"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "MP"; Value = "430451600"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Package"; Value = "None"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "SnapEDA_Link"; Value = "https://www.snapeda.com/parts/430451600/Molex/view-part/?ref=snap"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = ""; VariantName = "[No Variations]"
+Added Pin To Net: NetName=VCC Pin=J1-1
+Added Pin To Net: NetName=-Vbat Pin=J1-2
+Added Pin To Net: NetName=VCC Pin=J1-3
+Added Pin To Net: NetName=VCC Pin=J1-4
+Added Pin To Net: NetName=GND Pin=J1-5
+Added Pin To Net: NetName=GND Pin=J1-6
+Added Pin To Net: NetName=CANL Pin=J1-7
+Added Pin To Net: NetName=CANH Pin=J1-8
+Added Pin To Net: NetName=PWM_OUT3 Pin=J1-9
+Added Pin To Net: NetName=PWM_OUT4 Pin=J1-10
+Added Pin To Net: NetName=0~10V-1 Pin=J1-11
+Added Pin To Net: NetName=0~10V-2 Pin=J1-12
+Added Pin To Net: NetName=IN_AN1 Pin=J1-13
+Added Pin To Net: NetName=IN_AN2 Pin=J1-14
+Added Pin To Net: NetName=IN_DIG1 Pin=J1-15
+Added Pin To Net: NetName=IN_DIG2 Pin=J1-16
+Change Net Name : Old Net Name=NetJ1_1 New Net Name=NetJ2_1
+Change Net Name : Old Net Name=NetJ1_2 New Net Name=NetJ2_2
+Change Net Name : Old Net Name=NetJ1_17 New Net Name=NetJ2_17
+Add Class: Class already exists: Designator
+Added Class: Name=EvoProject 1.0

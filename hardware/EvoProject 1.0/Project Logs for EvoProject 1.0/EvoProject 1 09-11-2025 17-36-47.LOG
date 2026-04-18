@@ -1,0 +1,27 @@
+Change Component Designator: OldDesignator=TRM? NewDesignator=TRM1
+Change Component Designator: OldDesignator=TRM? NewDesignator=TRM2
+Change Component Designator: OldDesignator=TRM? NewDesignator=TRM3
+Change Component Designator: OldDesignator=TRM? NewDesignator=TRM4
+Change Component Designator: OldDesignator=TRM? NewDesignator=TRM5
+Added Component: Designator=TRM6(Terminal Faston Macho 180° OBLONGO COM SUPORTE)
+Add component (AddParameter): Name = "Custo médio (R$)"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Custo padrão (R$)"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet 2"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ERP"; Value = "22116"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Etapa"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "HC 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "HC 2"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer 2"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Package"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number 2"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Status"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 2"; Value = ""; VariantName = "[No Variations]"
+Added Pin To Net: NetName=power_GND1 Pin=TRM5-1
+Added Pin To Net: NetName=power_GND1 Pin=TRM5-1
+Added Pin To Net: NetName=power_GND2 Pin=TRM6-1
+Added Pin To Net: NetName=power_GND2 Pin=TRM6-1
+Add Class: Class already exists: Designator
