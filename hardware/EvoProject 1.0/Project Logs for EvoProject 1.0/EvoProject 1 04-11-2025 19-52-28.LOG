@@ -1,0 +1,6 @@
+Change Component Footprint: Designator=C8 Old Footprint=CAP SMD CE 0603 MR New Footprint=CAP SMD CE 0603 HR
+Change Component Footprint: Designator=C9 Old Footprint=CAP SMD CE 0603 MR New Footprint=CAP SMD CE 0603 HR
+Change Component Footprint: Designator=C18 Old Footprint=CAP SMD CE 0603 MR New Footprint=CAP SMD CE 0603 HR
+Change Component Footprint: Designator=C19 Old Footprint=CAP SMD CE 0603 MR New Footprint=CAP SMD CE 0603 HR
+Add Net: Net with name "CANL" already exists
+Add Class: Class already exists: Designator

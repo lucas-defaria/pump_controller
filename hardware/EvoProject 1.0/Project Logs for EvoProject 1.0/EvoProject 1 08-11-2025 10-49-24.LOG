@@ -1,0 +1,91 @@
+Change Component Designator: OldDesignator=C29 NewDesignator=C32
+Change Component Designator: OldDesignator=C30 NewDesignator=C33
+Change Component Designator: OldDesignator=C31 NewDesignator=C34
+Change Component Designator: OldDesignator=C32 NewDesignator=C35
+Change Component Designator: OldDesignator=C33 NewDesignator=C36
+Change Component Designator: OldDesignator=C34 NewDesignator=C37
+Change Component Designator: OldDesignator=C35 NewDesignator=C38
+Change Component Designator: OldDesignator=C36 NewDesignator=C39
+Change Component Designator: OldDesignator=C37 NewDesignator=C40
+Change Component Designator: OldDesignator=C38 NewDesignator=C41
+Change Component Designator: OldDesignator=CN1 NewDesignator=CN2
+Change Component Designator: OldDesignator=CN2 NewDesignator=CN1
+Added Component: Designator=C29(CAP SMD EL D.6,30 H.5,40 P.4,80 HR)
+Add component (AddParameter): Name = "Custo médio (R$)"; Value = "0.3095"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Custo padrão (R$)"; Value = "0.3095"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet 1"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet 2"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ERP"; Value = "5896"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Etapa"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Footprint Path"; Value = "PCBLibrary.PcbLib"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Footprint Ref"; Value = "CAP SMD EL D.6,30 H.5,40 P.4,80 HR"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Footprint Ref 2"; Value = "CAP SMD EL D.6,30 H.5,40 P.4,80 MR"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "HC 1"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "HC 2"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Library Path"; Value = "SchLibrary.SchLib"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Library Ref"; Value = "CAP_P"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer 1"; Value = "ENW"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer 2"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Montagem"; Value = "SMD"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Package"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number 1"; Value = "LZ-101-M-006-TX-XX-X-0654-V00"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number 2"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 1"; Value = "JYE FWE ELECTRONICS COMPANY LIMITED"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 2"; Value = "N/A"; VariantName = "[No Variations]"
+Added Component: Designator=C30(CAP SMD EL D.6,30 H.5,40 P.4,80 HR)
+Add component (AddParameter): Name = "Custo médio (R$)"; Value = "0.3095"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Custo padrão (R$)"; Value = "0.3095"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet 1"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet 2"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ERP"; Value = "5896"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Etapa"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Footprint Path"; Value = "PCBLibrary.PcbLib"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Footprint Ref"; Value = "CAP SMD EL D.6,30 H.5,40 P.4,80 HR"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Footprint Ref 2"; Value = "CAP SMD EL D.6,30 H.5,40 P.4,80 MR"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "HC 1"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "HC 2"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Library Path"; Value = "SchLibrary.SchLib"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Library Ref"; Value = "CAP_P"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer 1"; Value = "ENW"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer 2"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Montagem"; Value = "SMD"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Package"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number 1"; Value = "LZ-101-M-006-TX-XX-X-0654-V00"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number 2"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 1"; Value = "JYE FWE ELECTRONICS COMPANY LIMITED"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 2"; Value = "N/A"; VariantName = "[No Variations]"
+Added Component: Designator=C31(CAP SMD EL D.6,30 H.5,40 P.4,80 HR)
+Add component (AddParameter): Name = "Custo médio (R$)"; Value = "0.3095"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Custo padrão (R$)"; Value = "0.3095"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet 1"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet 2"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ERP"; Value = "5896"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Etapa"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Footprint Path"; Value = "PCBLibrary.PcbLib"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Footprint Ref"; Value = "CAP SMD EL D.6,30 H.5,40 P.4,80 HR"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Footprint Ref 2"; Value = "CAP SMD EL D.6,30 H.5,40 P.4,80 MR"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "HC 1"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "HC 2"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Library Path"; Value = "SchLibrary.SchLib"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Library Ref"; Value = "CAP_P"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer 1"; Value = "ENW"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer 2"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Montagem"; Value = "SMD"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Package"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number 1"; Value = "LZ-101-M-006-TX-XX-X-0654-V00"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number 2"; Value = "N/A"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 1"; Value = "JYE FWE ELECTRONICS COMPANY LIMITED"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 2"; Value = "N/A"; VariantName = "[No Variations]"
+Added Pin To Net: NetName=GND Pin=C29-1
+Added Pin To Net: NetName=+5V Pin=C29-2
+Added Pin To Net: NetName=GND Pin=C30-1
+Added Pin To Net: NetName=+5V Pin=C30-2
+Added Pin To Net: NetName=GND Pin=C31-1
+Added Pin To Net: NetName=+5V Pin=C31-2
+Change Net Name : Old Net Name=NetC36_1 New Net Name=NetC39_1
+Change Net Name : Old Net Name=NetCN1_1 New Net Name=NetCN2_1
+Change Net Name : Old Net Name=NetCN1_2 New Net Name=NetCN2_2
+Add Class: Class already exists: Designator
+Added Member To Class: ClassName=Designator Member=Component C39 100nF/50V
+Added Member To Class: ClassName=Designator Member=Component C40 100nF/50V
+Added Member To Class: ClassName=Designator Member=Component C41 100nF/50V

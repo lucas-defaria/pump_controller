@@ -1,0 +1,20 @@
+Change Component Footprint: Designator=R69 Old Footprint=RES SMD CH 0402 HR New Footprint=RES SMD CH 0603 HR
+Change Managed Component Library Link : Designator=R69 Old VaultGUID=6D3AE728-7EFB-4055-B10D-18B16094236A New VaultGUID=6D3AE728-7EFB-4055-B10D-18B16094236A Old ItemGUID=A9BBD2FF-0665-49AC-8BE0-F97297AC3FA6 New ItemGUID=5E7A5D2F-08BD-4CC4-9C30-E6DB754B2D81 Old RevisionGUID=8107515A-EA72-480E-8E0F-B446E3E2D3C2 New RevisionGUID=366E1227-B46E-4D18-9515-8FD71B70E7F5
+Change component parameters: Designator = "R69" ("R69"); Footprint = "RES SMD CH 0402 HR"; UniqueID = "\EQZFJFER\RXXVNZYK" ("\EQZFJFER\RXXVNZYK")
+Change component parameters (AddParameter): Name = "Custo médio (R$)"; Value = "0.00554"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Custo padrão (R$)"; Value = "0.0023"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Datasheet 1"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Datasheet 2"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "ERP"; Value = "4426"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Etapa"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "HC 1"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "HC 2"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer 1"; Value = "HOTTECH"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer 2"; Value = "YAGEO"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Package"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Part Number 1"; Value = "RI0603L1002FT"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Part Number 2"; Value = "RC0603FR-0710KL"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Status"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Supplier 1"; Value = "HOTTECH SEMICONDUCTOR TECHNOLOGY (HK) LTDA"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Supplier 2"; Value = "SOLUCAO COMERCIO DE COMP ELE LTDA EPP"; VariantName = "[No Variations]"
+Add Class: Class already exists: Designator

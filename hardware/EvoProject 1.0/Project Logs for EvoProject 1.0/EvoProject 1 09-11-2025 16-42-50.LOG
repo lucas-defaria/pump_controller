@@ -1,0 +1,50 @@
+Removed Pin From Net: NetName=power_GND Pin=U2-5_1
+Removed Pin From Net: NetName=power_GND Pin=U2-5_2
+Removed Pin From Net: NetName=power_GND Pin=U2-5_3
+Removed Pin From Net: NetName=power_GND Pin=U2-5_4
+Removed Pin From Net: NetName=power_GND Pin=U2-5_5
+Removed Pin From Net: NetName=power_GND Pin=U2-5_6
+Removed Pin From Net: NetName=power_GND Pin=U2-5_7
+Removed Pin From Net: NetName=power_GND Pin=U2-5_8
+Removed Pin From Net: NetName=power_GND Pin=U2-5_9
+Removed Pin From Net: NetName=power_GND Pin=U2-5_10
+Removed Pin From Net: NetName=power_GND Pin=U2-5_11
+Removed Pin From Net: NetName=power_GND Pin=U2-5_12
+Removed Pin From Net: NetName=power_GND Pin=U2-5_13
+Removed Pin From Net: NetName=power_GND Pin=U2-5_14
+Removed Pin From Net: NetName=power_GND Pin=U2-5_15
+Removed Pin From Net: NetName=power_GND Pin=U2-5_16
+Removed Pin From Net: NetName=power_GND Pin=U2-5
+Change Net Name : Old Net Name=power_GND New Net Name=power_GND1
+Added Pin To Net: NetName=power_GND2 Pin=U2-5
+Added Pin To Net: NetName=power_GND2 Pin=U2-5_1
+Added Pin To Net: NetName=power_GND2 Pin=U2-5_2
+Added Pin To Net: NetName=power_GND2 Pin=U2-5_3
+Added Pin To Net: NetName=power_GND2 Pin=U2-5_4
+Added Pin To Net: NetName=power_GND2 Pin=U2-5_5
+Added Pin To Net: NetName=power_GND2 Pin=U2-5_6
+Added Pin To Net: NetName=power_GND2 Pin=U2-5_7
+Added Pin To Net: NetName=power_GND2 Pin=U2-5_8
+Added Pin To Net: NetName=power_GND2 Pin=U2-5_9
+Added Pin To Net: NetName=power_GND2 Pin=U2-5_10
+Added Pin To Net: NetName=power_GND2 Pin=U2-5_11
+Added Pin To Net: NetName=power_GND2 Pin=U2-5_12
+Added Pin To Net: NetName=power_GND2 Pin=U2-5_13
+Added Pin To Net: NetName=power_GND2 Pin=U2-5_14
+Added Pin To Net: NetName=power_GND2 Pin=U2-5_15
+Added Pin To Net: NetName=power_GND2 Pin=U2-5_16
+Added Net: Name=power_GND2
+Add Class: Class already exists: Designator
+Added Member To Class: ClassName=Designator Member=Component C25 100nF/50V
+Added Member To Class: ClassName=Designator Member=Component C26 47uF/16V
+Added Member To Class: ClassName=Designator Member=Component C28 1uF/50V
+Added Member To Class: ClassName=Designator Member=Component C29 1uF/50V
+Added Member To Class: ClassName=Designator Member=Component C31 100uF/6,3V
+Added Member To Class: ClassName=Designator Member=Component C32 100uF/6,3V
+Added Member To Class: ClassName=Designator Member=Component C33 100uF/6,3V
+Added Member To Class: ClassName=Designator Member=Component C34 10nF/50V
+Added Member To Class: ClassName=Designator Member=Component C35 10nF/50V
+Added Member To Class: ClassName=Designator Member=Component C37 100nF/50V
+Added Member To Class: ClassName=Designator Member=Component C38 22pF/50V
+Added Rule: Name=Schematic Supply Nets_7
+Added Rule: Name=Schematic Supply Nets_8

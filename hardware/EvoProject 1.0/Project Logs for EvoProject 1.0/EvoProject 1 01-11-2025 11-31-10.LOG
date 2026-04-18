@@ -1,0 +1,7 @@
+Removed Pin From Net: NetName=-Vbat Pin=J1-2
+Removed Pin From Net: NetName=PWM_OUT3 Pin=J1-9
+Removed Member From Class: ClassName=EvoProject 1.0 Member=J2
+Added Pin To Net: NetName=PWM_OUT3 Pin=J1-2
+Added Pin To Net: NetName=-Vbat Pin=J1-9
+Add Class: Class already exists: Designator
+Added Member To Class: ClassName=EvoProject 1.0 Member=Component J1 430451600

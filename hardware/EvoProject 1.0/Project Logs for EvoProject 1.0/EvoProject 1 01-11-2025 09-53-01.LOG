@@ -1,0 +1,29 @@
+Added Component: Designator=FD1(MEC SMD FD R0.5K1.5 MR)
+Add component (AddParameter): Name = "CodERP"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Complemento"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ERP"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Etapa"; Value = ""; VariantName = "[No Variations]"
+Added Component: Designator=FD2(MEC SMD FD R0.5K1.5 MR)
+Add component (AddParameter): Name = "CodERP"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Complemento"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ERP"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Etapa"; Value = ""; VariantName = "[No Variations]"
+Added Component: Designator=FD3(MEC SMD FD R0.5K1.5 MR)
+Add component (AddParameter): Name = "CodERP"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Complemento"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ERP"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Etapa"; Value = ""; VariantName = "[No Variations]"
+Added Component: Designator=FD4(MEC SMD FD R0.5K1.5 MR)
+Add component (AddParameter): Name = "CodERP"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Complemento"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ERP"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Etapa"; Value = ""; VariantName = "[No Variations]"
+Add Class: Class already exists: Designator
+Added Member To Class: ClassName=Designator Member=Component FD1 MEC FD PickAndPlace
+Added Member To Class: ClassName=Designator Member=Component FD2 MEC FD PickAndPlace
+Added Member To Class: ClassName=Designator Member=Component FD3 MEC FD PickAndPlace
+Added Member To Class: ClassName=Designator Member=Component FD4 MEC FD PickAndPlace

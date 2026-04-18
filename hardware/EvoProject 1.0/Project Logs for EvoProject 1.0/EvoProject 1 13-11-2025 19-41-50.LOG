@@ -1,0 +1,43 @@
+Removed Pin From Net: NetName=VCC1 Pin=D6-2
+Removed Pin From Net: NetName=VCC1 Pin=R50-2
+Added Component: Designator=TRM1(Terminal Faston Macho 180° OBLONGO COM SUPORTE)
+Add component (AddParameter): Name = "Custo médio (R$)"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Custo padrão (R$)"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet 2"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ERP"; Value = "22116"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Etapa"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "HC 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "HC 2"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer 2"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Package"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number 2"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Status"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 2"; Value = ""; VariantName = "[No Variations]"
+Added Component: Designator=TRM5(Terminal Faston Macho 180° OBLONGO COM SUPORTE)
+Add component (AddParameter): Name = "Custo médio (R$)"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Custo padrão (R$)"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Datasheet 2"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ERP"; Value = "22116"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Etapa"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "HC 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "HC 2"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer 2"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Package"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number 2"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Status"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 2"; Value = ""; VariantName = "[No Variations]"
+Added Pin To Net: NetName=PWM_OUT2 Pin=D6-2
+Added Pin To Net: NetName=VCC2 Pin=R50-2
+Added Pin To Net: NetName=VCC1 Pin=TRM1-1
+Added Pin To Net: NetName=VCC1 Pin=TRM1-1
+Added Pin To Net: NetName=VCC1 Pin=TRM5-1
+Added Pin To Net: NetName=VCC1 Pin=TRM5-1
+Add Class: Class already exists: Designator

@@ -1,0 +1,17 @@
+Added Component: Designator=PTC3(PTC SMD CH 0805 HR)
+Add component (AddParameter): Name = "ERP"; Value = "20004"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "HC 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "HC 2"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer 2"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Package"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Part Number 2"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Status"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 1"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Supplier 2"; Value = ""; VariantName = "[No Variations]"
+Added Pin To Net: NetName=+5V Pin=PTC3-2
+Added Pin To Net: NetName=NetJ1_11 Pin=J1-11
+Added Pin To Net: NetName=NetJ1_11 Pin=PTC3-1
+Added Net: Name=NetJ1_11
+Added Member To Class: ClassName=EvoProject 2.0 Member=Component PTC3 PTC 100mA

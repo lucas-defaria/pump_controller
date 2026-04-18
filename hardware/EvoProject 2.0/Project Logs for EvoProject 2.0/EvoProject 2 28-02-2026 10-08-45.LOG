@@ -1,0 +1,14 @@
+Removed Pin From Net: NetName=+5V Pin=C13-2
+Removed Pin From Net: NetName=+5V Pin=CN1-9
+Added Pin To Net: NetName=NetC13_2 Pin=C13-2
+Added Pin To Net: NetName=NetC13_2 Pin=CN1-9
+Added Net: Name=NetC13_2
+Added Member To Class: ClassName=EvoProject 2.0 Member=Component R24 1K/1%
+Added Member To Class: ClassName=EvoProject 2.0 Member=Component R25 10K/1%
+Added Member To Class: ClassName=EvoProject 2.0 Member=Component R27 10K/1%
+Added Member To Class: ClassName=EvoProject 2.0 Member=Component R28 10K/1%
+Added Member To Class: ClassName=EvoProject 2.0 Member=Component R30 10K/1%
+Added Member To Class: ClassName=EvoProject 2.0 Member=Component R32 100K/1%
+Added Member To Class: ClassName=EvoProject 2.0 Member=Component R34 10K/1%
+Added Member To Class: ClassName=EvoProject 2.0 Member=Component R35 10K/1%
+Added Member To Class: ClassName=EvoProject 2.0 Member=Component R37 10K/1%

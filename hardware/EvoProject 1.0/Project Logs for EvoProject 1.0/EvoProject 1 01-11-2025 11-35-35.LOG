@@ -1,0 +1,22 @@
+Change Component Footprint: Designator=C25 Old Footprint=CAP SMD CE 0402 HR New Footprint=CAP SMD CE 0603 HR
+Change Component Comment : Designator=C25 Old Comment=100nF/16V New Comment=100nF/50V
+Change Managed Component Library Link : Designator=C25 Old VaultGUID=6D3AE728-7EFB-4055-B10D-18B16094236A New VaultGUID=6D3AE728-7EFB-4055-B10D-18B16094236A Old ItemGUID=2A6AA669-5171-406C-BAF9-6987B417D043 New ItemGUID=93FA68AE-5CD5-4E34-B12A-DCA442C32708 Old RevisionGUID=D92A3BC6-8557-4C7B-AA78-F6BB7DFD18A3 New RevisionGUID=90F87D96-AF43-4988-9850-E4F7B91AB0BC
+Change component parameters: Designator = "C25" ("C25"); Footprint = "CAP SMD CE 0402 HR"; UniqueID = "\EQZFJFER\TAOOIGUS" ("\EQZFJFER\TAOOIGUS")
+Change component parameters (AddParameter): Name = "Custo médio (R$)"; Value = "0.01221"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Custo padrão (R$)"; Value = "0.0072"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Datasheet 1"; Value = "https://octopart.com/pt/datasheet/cl10b104kb8nnnc-samsung-9299375"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Datasheet 2"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "ERP"; Value = "5845"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Etapa"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "HC 1"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "HC 2"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer 1"; Value = "SAMSUNG"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Manufacturer 2"; Value = "SAMSUNG ELECTRONICS"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Montagem"; Value = "SMD"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Package"; Value = "N/A"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Part Number 1"; Value = "CL10B104KB8NNNC"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Part Number 2"; Value = "CL10B104KB8NNNC"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Status"; Value = "1 - LIBERADO"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Supplier 1"; Value = "FUTURE ELECTRONICS CORP."; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Supplier 2"; Value = "AVNET ELECTRONICS MARKETING"; VariantName = "[No Variations]"
+Add Class: Class already exists: Designator

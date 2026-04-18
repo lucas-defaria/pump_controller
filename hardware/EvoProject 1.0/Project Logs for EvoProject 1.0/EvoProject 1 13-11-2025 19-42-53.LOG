@@ -1,0 +1,15 @@
+Removed Pin From Net: NetName=VCC1 Pin=D6-1
+Removed Pin From Net: NetName=VCC1 Pin=R50-2
+Removed Pin From Net: NetName=VCC1 Pin=T16-3
+Removed Pin From Net: NetName=VCC1 Pin=TRM5-1
+Removed Pin From Net: NetName=VCC1 Pin=TRM5-1
+Removed Pin From Net: NetName=VCC1 Pin=TRM6-1
+Removed Pin From Net: NetName=VCC1 Pin=TRM6-1
+Added Pin To Net: NetName=VCC2 Pin=D6-1
+Added Pin To Net: NetName=VCC2 Pin=R50-2
+Added Pin To Net: NetName=VCC2 Pin=T16-3
+Added Pin To Net: NetName=VCC2 Pin=TRM5-1
+Added Pin To Net: NetName=VCC2 Pin=TRM5-1
+Added Pin To Net: NetName=VCC2 Pin=TRM6-1
+Added Pin To Net: NetName=VCC2 Pin=TRM6-1
+Add Class: Class already exists: Designator
