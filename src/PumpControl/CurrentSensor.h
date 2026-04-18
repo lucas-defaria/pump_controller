@@ -3,17 +3,19 @@
 #include "Config.h"
 
 // -----------------------------------------------------------------------------
-// CurrentSensor - Measures current using ACS772LCB-050B Hall-effect sensor
+// CurrentSensor - Measures current using ACS758LCB-050B Hall-effect sensor
 // -----------------------------------------------------------------------------
-// ACS772LCB-050B Specifications:
-//   - Unidirectional: 0 to +50A measurement range
+// ACS758LCB-050B Specifications:
+//   - Bidirectional: -50A to +50A measurement range
 //   - Sensitivity: 40mV/A (0.040 V/A)
-//   - Zero current output: 0.6V (measured, confirms unidirectional variant)
+//   - Zero current output: Vcc/2 (~2.5V nominal; calibrated per-board in Config)
 //   - Supply voltage: 5V
-//   - Output voltage range: 0.6V (0A) to 2.6V (50A)
+//   - Output voltage range: 0.5V (-50A) to 4.5V (+50A) around Vzero
 //
-// Output voltage formula: Vout = Vzero + (I × Sensitivity)
+// Output voltage formula: Vout = Vzero + (I * Sensitivity)
 // Current calculation:    I = (Vout - Vzero) / Sensitivity
+//
+// Note: reverse current (I < 0) is clamped to 0 â€” the pump load is unidirectional.
 //
 // PWM interference mitigation:
 //   - Multi-sample averaging (configurable via Config::CURRENT_ADC_SAMPLES)
@@ -24,7 +26,7 @@ class CurrentSensor {
 public:
     explicit CurrentSensor(uint8_t pin) 
         : _pin(pin)
-        , _filteredVoltage(Config::ACS772_ZERO_CURRENT_V)
+        , _filteredVoltage(Config::ACS758_ZERO_CURRENT_V)
         , _initialized(false)
     {}
 
@@ -53,12 +55,12 @@ public:
         }
         
         // Calculate current: I = (Vout - Vzero) / Sensitivity
-        float current = (_filteredVoltage - Config::ACS772_ZERO_CURRENT_V) / 
-                        Config::ACS772_SENSITIVITY;
-        
-        // Clamp to valid range (0 to max) for unidirectional sensor
+        float current = (_filteredVoltage - Config::ACS758_ZERO_CURRENT_V) /
+                        Config::ACS758_SENSITIVITY;
+
+        // Clamp negative (reverse-flow) readings; pump load is unidirectional
         if (current < 0.0f) current = 0.0f;
-        if (current > Config::ACS772_MAX_CURRENT) current = Config::ACS772_MAX_CURRENT;
+        if (current > Config::ACS758_MAX_CURRENT) current = Config::ACS758_MAX_CURRENT;
         
         return current;
     }
@@ -67,10 +69,10 @@ public:
     float readCurrentRawA() {
         int adc = analogRead(_pin);
         float voltage = adcToVoltage(adc);
-        float current = (voltage - Config::ACS772_ZERO_CURRENT_V) / 
-                        Config::ACS772_SENSITIVITY;
+        float current = (voltage - Config::ACS758_ZERO_CURRENT_V) /
+                        Config::ACS758_SENSITIVITY;
         if (current < 0.0f) current = 0.0f;
-        if (current > Config::ACS772_MAX_CURRENT) current = Config::ACS772_MAX_CURRENT;
+        if (current > Config::ACS758_MAX_CURRENT) current = Config::ACS758_MAX_CURRENT;
         return current;
     }
     
@@ -96,7 +98,7 @@ private:
 
     // Read voltage with multi-sample averaging to filter PWM interference
     // Takes multiple ADC samples with small delays to average PWM cycles
-    // PWM at 977Hz = ~1.02ms period, so 10 samples @ 50µs = 500µs covers ~half cycle
+    // PWM at 977Hz = ~1.02ms period, so 10 samples @ 50ï¿½s = 500ï¿½s covers ~half cycle
     // SAFETY: uint32_t can hold up to 4,194,303 samples (each ADC read max 1023)
     // Current CURRENT_ADC_SAMPLES=10 is safe. Max safe value = 4194 samples.
     float readVoltageAveraged() {

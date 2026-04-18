@@ -3,7 +3,7 @@
    
    Features:
    - MAP sensor-based pressure control (MPX5700ASX on A4)
-   - Dual ACS772LCB-100U current sensors (A2, A3)
+   - Dual ACS758LCB-050B current sensors (A2, A3)
    - Current fault protection (never fully shuts down under normal fault)
    - Two PWM outputs (D3, D5) for SSR control
    - NeoPixel RGB LED indicating current level and protection state
@@ -32,6 +32,7 @@
 #include "PowerProtection.h"
 #include "VoltageSensor.h"
 #include "VoltageProtection.h"
+#include "TempSensor.h"
 #include "CanInterface.h"
 #include "StatusLed.h"
 #include "PwmInput.h"
@@ -47,6 +48,7 @@ CurrentSensor  g_curr2(Config::PIN_CURRENT_2);
 PowerProtection g_protection(g_curr1, g_curr2);
 VoltageSensor  g_voltage(Config::PIN_VCC_SENSE);
 VoltageProtection g_voltageProtection(g_voltage);
+TempSensor     g_temp(Config::PIN_NTC_TEMP);  // Heatsink NTC 10K (monitoring only)
 CanInterface   g_can;  // stub for future CAN bus integration
 StatusLed      g_statusLed(Config::PIN_STATUS_LED, Config::STATUS_LED_COUNT);
 PwmInput       g_pwmInput(Config::PIN_PWM_INPUT);  // External PWM input for slave mode
@@ -105,6 +107,7 @@ void setup() {
     g_protection.begin();
     g_voltage.begin();
     g_voltageProtection.begin();
+    g_temp.begin();
     g_can.begin(); // stub
     g_pwmInput.begin(); // External PWM input for slave mode - configures PIN_DIG_IN_1 as INPUT (no pullup)
     
@@ -408,8 +411,18 @@ void printDetailedStatus() {
     Serial.println(g_voltageProtection.getLevelString());
     Serial.print(F("Sensor Valid:    ")); 
     Serial.println(g_voltageProtection.isSensorOk() ? "YES" : "NO");
-    Serial.print(F("V Fault Count:   ")); 
+    Serial.print(F("V Fault Count:   "));
     Serial.println(g_voltageProtection.getFaultCount());
+
+    // Heatsink temperature (monitoring only, no protection logic)
+    float heatsinkC = g_temp.readTemperatureC();
+    Serial.print(F("Heatsink Temp:   "));
+    Serial.print(heatsinkC, 1);
+    Serial.print(F(" °C"));
+    if (!g_temp.isSensorOk()) {
+        Serial.print(F("  (sensor fault?)"));
+    }
+    Serial.println();
     Serial.println();
     
     // Current protection status

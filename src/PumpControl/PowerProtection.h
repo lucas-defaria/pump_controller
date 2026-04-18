@@ -210,7 +210,7 @@ private:
             Serial.print(Config::CURRENT_THRESHOLD_EMERGENCY, 1);
             Serial.println(F("A)"));
             Serial.print(F("Sensor near saturation limit ("));
-            Serial.print(Config::ACS772_MAX_CURRENT, 0);
+            Serial.print(Config::ACS758_MAX_CURRENT, 0);
             Serial.println(F("A)"));
             
             if (Config::ENABLE_EMERGENCY_SHUTDOWN) {
