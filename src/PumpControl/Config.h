@@ -252,8 +252,8 @@ namespace Config {
     // Extra/future pins (stubs)
     constexpr uint8_t PIN_EXTRA_PWM_1  = 1;  // PD1 (TX - careful with Serial)
     constexpr uint8_t PIN_EXTRA_PWM_2  = 0;  // PD0 (RX - careful with Serial)
-    constexpr uint8_t PIN_ANALOG_OUT_1 = 6;  // D6 (0-10V via external circuit)
-    constexpr uint8_t PIN_ANALOG_OUT_2 = 9;  // D9 (0-10V via external circuit)
+    constexpr uint8_t PIN_ANALOG_OUT_1 = 6;  // D6 (0-10V via external circuit) - não tem mais no Hardware, mas mantido como referência
+    constexpr uint8_t PIN_ANALOG_OUT_2 = 9;  // D9 (0-10V via external circuit) - não tem mais no Hardware, mas mantido como referência
     constexpr uint8_t PIN_DIG_IN_1     = 7;  // D7 (active low)
     constexpr uint8_t PIN_DIG_IN_2     = 8;  // D8 (active low)
     constexpr uint8_t PIN_AUX_IN_1     = A0; // Extra analog input
