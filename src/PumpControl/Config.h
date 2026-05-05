@@ -276,15 +276,31 @@ namespace Config {
     // When valid PWM signal is detected on PIN_DIG_IN_1 (D7), system enters slave mode
     // and replicates the input PWM on both outputs (ignoring temperature control)
     // When signal is lost/idle, system returns to normal temperature-based control
+    //
+    // HARDWARE NOTE: the gate driver input has the µC PWM (uC_PWM1, R28=1K) and
+    // the external PWM (uC_IN1, R30=1K) summing into the same node at T4's base
+    // (R26=100K is a weak pulldown). With both 1K resistors equal, two driven
+    // sources fight in a 1:1 divider. So entering slave mode requires the µC
+    // PWM pins to go Hi-Z (pinMode INPUT) — see PowerOutputs::setHiZ(). When
+    // exiting slave (signal lost), the µC must drive HIGH (= MOSFET OFF, due
+    // to the inverted driver) before reapplying PWM, otherwise the floating
+    // base briefly turns the motor ON via R26.
     constexpr uint8_t PIN_PWM_INPUT = PIN_DIG_IN_1;  // D7 - PWM input for slave mode
-    
+
     // Expected PWM frequency range (Hz) - typically 25Hz �10Hz tolerance
     constexpr float PWM_INPUT_FREQ_MIN = 15.0f;      // Minimum valid frequency (Hz)
     constexpr float PWM_INPUT_FREQ_MAX = 35.0f;      // Maximum valid frequency (Hz)
-    
+
     // Signal timeout (milliseconds) - if no valid pulse received in this time, signal is considered lost
     constexpr unsigned long PWM_INPUT_TIMEOUT_MS = 200; // 200ms timeout (5x period @ 25Hz)
-    
+
+    // Boot hold-off (milliseconds) - at startup, keep motor OFF and try to detect
+    // an external PWM signal for this long before falling back to temperature
+    // control. Useful when the external PWM source takes longer to come online
+    // than the Arduino. Each pulseIn attempt blocks up to ~100ms, so this window
+    // typically allows 4-5 detection attempts at 25Hz.
+    constexpr unsigned long PWM_INPUT_BOOT_HOLDOFF_MS = 500;
+
     // Slave mode enable flag
     constexpr bool  ENABLE_PWM_SLAVE_MODE = true;     // Enable external PWM slave mode
     

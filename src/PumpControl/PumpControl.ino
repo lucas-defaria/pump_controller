@@ -140,6 +140,28 @@ void setup() {
     // Using delayMicroseconds because it's NOT affected by Timer 0 prescaler change
     // delay() would require dividing by 64, not multiplying
     delayMicroseconds(2000000UL);  // 2 seconds = 2,000,000 microseconds
+
+    // PWM boot hold-off: if the external PWM source is slower to come online
+    // than the Arduino, give it a chance now — before the master loop starts
+    // ramping the fan from temperature. If a valid signal is detected we go
+    // straight to slave mode (outputs Hi-Z) so the external signal owns the
+    // gate driver. Each pulseIn() inside update() blocks ~100ms.
+    if (Config::ENABLE_PWM_SLAVE_MODE) {
+        Serial.println(F("Boot hold-off: looking for external PWM at D7..."));
+        unsigned long holdoffStart = millis();
+        while ((unsigned long)(millis() - holdoffStart) < MILLIS_COMPENSATED(Config::PWM_INPUT_BOOT_HOLDOFF_MS)) {
+            g_pwmInput.update();
+            if (g_pwmInput.isSignalValid()) {
+                Serial.println(F("External PWM detected -> entering SLAVE mode (Hi-Z)"));
+                g_power.setHiZ(true);
+                break;
+            }
+        }
+        if (!g_pwmInput.isSignalValid()) {
+            Serial.println(F("No external PWM at boot -> starting in MASTER (temperature) mode"));
+        }
+    }
+
     Serial.println(F("Starting normal operation"));
     Serial.println();
 }
@@ -175,9 +197,11 @@ void loop() {
             } else {
                 externalSafetyActive = (safetyInput == LOW);   // LOW = shutdown
             }
-            
+
             // If external safety triggered, immediately shutdown and skip normal control
             if (externalSafetyActive) {
+                // Take outputs back from any Hi-Z handoff before driving the gate
+                if (g_power.isHiZ()) g_power.setHiZ(false);
                 g_power.setDuty(0.0f);  // IMMEDIATE shutdown (no rate limiting)
                 g_statusLed.updateExternalSafetyBlink();  // Blue blinking LED
                 Serial.println(F("*** EXTERNAL SAFETY ACTIVE - OUTPUT FORCED OFF ***"));
@@ -185,48 +209,61 @@ void loop() {
                 return;
             }
         }
-        
+
         // ====================================================================
-        // 3. Check for PWM slave mode (SECOND PRIORITY)
+        // 3. Update current protection (reads currents, applies hysteresis)
+        // ====================================================================
+        float voltageLimit = g_protection.update();
+        PowerProtection::ProtectionLevel protLevel = g_protection.getLevel();
+        bool inFault = (protLevel == PowerProtection::ProtectionLevel::FAULT);
+        bool inEmergency = (protLevel == PowerProtection::ProtectionLevel::EMERGENCY);
+
+        // ====================================================================
+        // 4. Decide mode: SLAVE (PWM input mirrored) vs MASTER (temp control)
+        //    EMERGENCY overrides slave - we MUST take back the gate driver to
+        //    shut the motor down (otherwise the external PWM keeps it running
+        //    into the fault).
         // ====================================================================
         bool slaveMode = (Config::ENABLE_PWM_SLAVE_MODE && g_pwmInput.isSignalValid());
-        
+        if (inEmergency) slaveMode = false;
+
+        // Glitch-free transition between OUTPUT and Hi-Z. Source of truth is
+        // PowerOutputs::isHiZ(), so the boot-time slave entry (if any) doesn't
+        // re-fire setHiZ() on the first iteration.
+        if (slaveMode != g_power.isHiZ()) {
+            Serial.print(F("*** Mode change: "));
+            Serial.println(slaveMode ? F("master -> SLAVE (Hi-Z)")
+                                     : F("slave -> MASTER"));
+            g_power.setHiZ(slaveMode);
+            if (!slaveMode) g_power.setDuty(0.0f);  // Safe state on entry to master
+        }
+
+        // ====================================================================
+        // 5. Common readings + status LED (used by both modes)
+        // ====================================================================
+        float supplyVoltage = g_voltage.readVoltage();
+        g_power.setSupplyVoltage(supplyVoltage);
+        g_power.setVoltageLimit(voltageLimit);
+
+        float current1 = g_curr1.readCurrentA();
+        float current2 = g_curr2.readCurrentA();
+        float maxCurrent = max(current1, current2);
+        g_statusLed.updateFromCurrent(maxCurrent, inFault, inEmergency);
+
         if (slaveMode) {
             // ================================================================
-            // SLAVE MODE: Replicate input PWM on outputs
+            // SLAVE MODE: outputs are Hi-Z, external PWM drives the gate via
+            // R30 alone. We just observe; protection still runs and will pull
+            // us out via the EMERGENCY override above if current spikes.
             // ================================================================
-            // Still monitor current and voltage for protection
             float inputDuty = g_pwmInput.getDutyCycle();
-            
-            // Read sensors for protection
-            float supplyVoltage = g_voltage.readVoltage();
-            float voltageLimit = g_protection.update();
-            
-            // Apply input duty cycle with protection limits
-            // CRITICAL: Use setOutputPercent() to respect voltage limit from protection
-            g_power.setSupplyVoltage(supplyVoltage);
-            g_power.setVoltageLimit(voltageLimit);
-            g_power.setOutputPercent(inputDuty);  // This applies voltageLimit internally
-            
-            // Read current sensors and update status LED
-            float current1 = g_curr1.readCurrentA();
-            float current2 = g_curr2.readCurrentA();
-            float maxCurrentSlave = max(current1, current2);
 
-            PowerProtection::ProtectionLevel protLevelSlave = g_protection.getLevel();
-            bool inFaultSlave = (protLevelSlave == PowerProtection::ProtectionLevel::FAULT);
-            bool inEmergencySlave = (protLevelSlave == PowerProtection::ProtectionLevel::EMERGENCY);
-            g_statusLed.updateFromCurrent(maxCurrentSlave, inFaultSlave, inEmergencySlave);
-
-            // Compact status output for slave mode
             Serial.print(F("*** SLAVE MODE *** | PWM In:"));
             Serial.print(inputDuty * 100.0f, 1);
             Serial.print(F("% @ "));
             Serial.print(g_pwmInput.getFrequency(), 1);
             Serial.print(F("Hz | Vs:"));
             Serial.print(supplyVoltage, 1);
-            Serial.print(F("V | Vo:"));
-            Serial.print(g_power.getActualOutputVoltage(), 1);
             Serial.print(F("V | I1:"));
             Serial.print(current1, 1);
             Serial.print(F("A | I2:"));
@@ -235,45 +272,20 @@ void loop() {
             Serial.print(voltageLimit * 100.0f, 0);
             Serial.print(F("% | "));
             Serial.println(g_protection.getLevelString());
-            
+
         } else {
             // ================================================================
-            // NORMAL TEMPERATURE-BASED CONTROL MODE
+            // MASTER MODE: temperature-based control via CAN
             // ================================================================
-
-            // Poll CAN bus for new messages
             g_can.poll();
 
-            // Get temperature (returns safety-high value if CAN timeout)
             float tempC = g_can.getTempC();
             bool tempFresh = g_can.isTempFresh();
+            g_voltageProtection.update();
 
-            // Read supply voltage
-            float supplyVoltage = g_voltage.readVoltage();
-            VoltageProtection::ProtectionLevel voltageLevel = g_voltageProtection.update();
-
-            // Calculate target fan output from temperature
             float targetPercent = temperatureToTargetPercent(tempC);
-
-            // Update current protection system
-            float voltageLimit = g_protection.update();
-
-            // Read current sensors and update status LED
-            float current1 = g_curr1.readCurrentA();
-            float current2 = g_curr2.readCurrentA();
-            float maxCurrent = max(current1, current2);
-
-            PowerProtection::ProtectionLevel protLevel = g_protection.getLevel();
-            bool inFault = (protLevel == PowerProtection::ProtectionLevel::FAULT);
-            bool inEmergency = (protLevel == PowerProtection::ProtectionLevel::EMERGENCY);
-            g_statusLed.updateFromCurrent(maxCurrent, inFault, inEmergency);
-
-            // Apply voltage limit and set power output
-            g_power.setSupplyVoltage(supplyVoltage);
-            g_power.setVoltageLimit(voltageLimit);
             g_power.setOutputPercent(targetPercent);
 
-            // Compact status output (every cycle)
             Serial.print(F("T:"));
             Serial.print(tempC, 1);
             Serial.print(tempFresh ? F("C") : F("C(TIMEOUT)"));
@@ -433,9 +445,11 @@ void printDetailedStatus() {
     Serial.print(F("Actual Voltage:  ")); 
     Serial.print(g_power.getActualOutputVoltage(), 2);
     Serial.println(F(" V"));
-    Serial.print(F("PWM Duty:        ")); 
+    Serial.print(F("PWM Duty:        "));
     Serial.print(g_power.getCurrentDuty() * 100.0f, 1);
     Serial.println(F(" %"));
+    Serial.print(F("Output Stage:    "));
+    Serial.println(g_power.isHiZ() ? F("Hi-Z (slave passthrough)") : F("OUTPUT (uC drives)"));
     
     // External safety status
     if (Config::ENABLE_EXTERNAL_SAFETY) {

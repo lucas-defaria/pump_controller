@@ -13,12 +13,13 @@
 // -----------------------------------------------------------------------------
 class PowerOutputs {
 public:
-    PowerOutputs(uint8_t pin1, uint8_t pin2) 
+    PowerOutputs(uint8_t pin1, uint8_t pin2)
         : _pin1(pin1)
         , _pin2(pin2)
         , _currentDuty(0.0f)
         , _voltageLimit(1.0f)
         , _supplyVoltage(12.0f)  // Initialize to nominal 12V, will be updated dynamically
+        , _isHiZ(false)
     {}
 
     void begin() {
@@ -107,23 +108,54 @@ public:
     void setDuty(float duty) {
         if (duty < 0) duty = 0;
         if (duty > 1) duty = 1;
-        
-        _currentDuty = duty;
-        
-        // Convert duty cycle to PWM value (0-255)
-        int pwmValue = static_cast<int>(duty * 255.0f + 0.5f);
 
-        // Hardware inversion compensation:
-        // If driver circuit inverts signal (NPN+PNP topology), invert PWM in software
-        // This ensures: duty=1.0 → MOSFET ON (full power), duty=0.0 → MOSFET OFF
-        if (Config::PWM_INVERTED_BY_HARDWARE) {
-            pwmValue = 255 - pwmValue;  // Invert: 0→255, 255→0
+        _currentDuty = duty;
+
+        // In Hi-Z (slave) mode the µC pins are disconnected from the gate driver
+        // so the external PWM (uC_IN1) can drive T4 alone via R30 without fighting
+        // R28. Skip analogWrite — it would re-enable OUTPUT and force a battle on
+        // the base node. Duty is still cached for diagnostics and for the moment
+        // we leave Hi-Z (setHiZ(false) re-applies it).
+        if (_isHiZ) {
+            return;
         }
 
-        // Both outputs on Timer 0 - hardware PWM, no SPI conflict
-        analogWrite(_pin1, pwmValue);  // D6 (OC0A)
-        analogWrite(_pin2, pwmValue);  // D5 (OC0B)
+        writeDutyToPins(duty);
     }
+
+    // Switch the output stage between active OUTPUT mode and Hi-Z (INPUT).
+    // Hi-Z (true): pins go to INPUT (no pullup). Lets external PWM at uC_IN1
+    //              control T4 base alone (R30=1K dominates R26=100K pulldown).
+    // Hi-Z (false): drive HIGH at hardware level FIRST (= MOSFET OFF via the
+    //               inverted driver), then pinMode(OUTPUT), then re-apply the
+    //               cached duty cycle. The HIGH-before-OUTPUT order avoids a
+    //               brief LOW glitch (= MOSFET full ON) during the transition.
+    void setHiZ(bool hiZ) {
+        if (hiZ == _isHiZ) return;
+
+        if (hiZ) {
+            // Disengage µC from the gate driver base node. analogWrite stays on
+            // the OCRn registers (Timer 0 keeps running) but the pin direction
+            // change disconnects it from PORT. Use INPUT (no pullup) so R30
+            // alone biases T4.
+            pinMode(_pin1, INPUT);
+            pinMode(_pin2, INPUT);
+            _isHiZ = true;
+        } else {
+            // Drive safe state BEFORE re-engaging OUTPUT, otherwise PORT may hold
+            // the last value (potentially LOW = motor full).
+            digitalWrite(_pin1, Config::PWM_INVERTED_BY_HARDWARE ? HIGH : LOW);
+            digitalWrite(_pin2, Config::PWM_INVERTED_BY_HARDWARE ? HIGH : LOW);
+            pinMode(_pin1, OUTPUT);
+            pinMode(_pin2, OUTPUT);
+            _isHiZ = false;
+            // Re-apply cached duty so the timer drives the pins correctly.
+            writeDutyToPins(_currentDuty);
+        }
+    }
+
+    // Whether outputs are currently in Hi-Z (slave passthrough) state.
+    bool isHiZ() const { return _isHiZ; }
 
     // Set voltage limit factor (0.0 to 1.0)
     // Called by protection system to progressively reduce power
@@ -149,9 +181,26 @@ public:
     }
 
 private:
+    void writeDutyToPins(float duty) {
+        // Convert duty cycle to PWM value (0-255)
+        int pwmValue = static_cast<int>(duty * 255.0f + 0.5f);
+
+        // Hardware inversion compensation:
+        // If driver circuit inverts signal (NPN+PNP topology), invert PWM in software
+        // This ensures: duty=1.0 → MOSFET ON (full power), duty=0.0 → MOSFET OFF
+        if (Config::PWM_INVERTED_BY_HARDWARE) {
+            pwmValue = 255 - pwmValue;  // Invert: 0→255, 255→0
+        }
+
+        // Both outputs on Timer 0 - hardware PWM, no SPI conflict
+        analogWrite(_pin1, pwmValue);  // D6 (OC0A)
+        analogWrite(_pin2, pwmValue);  // D5 (OC0B)
+    }
+
     uint8_t _pin1;
     uint8_t _pin2;
     float _currentDuty;      // Current requested duty cycle (before limiting)
     float _voltageLimit;     // Voltage limit factor from protection system
     float _supplyVoltage;    // Measured supply voltage (updated dynamically)
+    bool  _isHiZ;            // True when outputs are tri-stated (slave passthrough)
 };
