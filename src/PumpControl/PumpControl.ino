@@ -1,29 +1,32 @@
 /* ----------------------------------------------------------------------------
-   FanControl.ino - Transmission radiator fan control via CAN temperature
-
+   PumpControl.ino - Advanced fuel pump control with current protection
+   
    Features:
-   - CAN bus temperature acquisition (MCP2515 - transmission oil temp)
-   - Temperature-based fan PWM control (95-100°C ramp)
+   - MAP sensor-based pressure control (MPX5700ASX on A4)
    - Dual ACS758LCB-050B current sensors (A2, A3)
-   - Current fault protection with multi-level response
-   - Two PWM outputs (D6, D5) for MOSFET driver
-   - CAN timeout safety: fan forced to 100% if no data received
+   - Current fault protection (never fully shuts down under normal fault)
+   - Two PWM outputs (D3, D5) for SSR control
+   - NeoPixel RGB LED indicating current level and protection state
+   - Serial logging of all parameters
 
-   Temperature Control:
-   - Below 95°C:  Fan OFF (0% PWM)
-   - 95-100°C:    Linear ramp (0% to 100%)
-   - Above 100°C: Fan FULL (100% PWM)
-   - CAN Timeout:  Fan FULL (100% PWM) - safety fallback
+   LED Status Indication:
+   - NORMAL (0-40A):   Green solid (gradient green->red as current rises)
+   - FAULT (>40A):     Blinking red (1Hz)
+   - EMERGENCY (>45A): Fast blinking red (5Hz)
 
    Protection Strategy:
    - NORMAL (0-40A):   Full voltage available
-   - FAULT (>40A):     50% voltage reduction
+   - FAULT (>40A):     50% voltage reduction (minimum safe level)
    - EMERGENCY (>45A): Complete shutdown (if enabled)
+
+   CRITICAL SAFETY REQUIREMENT:
+   Pump cannot be fully shut down - would damage engine under load.
 
    Configuration in Config.h
 ---------------------------------------------------------------------------- */
 #include <Arduino.h>
 #include "Config.h"
+#include "MapSensor.h"
 #include "PowerOutputs.h"
 #include "CurrentSensor.h"
 #include "PowerProtection.h"
@@ -38,6 +41,7 @@
 // Global instances
 // ============================================================================
 
+MapSensor      g_map(Config::PIN_MAP_SENSOR);
 PowerOutputs   g_power(Config::PIN_PWM_OUT_1, Config::PIN_PWM_OUT_2);
 CurrentSensor  g_curr1(Config::PIN_CURRENT_1);
 CurrentSensor  g_curr2(Config::PIN_CURRENT_2);
@@ -45,25 +49,33 @@ PowerProtection g_protection(g_curr1, g_curr2);
 VoltageSensor  g_voltage(Config::PIN_VCC_SENSE);
 VoltageProtection g_voltageProtection(g_voltage);
 TempSensor     g_temp(Config::PIN_NTC_TEMP);  // Heatsink NTC 10K (monitoring only)
-CanInterface   g_can;
+CanInterface   g_can;  // stub for future CAN bus integration
 StatusLed      g_statusLed(Config::PIN_STATUS_LED, Config::STATUS_LED_COUNT);
-PwmInput       g_pwmInput(Config::PIN_PWM_INPUT);
+PwmInput       g_pwmInput(Config::PIN_PWM_INPUT);  // External PWM input for slave mode
 
 unsigned long g_lastUpdateMs = 0;
 unsigned long g_lastStatusMs = 0;
 
 // ============================================================================
-// Temperature to output percentage conversion
+// Pressure to output percentage conversion
 // ============================================================================
 
-// Converts temperature (°C) to target fan output percentage (0.0 to 1.0)
-// Below TEMP_FAN_OFF_C:  0% (fan off)
-// Linear ramp between OFF and FULL
-// Above TEMP_FAN_FULL_C: 100% (fan full speed)
-static float temperatureToTargetPercent(float tempC) {
-    if (tempC <= Config::TEMP_FAN_OFF_C)  return 0.0f;
-    if (tempC >= Config::TEMP_FAN_FULL_C) return 1.0f;
-    return (tempC - Config::TEMP_FAN_OFF_C) / (Config::TEMP_FAN_FULL_C - Config::TEMP_FAN_OFF_C);
+// Converts pressure (bar) to target output percentage (0.0 to 1.0)
+// Linear interpolation between low and high setpoints
+// Low pressure (?0.2bar): 70% of supply voltage
+// High pressure (?0.4bar): 100% of supply voltage
+static float pressureToTargetPercent(float bar) {
+    const float pLow  = Config::MAP_BAR_LOW_SETPOINT;
+    const float pHigh = Config::MAP_BAR_HIGH_SETPOINT;
+    const float percentLow  = Config::OUTPUT_PERCENT_MIN;  // 0.70 (70%)
+    const float percentHigh = Config::OUTPUT_PERCENT_MAX;  // 1.00 (100%)
+
+    if (bar <= pLow)  return percentLow;
+    if (bar >= pHigh) return percentHigh;
+
+    float spanP = pHigh - pLow;
+    float ratio = (bar - pLow) / spanP; // 0..1
+    return percentLow + ratio * (percentHigh - percentLow);
 }
 
 // ============================================================================
@@ -79,49 +91,52 @@ void setup() {
     }
 
     Serial.println(F("========================================"));
-    Serial.println(F("  FanControl - Transmission Radiator   "));
+    Serial.println(F("  PumpControl with Current Protection  "));
     Serial.println(F("========================================"));
     Serial.println();
 
-    // Initialize CAN FIRST - before PowerOutputs changes Timer 0 prescaler
-    // mcp_can library uses delay() internally, which breaks if Timer 0 is modified
-    Serial.println(F("Initializing CAN bus (MCP2515)..."));
-    if (!g_can.begin()) {
-        Serial.println(F("*** WARNING: CAN init failed - fan will run at 100% (safety) ***"));
-        
-    }
-
-    // Power outputs init changes Timer 0 prescaler (millis/delay run 8x faster after this)
-    Serial.println(F("Initializing power outputs (fan OFF)..."));
-    g_power.begin();
-
+    // Initialize all subsystems
+    // CRITICAL: Power outputs initialized FIRST to ensure motor starts OFF
+    Serial.println(F("Initializing power outputs (motor OFF)..."));
+    g_power.begin();  // This sets motor to OFF state with safety delays
+    
     Serial.println(F("Initializing sensors..."));
+    g_map.begin();
     g_curr1.begin();
     g_curr2.begin();
     g_protection.begin();
     g_voltage.begin();
     g_voltageProtection.begin();
     g_temp.begin();
-    g_pwmInput.begin();
-
+    g_can.begin(); // stub
+    g_pwmInput.begin(); // External PWM input for slave mode - configures PIN_DIG_IN_1 as INPUT (no pullup)
+    
     // Enable PWM debug for first 10 seconds (for troubleshooting)
+    // Comment out after confirming PWM detection works
     g_pwmInput.setDebug(true);
+    
     Serial.println(F("Initializing status LED..."));
     g_statusLed.begin();
-    // Configure digital inputs
-    pinMode(Config::PIN_DIG_IN_2, INPUT_PULLUP);     // D8 for external safety
+
+    // Configure digital inputs (active low)
+    // NOTE: PIN_DIG_IN_1 (D7) is used for PWM input and configured by g_pwmInput.begin()
+    // Do NOT reconfigure it here as INPUT_PULLUP or it will interfere with PWM signal
+    // pinMode(Config::PIN_DIG_IN_1, INPUT_PULLUP);  // REMOVED - conflicts with PWM input
+    pinMode(Config::PIN_DIG_IN_2, INPUT_PULLUP);     // D8 for external safety (active low)
 
     // Print configuration summary
     Serial.println(F("Configuration:"));
-    Serial.print(F("  Temp OFF:  "));
-    Serial.print(Config::TEMP_FAN_OFF_C, 0);
-    Serial.println(F(" C"));
-    Serial.print(F("  Temp FULL: "));
-    Serial.print(Config::TEMP_FAN_FULL_C, 0);
-    Serial.println(F(" C"));
-    Serial.print(F("  CAN Timeout: "));
-    Serial.print(Config::CAN_TEMP_TIMEOUT_MS);
-    Serial.println(F(" ms"));
+    Serial.print(F("  Pressure: ")); 
+    Serial.print(Config::MAP_BAR_LOW_SETPOINT, 2);
+    Serial.print(F("-"));
+    Serial.print(Config::MAP_BAR_HIGH_SETPOINT, 2);
+    Serial.println(F(" bar"));
+    
+    Serial.print(F("  Voltage:  "));
+    Serial.print(Config::OUTPUT_PERCENT_MIN * 100.0f, 0);
+    Serial.print(F("-"));
+    Serial.print(Config::OUTPUT_PERCENT_MAX * 100.0f, 0);
+    Serial.println(F("% of Vsupply"));
     
     Serial.println();
     Serial.println(F("Protection thresholds (A):"));
@@ -211,13 +226,13 @@ void loop() {
             // Read current sensors and update status LED
             float current1 = g_curr1.readCurrentA();
             float current2 = g_curr2.readCurrentA();
-            float maxCurrentSlave = max(current1, current2);
-
-            PowerProtection::ProtectionLevel protLevelSlave = g_protection.getLevel();
-            bool inFaultSlave = (protLevelSlave == PowerProtection::ProtectionLevel::FAULT);
-            bool inEmergencySlave = (protLevelSlave == PowerProtection::ProtectionLevel::EMERGENCY);
-            g_statusLed.updateFromCurrent(maxCurrentSlave, inFaultSlave, inEmergencySlave);
-
+            float maxCurrent = max(current1, current2);
+            
+            PowerProtection::ProtectionLevel protLevel = g_protection.getLevel();
+            bool inFault = (protLevel == PowerProtection::ProtectionLevel::FAULT);
+            bool inEmergency = (protLevel == PowerProtection::ProtectionLevel::EMERGENCY);
+            g_statusLed.updateFromCurrent(maxCurrent, inFault, inEmergency);
+            
             // Compact status output for slave mode
             Serial.print(F("*** SLAVE MODE *** | PWM In:"));
             Serial.print(inputDuty * 100.0f, 1);
@@ -238,48 +253,50 @@ void loop() {
             
         } else {
             // ================================================================
-            // NORMAL TEMPERATURE-BASED CONTROL MODE
+            // NORMAL MAP-BASED CONTROL MODE (4)
             // ================================================================
-
-            // Poll CAN bus for new messages
-            g_can.poll();
-
-            // Get temperature (returns safety-high value if CAN timeout)
-            float tempC = g_can.getTempC();
-            bool tempFresh = g_can.isTempFresh();
-
-            // Read supply voltage
+            
+            // Read pressure sensor
+            float pressureBar = g_map.readPressureBar();
+            
+            // Read supply voltage (used for all percentage calculations)
             float supplyVoltage = g_voltage.readVoltage();
             VoltageProtection::ProtectionLevel voltageLevel = g_voltageProtection.update();
-
-            // Calculate target fan output from temperature
-            float targetPercent = temperatureToTargetPercent(tempC);
-
-            // Update current protection system
+            
+            // Calculate target output as percentage of supply voltage
+            float targetPercent = pressureToTargetPercent(pressureBar);
+            float targetVoltage = targetPercent * supplyVoltage;  // Convert to actual voltage
+            
+            // Update current protection system (reads current sensors)
             float voltageLimit = g_protection.update();
-
+            
             // Read current sensors and update status LED
             float current1 = g_curr1.readCurrentA();
             float current2 = g_curr2.readCurrentA();
             float maxCurrent = max(current1, current2);
-
+            
+            // Update LED based on current level and protection state
             PowerProtection::ProtectionLevel protLevel = g_protection.getLevel();
             bool inFault = (protLevel == PowerProtection::ProtectionLevel::FAULT);
             bool inEmergency = (protLevel == PowerProtection::ProtectionLevel::EMERGENCY);
             g_statusLed.updateFromCurrent(maxCurrent, inFault, inEmergency);
-
+            
             // Apply voltage limit and set power output
-            g_power.setSupplyVoltage(supplyVoltage);
+            g_power.setSupplyVoltage(supplyVoltage);  // Update measured supply voltage
             g_power.setVoltageLimit(voltageLimit);
-            g_power.setOutputPercent(targetPercent);
-
+            g_power.setOutputPercent(targetPercent);  // Use percentage-based method
+            
+            // Read digital inputs (active low) - for logging only
+            // Note: PIN_DIG_IN_2 (D8) is now used for external safety (checked at start of loop)
+            bool dig1Active = (digitalRead(Config::PIN_DIG_IN_1) == LOW);
+            bool dig2Active = (digitalRead(Config::PIN_DIG_IN_2) == LOW);
+            
             // Compact status output (every cycle)
-            Serial.print(F("T:"));
-            Serial.print(tempC, 1);
-            Serial.print(tempFresh ? F("C") : F("C(TIMEOUT)"));
-            Serial.print(F(" | Vs:"));
+            Serial.print(F("P:"));
+            Serial.print(pressureBar, 2);
+            Serial.print(F("bar | Vs:"));
             Serial.print(supplyVoltage, 1);
-            Serial.print(F("V | Fan:"));
+            Serial.print(F("V | T%:"));
             Serial.print(targetPercent * 100.0f, 0);
             Serial.print(F("% | Vo:"));
             Serial.print(g_power.getActualOutputVoltage(), 1);
@@ -305,7 +322,10 @@ void loop() {
         printDetailedStatus();
     }
     
-    // CAN polling also happens inside the normal control block above
+    // ========================================================================
+    // CAN bus polling (stub for future implementation)
+    // ========================================================================
+    g_can.poll();
 }
 
 // ============================================================================
@@ -335,7 +355,7 @@ void printDetailedStatus() {
             Serial.print(g_pwmInput.getHighTimeUs() / 1000.0f, 2);
             Serial.println(F(" ms"));
         } else {
-            Serial.println(F("Inactive (no signal) - Normal TEMP mode"));
+            Serial.println(F("Inactive (no signal) - Normal MAP mode"));
             // Debug information
             Serial.print(F("  Pin D7 State:  "));
             Serial.println(g_pwmInput.getCurrentState() == HIGH ? "HIGH" : "LOW");
@@ -351,18 +371,11 @@ void printDetailedStatus() {
         Serial.println();
     }
     
-    // Temperature (CAN)
-    float tempC = g_can.getTempC();
-    bool tempFresh = g_can.isTempFresh();
-    Serial.print(F("Temperature:     "));
-    Serial.print(tempC, 1);
-    Serial.println(tempFresh ? F(" C") : F(" C (TIMEOUT!)"));
-    Serial.print(F("Raw CAN (F):     "));
-    Serial.println(g_can.getData().transTemp_rawF);
-    Serial.print(F("CAN Messages:    "));
-    Serial.println(g_can.getMessageCount());
-    Serial.print(F("CAN Errors:      "));
-    Serial.println(g_can.getErrorCount());
+    // Pressure
+    float pressure = g_map.readPressureBar();
+    Serial.print(F("Pressure:        ")); 
+    Serial.print(pressure, 3);
+    Serial.println(F(" bar"));
     
     // Current readings (filtered)
     float i1 = g_curr1.readCurrentA();
@@ -422,7 +435,7 @@ void printDetailedStatus() {
     Serial.println(g_protection.getFaultCount());
     
     // Output status
-    float targetPercent = temperatureToTargetPercent(tempC);
+    float targetPercent = pressureToTargetPercent(pressure);
     float targetV = targetPercent * supplyV;
     Serial.print(F("Target Percent:  ")); 
     Serial.print(targetPercent * 100.0f, 1);
