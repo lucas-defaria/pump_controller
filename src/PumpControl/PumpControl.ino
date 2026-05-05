@@ -88,6 +88,7 @@ void setup() {
     Serial.println(F("Initializing CAN bus (MCP2515)..."));
     if (!g_can.begin()) {
         Serial.println(F("*** WARNING: CAN init failed - fan will run at 100% (safety) ***"));
+        
     }
 
     // Power outputs init changes Timer 0 prescaler (millis/delay run 8x faster after this)

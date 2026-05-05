@@ -14,10 +14,12 @@ CanInterface::CanInterface()
 }
 
 bool CanInterface::begin() {
-    // CRITICAL: D10 (hardware SS) MUST be OUTPUT for SPI master mode on ATmega328P
-    // If D10 goes LOW while set as INPUT, SPI hardware switches to slave mode
-    pinMode(10, OUTPUT);
-    digitalWrite(10, HIGH);
+    // CS pin is also the hardware SS pin (D10) on ATmega328P — MUST be OUTPUT
+    // for SPI master mode. If SS goes LOW while set as INPUT, SPI hardware
+    // switches to slave mode. MCP_CAN library handles this, but we set it
+    // explicitly before begin() to be safe.
+    pinMode(Config::PIN_CAN_CS, OUTPUT);
+    digitalWrite(Config::PIN_CAN_CS, HIGH);
 
     // MCP2515 needs time after power-on before SPI is ready
     delay(100);

@@ -29,7 +29,7 @@ namespace Config {
     // =========================================================================
 
     // MCP2515 SPI pins (SPI: MOSI=D11, MISO=D12, SCK=D13)
-    constexpr uint8_t PIN_CAN_CS  = 9;  // D9 - MCP2515 chip select
+    constexpr uint8_t PIN_CAN_CS  = 10; // D10 - MCP2515 chip select (hardware SS pin on ATmega328P)
     constexpr uint8_t PIN_CAN_INT = 4;  // D4  - MCP2515 interrupt
 
     // CAN message IDs and byte mapping (extensible - add new IDs here)
