@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(find /c/Users/lucas.faria/Documents/Arduino/libraries/Adafruit_NeoPixel -name *.cpp -o -name *.h)"
+      "Bash(find /c/Users/lucas.faria/Documents/Arduino/libraries/Adafruit_NeoPixel -name *.cpp -o -name *.h)",
+      "Bash(xargs grep -l \"PIN_DIG_IN\")"
     ]
   }
 }

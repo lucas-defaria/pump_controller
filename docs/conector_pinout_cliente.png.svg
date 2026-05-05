@@ -1,0 +1,149 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 540" font-family="Arial, sans-serif">
+  <!-- Title -->
+  <text x="380" y="30" font-size="20" font-weight="bold" text-anchor="middle">Conector Molex Mini-Fit Jr. 16 vias - Vista TRASEIRA</text>
+  <text x="380" y="52" font-size="13" text-anchor="middle" fill="#555">(lado da fiacao - como voce ve ao crimpar os terminais)</text>
+
+  <!-- Connector body -->
+  <rect x="60" y="90" width="640" height="240" rx="14" ry="14" fill="#f5e8c8" stroke="#5a4a2a" stroke-width="3"/>
+
+  <!-- Notch indicator (chave de orientacao) -->
+  <rect x="350" y="84" width="60" height="14" rx="3" fill="#5a4a2a"/>
+  <text x="380" y="76" font-size="11" text-anchor="middle" fill="#5a4a2a" font-style="italic">chave</text>
+
+  <!-- ============================================================ -->
+  <!-- LINHA DE CIMA (vista traseira: 16, 15, 14, 13, 12, 11, 10, 9) -->
+  <!-- ============================================================ -->
+
+  <!-- Pin 16 - CAN (USADO) -->
+  <circle cx="120" cy="140" r="22" fill="#ab47bc" stroke="#000" stroke-width="2.5"/>
+  <text x="120" y="146" font-size="14" font-weight="bold" text-anchor="middle" fill="white">16</text>
+
+  <!-- Pin 15 - nada -->
+  <circle cx="200" cy="140" r="22" fill="#e0e0e0" stroke="#888" stroke-width="2"/>
+  <text x="200" y="146" font-size="14" font-weight="bold" text-anchor="middle" fill="#888">15</text>
+
+  <!-- Pin 14 - Safety (USADO) -->
+  <circle cx="280" cy="140" r="22" fill="#66bb6a" stroke="#000" stroke-width="2.5"/>
+  <text x="280" y="146" font-size="14" font-weight="bold" text-anchor="middle">14</text>
+
+  <!-- Pin 13 - PWM externo (USADO) -->
+  <circle cx="360" cy="140" r="22" fill="#ffd54f" stroke="#000" stroke-width="2.5"/>
+  <text x="360" y="146" font-size="14" font-weight="bold" text-anchor="middle">13</text>
+
+  <!-- Pin 12 - nada -->
+  <circle cx="440" cy="140" r="22" fill="#e0e0e0" stroke="#888" stroke-width="2"/>
+  <text x="440" y="146" font-size="14" font-weight="bold" text-anchor="middle" fill="#888">12</text>
+
+  <!-- Pin 11 - nada -->
+  <circle cx="520" cy="140" r="22" fill="#e0e0e0" stroke="#888" stroke-width="2"/>
+  <text x="520" y="146" font-size="14" font-weight="bold" text-anchor="middle" fill="#888">11</text>
+
+  <!-- Pin 10 - GND (USADO) -->
+  <circle cx="600" cy="140" r="22" fill="#bdbdbd" stroke="#000" stroke-width="2.5"/>
+  <text x="600" y="146" font-size="14" font-weight="bold" text-anchor="middle">10</text>
+
+  <!-- Pin 9 - VCC (USADO) -->
+  <circle cx="680" cy="140" r="22" fill="#ef5350" stroke="#000" stroke-width="2.5"/>
+  <text x="680" y="146" font-size="14" font-weight="bold" text-anchor="middle" fill="white">9</text>
+
+  <!-- ============================================================ -->
+  <!-- LINHA DE BAIXO (vista traseira: 8, 7, 6, 5, 4, 3, 2, 1) -->
+  <!-- ============================================================ -->
+
+  <!-- Pin 8 - CAN (USADO) -->
+  <circle cx="120" cy="280" r="22" fill="#ab47bc" stroke="#000" stroke-width="2.5"/>
+  <text x="120" y="286" font-size="14" font-weight="bold" text-anchor="middle" fill="white">8</text>
+
+  <!-- Pin 7 - nada -->
+  <circle cx="200" cy="280" r="22" fill="#e0e0e0" stroke="#888" stroke-width="2"/>
+  <text x="200" y="286" font-size="14" font-weight="bold" text-anchor="middle" fill="#888">7</text>
+
+  <!-- Pin 6 - nada -->
+  <circle cx="280" cy="280" r="22" fill="#e0e0e0" stroke="#888" stroke-width="2"/>
+  <text x="280" y="286" font-size="14" font-weight="bold" text-anchor="middle" fill="#888">6</text>
+
+  <!-- Pin 5 - nada -->
+  <circle cx="360" cy="280" r="22" fill="#e0e0e0" stroke="#888" stroke-width="2"/>
+  <text x="360" y="286" font-size="14" font-weight="bold" text-anchor="middle" fill="#888">5</text>
+
+  <!-- Pin 4 - nada -->
+  <circle cx="440" cy="280" r="22" fill="#e0e0e0" stroke="#888" stroke-width="2"/>
+  <text x="440" y="286" font-size="14" font-weight="bold" text-anchor="middle" fill="#888">4</text>
+
+  <!-- Pin 3 - nada -->
+  <circle cx="520" cy="280" r="22" fill="#e0e0e0" stroke="#888" stroke-width="2"/>
+  <text x="520" y="286" font-size="14" font-weight="bold" text-anchor="middle" fill="#888">3</text>
+
+  <!-- Pin 2 - GND (USADO) -->
+  <circle cx="600" cy="280" r="22" fill="#bdbdbd" stroke="#000" stroke-width="2.5"/>
+  <text x="600" y="286" font-size="14" font-weight="bold" text-anchor="middle">2</text>
+
+  <!-- Pin 1 - VCC (USADO) -->
+  <circle cx="680" cy="280" r="22" fill="#ef5350" stroke="#000" stroke-width="2.5"/>
+  <text x="680" y="286" font-size="14" font-weight="bold" text-anchor="middle" fill="white">1</text>
+
+  <!-- ============================================================ -->
+  <!-- LABELS DOS PINOS USADOS (acima da linha de cima) -->
+  <!-- ============================================================ -->
+
+  <!-- Pin 16 -->
+  <line x1="120" y1="118" x2="120" y2="92" stroke="#6a1b9a" stroke-width="1.5"/>
+  <text x="120" y="80" font-size="11" font-weight="bold" text-anchor="middle" fill="#6a1b9a">CAN H</text>
+
+  <!-- Pin 14 -->
+  <line x1="280" y1="118" x2="280" y2="92" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="280" y="80" font-size="11" font-weight="bold" text-anchor="middle" fill="#2e7d32">Safety</text>
+
+  <!-- Pin 13 -->
+  <line x1="360" y1="118" x2="360" y2="92" stroke="#b8860b" stroke-width="1.5"/>
+  <text x="360" y="80" font-size="11" font-weight="bold" text-anchor="middle" fill="#b8860b">PWM ext (slave)</text>
+
+  <!-- Pin 10 -->
+  <line x1="600" y1="118" x2="600" y2="92" stroke="#555" stroke-width="1.5"/>
+  <text x="600" y="80" font-size="11" font-weight="bold" text-anchor="middle" fill="#333">GND</text>
+
+  <!-- Pin 9 -->
+  <line x1="680" y1="118" x2="680" y2="92" stroke="#c62828" stroke-width="1.5"/>
+  <text x="680" y="80" font-size="11" font-weight="bold" text-anchor="middle" fill="#c62828">+12V</text>
+
+  <!-- ============================================================ -->
+  <!-- LABELS DOS PINOS USADOS (abaixo da linha de baixo) -->
+  <!-- ============================================================ -->
+
+  <!-- Pin 8 -->
+  <line x1="120" y1="302" x2="120" y2="328" stroke="#6a1b9a" stroke-width="1.5"/>
+  <text x="120" y="345" font-size="11" font-weight="bold" text-anchor="middle" fill="#6a1b9a">CAN L</text>
+
+  <!-- Pin 2 -->
+  <line x1="600" y1="302" x2="600" y2="328" stroke="#555" stroke-width="1.5"/>
+  <text x="600" y="345" font-size="11" font-weight="bold" text-anchor="middle" fill="#333">GND</text>
+
+  <!-- Pin 1 -->
+  <line x1="680" y1="302" x2="680" y2="328" stroke="#c62828" stroke-width="1.5"/>
+  <text x="680" y="345" font-size="11" font-weight="bold" text-anchor="middle" fill="#c62828">+12V</text>
+
+  <!-- ============================================================ -->
+  <!-- LEGENDA -->
+  <!-- ============================================================ -->
+  <g transform="translate(60, 400)">
+    <text x="0" y="0" font-size="14" font-weight="bold">Legenda:</text>
+
+    <circle cx="15" cy="22" r="10" fill="#ef5350" stroke="#000" stroke-width="1.5"/>
+    <text x="32" y="26" font-size="12">+12V (positivo da bateria) - pinos 1 e 9</text>
+
+    <circle cx="15" cy="48" r="10" fill="#bdbdbd" stroke="#000" stroke-width="1.5"/>
+    <text x="32" y="52" font-size="12">GND (negativo da bateria) - pinos 2 e 10</text>
+
+    <circle cx="15" cy="74" r="10" fill="#66bb6a" stroke="#000" stroke-width="1.5"/>
+    <text x="32" y="78" font-size="12">Safety externa (pino 14) - puxar p/ GND para desligar (em aberto = OK)</text>
+
+    <circle cx="15" cy="100" r="10" fill="#ffd54f" stroke="#000" stroke-width="1.5"/>
+    <text x="32" y="104" font-size="12">Entrada PWM externa - modo slave (pino 13) - 200 a 400 Hz, 0 a 12V</text>
+
+    <circle cx="15" cy="126" r="10" fill="#ab47bc" stroke="#000" stroke-width="1.5"/>
+    <text x="32" y="130" font-size="12">Barramento CAN - CAN H (pino 16) e CAN L (pino 8)</text>
+
+    <circle cx="15" cy="152" r="10" fill="#e0e0e0" stroke="#888" stroke-width="1.5"/>
+    <text x="32" y="156" font-size="12">Pino nao utilizado pelo firmware (deixar desconectado)</text>
+  </g>
+</svg>

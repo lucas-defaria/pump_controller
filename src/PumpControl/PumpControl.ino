@@ -51,7 +51,7 @@ VoltageProtection g_voltageProtection(g_voltage);
 TempSensor     g_temp(Config::PIN_NTC_TEMP);  // Heatsink NTC 10K (monitoring only)
 CanInterface   g_can;  // stub for future CAN bus integration
 StatusLed      g_statusLed(Config::PIN_STATUS_LED, Config::STATUS_LED_COUNT);
-PwmInput       g_pwmInput(Config::PIN_PWM_INPUT);  // External PWM input for slave mode
+PwmInput       g_pwmInput(Config::PIN_PWM_INPUT);  // External PWM input source
 
 unsigned long g_lastUpdateMs = 0;
 unsigned long g_lastStatusMs = 0;
@@ -109,7 +109,7 @@ void setup() {
     g_voltageProtection.begin();
     g_temp.begin();
     g_can.begin(); // stub
-    g_pwmInput.begin(); // External PWM input for slave mode - configures PIN_DIG_IN_1 as INPUT (no pullup)
+    g_pwmInput.begin(); // External PWM input - configures PIN_DIG_IN_1 as INPUT (no pullup)
     
     // Enable PWM debug for first 10 seconds (for troubleshooting)
     // Comment out after confirming PWM detection works
@@ -118,11 +118,9 @@ void setup() {
     Serial.println(F("Initializing status LED..."));
     g_statusLed.begin();
 
-    // Configure digital inputs (active low)
-    // NOTE: PIN_DIG_IN_1 (D7) is used for PWM input and configured by g_pwmInput.begin()
-    // Do NOT reconfigure it here as INPUT_PULLUP or it will interfere with PWM signal
-    // pinMode(Config::PIN_DIG_IN_1, INPUT_PULLUP);  // REMOVED - conflicts with PWM input
-    pinMode(Config::PIN_DIG_IN_2, INPUT_PULLUP);     // D8 for external safety (active low)
+    // Configure digital inputs
+    // NOTE: PIN_DIG_IN_2 (D8) is used for external PWM input and configured by g_pwmInput.begin()
+    pinMode(Config::PIN_DIG_IN_1, INPUT_PULLUP);     // D7 for external safety (active low - HIGH = OK)
 
     // Print configuration summary
     Serial.println(F("Configuration:"));
@@ -156,27 +154,6 @@ void setup() {
     // delay() would require dividing by 64, not multiplying
     delayMicroseconds(2000000UL);  // 2 seconds = 2,000,000 microseconds
 
-    // PWM boot hold-off: if the external PWM source is slower to come online
-    // than the Arduino, give it a chance now — before the master loop starts
-    // commanding the pump from MAP. If a valid signal is detected we go
-    // straight to slave mode (outputs Hi-Z) so the external signal owns the
-    // gate driver. Each pulseIn() inside update() blocks ~100ms.
-    if (Config::ENABLE_PWM_SLAVE_MODE) {
-        Serial.println(F("Boot hold-off: looking for external PWM at D7..."));
-        unsigned long holdoffStart = millis();
-        while ((unsigned long)(millis() - holdoffStart) < MILLIS_COMPENSATED(Config::PWM_INPUT_BOOT_HOLDOFF_MS)) {
-            g_pwmInput.update();
-            if (g_pwmInput.isSignalValid()) {
-                Serial.println(F("External PWM detected -> entering SLAVE mode (Hi-Z)"));
-                g_power.setHiZ(true);
-                break;
-            }
-        }
-        if (!g_pwmInput.isSignalValid()) {
-            Serial.println(F("No external PWM at boot -> starting in MASTER (MAP) mode"));
-        }
-    }
-
     Serial.println(F("Starting normal operation"));
     Serial.println();
 }
@@ -197,7 +174,7 @@ void loop() {
         // ====================================================================
         // 1. Update PWM input reading (uses pulseIn, may block ~40-100ms)
         // ====================================================================
-        if (Config::ENABLE_PWM_SLAVE_MODE) {
+        if (Config::ENABLE_EXTERNAL_PWM_MODE) {
             g_pwmInput.update();
         }
 
@@ -206,7 +183,7 @@ void loop() {
         // ====================================================================
         bool externalSafetyActive = false;
         if (Config::ENABLE_EXTERNAL_SAFETY) {
-            int safetyInput = digitalRead(Config::PIN_DIG_IN_2);  // D8
+            int safetyInput = digitalRead(Config::PIN_DIG_IN_1);  // D7
             if (Config::EXTERNAL_SAFETY_ACTIVE_HIGH) {
                 externalSafetyActive = (safetyInput == HIGH);  // HIGH = shutdown
             } else {
@@ -215,8 +192,6 @@ void loop() {
 
             // If external safety triggered, immediately shutdown and skip normal control
             if (externalSafetyActive) {
-                // Take outputs back from any Hi-Z handoff before driving the gate
-                if (g_power.isHiZ()) g_power.setHiZ(false);
                 g_power.setDuty(0.0f);  // IMMEDIATE shutdown (no rate limiting)
                 g_statusLed.updateExternalSafetyBlink();  // Blue blinking LED
                 Serial.println(F("*** EXTERNAL SAFETY ACTIVE - OUTPUT FORCED OFF ***"));
@@ -234,27 +209,7 @@ void loop() {
         bool inEmergency = (protLevel == PowerProtection::ProtectionLevel::EMERGENCY);
 
         // ====================================================================
-        // 4. Decide mode: SLAVE (PWM input mirrored) vs MASTER (MAP control)
-        //    EMERGENCY overrides slave - we MUST take back the gate driver to
-        //    shut the motor down (otherwise the external PWM keeps it running
-        //    into the fault).
-        // ====================================================================
-        bool slaveMode = (Config::ENABLE_PWM_SLAVE_MODE && g_pwmInput.isSignalValid());
-        if (inEmergency) slaveMode = false;
-
-        // Glitch-free transition between OUTPUT and Hi-Z. Source of truth is
-        // PowerOutputs::isHiZ(), so the boot-time slave entry (if any) doesn't
-        // re-fire setHiZ() on the first iteration.
-        if (slaveMode != g_power.isHiZ()) {
-            Serial.print(F("*** Mode change: "));
-            Serial.println(slaveMode ? F("master -> SLAVE (Hi-Z)")
-                                     : F("slave -> MASTER"));
-            g_power.setHiZ(slaveMode);
-            if (!slaveMode) g_power.setDuty(0.0f);  // Safe state on entry to master
-        }
-
-        // ====================================================================
-        // 5. Common readings + status LED (used by both modes)
+        // 4. Common readings + status LED
         // ====================================================================
         float supplyVoltage = g_voltage.readVoltage();
         g_power.setSupplyVoltage(supplyVoltage);
@@ -265,56 +220,57 @@ void loop() {
         float maxCurrent = max(current1, current2);
         g_statusLed.updateFromCurrent(maxCurrent, inFault, inEmergency);
 
-        if (slaveMode) {
-            // ================================================================
-            // SLAVE MODE: outputs are Hi-Z, external PWM drives the gate via
-            // R30 alone. We just observe; protection still runs and will pull
-            // us out via the EMERGENCY override above if current spikes.
-            // ================================================================
-            float inputDuty = g_pwmInput.getDutyCycle();
+        // ====================================================================
+        // 5. Source select: External PWM (if valid) vs MAP fallback
+        // ====================================================================
+        bool externalMode = (Config::ENABLE_EXTERNAL_PWM_MODE && g_pwmInput.isSignalValid());
+        float targetPercent;
+        float pressureBar = 0.0f;
+        if (externalMode) {
+            targetPercent = g_pwmInput.getDutyCycle();
+        } else {
+            g_voltageProtection.update();
+            pressureBar = g_map.readPressureBar();
+            targetPercent = pressureToTargetPercent(pressureBar);
+        }
 
-            Serial.print(F("*** SLAVE MODE *** | PWM In:"));
-            Serial.print(inputDuty * 100.0f, 1);
+        // ====================================================================
+        // 6. Apply: EMERGENCY overrides source with explicit zero duty
+        // ====================================================================
+        if (inEmergency) {
+            g_power.setDuty(0.0f);
+        } else {
+            g_power.setOutputPercent(targetPercent);
+        }
+
+        // ====================================================================
+        // 7. Status line
+        // ====================================================================
+        if (externalMode) {
+            Serial.print(F("*** EXTERNAL PWM MODE *** | PWM In:"));
+            Serial.print(g_pwmInput.getDutyCycle() * 100.0f, 1);
             Serial.print(F("% @ "));
             Serial.print(g_pwmInput.getFrequency(), 1);
-            Serial.print(F("Hz | Vs:"));
-            Serial.print(supplyVoltage, 1);
-            Serial.print(F("V | I1:"));
-            Serial.print(current1, 1);
-            Serial.print(F("A | I2:"));
-            Serial.print(current2, 1);
-            Serial.print(F("A | Lim:"));
-            Serial.print(voltageLimit * 100.0f, 0);
-            Serial.print(F("% | "));
-            Serial.println(g_protection.getLevelString());
-
+            Serial.print(F("Hz | "));
         } else {
-            // ================================================================
-            // MASTER MODE: MAP-based pressure control
-            // ================================================================
-            float pressureBar = g_map.readPressureBar();
-            g_voltageProtection.update();
-
-            float targetPercent = pressureToTargetPercent(pressureBar);
-            g_power.setOutputPercent(targetPercent);
-
-            Serial.print(F("P:"));
+            Serial.print(F("*** MAP MODE *** | P:"));
             Serial.print(pressureBar, 2);
-            Serial.print(F("bar | Vs:"));
-            Serial.print(supplyVoltage, 1);
-            Serial.print(F("V | T%:"));
+            Serial.print(F("bar | T%:"));
             Serial.print(targetPercent * 100.0f, 0);
             Serial.print(F("% | Vo:"));
             Serial.print(g_power.getActualOutputVoltage(), 1);
-            Serial.print(F("V | I1:"));
-            Serial.print(current1, 1);
-            Serial.print(F("A | I2:"));
-            Serial.print(current2, 1);
-            Serial.print(F("A | Lim:"));
-            Serial.print(voltageLimit * 100.0f, 0);
-            Serial.print(F("% | "));
-            Serial.println(g_protection.getLevelString());
+            Serial.print(F("V | "));
         }
+        Serial.print(F("Vs:"));
+        Serial.print(supplyVoltage, 1);
+        Serial.print(F("V | I1:"));
+        Serial.print(current1, 1);
+        Serial.print(F("A | I2:"));
+        Serial.print(current2, 1);
+        Serial.print(F("A | Lim:"));
+        Serial.print(voltageLimit * 100.0f, 0);
+        Serial.print(F("% | "));
+        Serial.println(g_protection.getLevelString());
     }
     
     // ========================================================================
@@ -343,9 +299,9 @@ void printDetailedStatus() {
     Serial.println(F("STATUS REPORT"));
     Serial.println(F("----------------------------------------"));
     
-    // PWM Slave Mode Status
-    if (Config::ENABLE_PWM_SLAVE_MODE) {
-        Serial.print(F("PWM Slave Mode:  "));
+    // External PWM Status
+    if (Config::ENABLE_EXTERNAL_PWM_MODE) {
+        Serial.print(F("External PWM:    "));
         if (g_pwmInput.isSignalValid()) {
             Serial.println(F("*** ACTIVE ***"));
             Serial.print(F("  Input Duty:    "));
@@ -455,32 +411,33 @@ void printDetailedStatus() {
     Serial.print(F("PWM Duty:        "));
     Serial.print(g_power.getCurrentDuty() * 100.0f, 1);
     Serial.println(F(" %"));
-    Serial.print(F("Output Stage:    "));
-    Serial.println(g_power.isHiZ() ? F("Hi-Z (slave passthrough)") : F("OUTPUT (uC drives)"));
+    Serial.print(F("Output Source:   "));
+    Serial.println((Config::ENABLE_EXTERNAL_PWM_MODE && g_pwmInput.isSignalValid())
+                       ? F("EXTERNAL PWM") : F("MAP"));
     
     // External safety status
     if (Config::ENABLE_EXTERNAL_SAFETY) {
-        int safetyInput = digitalRead(Config::PIN_DIG_IN_2);
-        bool safetyActive = Config::EXTERNAL_SAFETY_ACTIVE_HIGH ? 
+        int safetyInput = digitalRead(Config::PIN_DIG_IN_1);
+        bool safetyActive = Config::EXTERNAL_SAFETY_ACTIVE_HIGH ?
                            (safetyInput == HIGH) : (safetyInput == LOW);
-        Serial.print(F("External Safety: ")); 
+        Serial.print(F("External Safety: "));
         Serial.println(safetyActive ? "*** ACTIVE (SHUTDOWN) ***" : "OK");
     }
-    
+
     // Digital inputs
-    // Note: D7 (PIN_DIG_IN_1) is used for PWM input when ENABLE_PWM_SLAVE_MODE is true
-    if (Config::ENABLE_PWM_SLAVE_MODE) {
-        Serial.print(F("Digital In 1:    ")); 
-        Serial.println(F("(used for PWM input)"));
+    // Note: D8 (PIN_DIG_IN_2) is used for external PWM input when ENABLE_EXTERNAL_PWM_MODE is true
+    bool d1 = (digitalRead(Config::PIN_DIG_IN_1) == LOW);
+    Serial.print(F("Digital In 1:    "));
+    Serial.println(d1 ? "ACTIVE (LOW)" : "inactive (HIGH)");
+
+    if (Config::ENABLE_EXTERNAL_PWM_MODE) {
+        Serial.print(F("Digital In 2:    "));
+        Serial.println(F("(used for external PWM input)"));
     } else {
-        bool d1 = (digitalRead(Config::PIN_DIG_IN_1) == LOW);
-        Serial.print(F("Digital In 1:    ")); 
-        Serial.println(d1 ? "ACTIVE" : "inactive");
+        bool d2 = (digitalRead(Config::PIN_DIG_IN_2) == LOW);
+        Serial.print(F("Digital In 2:    "));
+        Serial.println(d2 ? "ACTIVE" : "inactive");
     }
-    
-    bool d2 = (digitalRead(Config::PIN_DIG_IN_2) == LOW);
-    Serial.print(F("Digital In 2:    ")); 
-    Serial.println(d2 ? "ACTIVE" : "inactive");
     
     // Runtime
     // COMPENSATED: millis() runs 64x faster, divide by prescaler factor for real time
