@@ -1,238 +1,201 @@
-# PumpControl - Sistema Avançado de Controle de Bomba de Combustível
+# PumpControl â€” Controle de Bomba de CombustÃ­vel
 
-Sistema inteligente de controle de bomba de combustível baseado em Arduino Nano, com controle proporcional por pressão MAP e proteção multinível contra sobrecorrente.
+Firmware para controle de bomba de combustÃ­vel baseado em Arduino Nano, com dois modos de operaÃ§Ã£o (MAP-based e slave por PWM externo) e proteÃ§Ã£o multinÃ­vel por corrente, tensÃ£o e safety externa.
 
-## ?? Visão Geral
+Este README descreve o estado atual do firmware no branch `main`.
 
-O PumpControl é um sistema eletrônico embarcado projetado para aplicações automotivas de alta performance, controlando a alimentação de bombas de combustível de forma proporcional à demanda do motor (medida via sensor MAP). O sistema garante operação segura através de múltiplas camadas de proteção elétrica e térmica.
+## VisÃ£o geral
 
-### Características Principais
+- **Modo MAP (default)**: pressÃ£o do MAP modulando duty entre 50% e 100% de Vsupply.
+- **Modo slave (override)**: quando hÃ¡ PWM externo vÃ¡lido em D8, o duty externo Ã© replicado nos outputs (anula o controle por MAP).
+- **ProteÃ§Ã£o em 3 nÃ­veis** por corrente: NORMAL â†’ FAULT â†’ EMERGENCY.
+- **Boot hold-off** de 2 s com motor OFF e inicializaÃ§Ã£o defensiva (pinos em estado seguro antes de virar OUTPUT).
+- **PWM de potÃªncia a 3.9 kHz** em Timer 0 (D5/D6), com compensaÃ§Ã£o de timing em todo o cÃ³digo.
 
-- **Controle Proporcional**: Ajusta automaticamente a tensão da bomba (70-100% da alimentação) baseado na pressão MAP (0.4-0.6 bar gauge)
-- **Proteção Inteligente**: Sistema multinível de proteção contra sobrecorrente com ação progressiva (nunca desliga completamente - crítico para motores sob carga)
-- **Monitoramento em Tempo Real**: Leitura contínua de pressão, corrente (2 canais), tensão de alimentação
-- **PWM Alta Frequência**: 3.9 kHz para operação silenciosa e eficiente
-- **Status Visual**: LED NeoPixel RGB indicando estado operacional
-- **Entrada de Segurança Externa**: Desligamento remoto via sinal digital (D7)
-- **Expansível**: Preparado para comunicação CAN bus (MCP2515)
+## Hardware
 
-## ?? Especificações Técnicas
+- **MCU**: Arduino Nano (ATmega328P @ 16 MHz)
+- **AlimentaÃ§Ã£o do mÃ³dulo**: +5 V vindo da placa host entra no pino **5V (VOUT)** do Nano. **VIN desconectado** para evitar dropout do regulador interno (o DCDC da host jÃ¡ entrega 5 V regulado).
+- **Power stage**: IRFB3077 como switch low-side, MBR30100 como freewheeling. Carga ligada entre VCC2 e PWM_OUT â€” o sinal medido no dreno Ã© invertido em relaÃ§Ã£o ao gate e sÃ³ aparece quando hÃ¡ carga.
+- **Driver de gate**: BC817 (NPN) + BC807 (PNP) â€” topologia inverte o sinal PWM, compensada em SW (`PWM_INVERTED_BY_HARDWARE = true`).
+- **Sensores de corrente**: 2Ã— **ACS758LCB-050B** (bidirecional Â±50 A, 40 mV/A nominal). Correntes negativas (fluxo reverso) sÃ£o clampadas a 0.
+- **Sensor MAP**: MPX5700AP (pressÃ£o absoluta 15â€“700 kPa). ConversÃ£o para gauge subtraindo `ATMOSPHERIC_PRESSURE_BAR` (1.013 bar).
+- **NTC 10 K** no dissipador, dividor com R19 (10 K) e R20 em sÃ©rie (alta impedÃ¢ncia) para o ADC. C16 (4.7 Î¼F) filtra.
+- **Sense de Vsupply**: divisor 1:11 (R1=10 K, R2=1 K).
+- **LED de status**: NeoPixel (1 LED) em D2.
 
-### Hardware
-- **MCU**: Arduino Nano (ATmega328P @ 16MHz)
-- **Alimentação**: 8-16V DC (típico 12V automotivo)
-- **Saídas PWM**: 2x canais @ 3.9 kHz (D3, D5)
-- **Corrente Máxima**: 50A por canal (ACS772LCB-050B)
-- **Sensor de Pressão**: MPX5700AP (15-700 kPa absoluto)
-- **Proteção**: Circuito de inversão com BC817/BC807 para acionamento de MOSFETs
+## Pinout (Config.h)
 
-### Arquitetura de Software
+| Pino | FunÃ§Ã£o | ObservaÃ§Ãµes |
+|------|--------|-------------|
+| A1 | NTC heatsink | Beta 3950, R25 = 10 K |
+| A2 | Current Ch1 | ACS758LCB-050B |
+| A3 | Current Ch2 | ACS758LCB-050B |
+| A4 | MAP | MPX5700AP |
+| A5 | Vsupply | Divisor 1/11 |
+| D2 | NeoPixel | Status visual |
+| D5 | PWM_OUT_2 | Timer 0 / OC0B |
+| D6 | PWM_OUT_1 | Timer 0 / OC0A â€” movido de D3 (ver nota abaixo) |
+| D7 | Safety input | OPTO output, ativo LOW (HIGH = OK) |
+| D8 | PWM input externo | Slave mode (200â€“400 Hz) |
+| A0 | AUX in | Reservado |
+
+> **Por que D6 e D5 (Timer 0)** â€” o pino D11 (OC2A do Timer 2) Ã© compartilhado com SPI/MOSI; quando o CAN/MCP2515 estÃ¡ ativo, ocorrem glitches periÃ³dicos no PWM em D3 (OC2B do mesmo Timer 2). Timer 0 nÃ£o tem overlap com SPI, entÃ£o mover ambas as saÃ­das para D5/D6 elimina o problema.
+
+> **R30 e R45 nÃ£o populados** â€” D7 e D8 sÃ£o apenas saÃ­das dos OPTOs; nÃ£o hÃ¡ caminho elÃ©trico de retorno para a base de T4/T8. O Arduino Ã© o **Ãºnico driver** dos gates dos MOSFETs via D5/D6.
+
+## PWM de potÃªncia
+
+- **3.9 kHz** Phase-Correct PWM em Timer 0 (`16 MHz / (2 Ã— 256 Ã— 8) â‰ˆ 3906 Hz`).
+- Prescaler do Timer 0 alterado de 64 â†’ 8 para atingir essa frequÃªncia.
+- **Efeito colateral**: `millis()` e `delay()` rodam **8Ã— mais rÃ¡pido**. Todo cÃ³digo de timing usa o macro `MILLIS_COMPENSATED(ms)` (multiplica por `TIMER0_PRESCALER_FACTOR = 8`). `delayMicroseconds()` **nÃ£o** Ã© afetado.
+- `PWM_INVERTED_BY_HARDWARE = true`: SW inverte o byte (`pwmValue = 255 - pwmValue`) antes do `analogWrite`, de forma que `duty = 1.0` corresponde a MOSFET ON (potÃªncia total).
+
+## Modos de operaÃ§Ã£o
+
+### MAP mode (default)
+
+Mapeamento linear entre pressÃ£o (gauge) e percentual da Vsupply:
+
+| PressÃ£o (bar gauge) | SaÃ­da |
+|---------------------|-------|
+| â‰¤ 0.4 (`MAP_BAR_LOW_SETPOINT`) | 50% Vsupply (`OUTPUT_PERCENT_MIN`) |
+| 0.4 â†’ 0.6 | interpolaÃ§Ã£o linear |
+| â‰¥ 0.6 (`MAP_BAR_HIGH_SETPOINT`) | 100% Vsupply (`OUTPUT_PERCENT_MAX`) |
+
+Filtro EMA no MAP: `MAP_FILTER_ALPHA = 0.15`.
+
+### Slave mode (PWM externo em D8)
+
+Quando `ENABLE_EXTERNAL_PWM_MODE = true` e hÃ¡ sinal vÃ¡lido em D8, o controle por MAP Ã© **sobrescrito**: o duty cycle medido na entrada vira o target dos outputs.
+
+- FrequÃªncia vÃ¡lida: **200â€“400 Hz** (tÃ­pico ~300 Hz)
+- Timeout: **200 ms** sem pulso â†’ volta para MAP
+- Leitura via `pulseIn()` (pode bloquear atÃ© ~100 ms por amostra), uma medida por iteraÃ§Ã£o do loop principal
+- Linha de status no Serial muda para `*** EXTERNAL PWM MODE ***` com freq e duty medidos
+
+## ProteÃ§Ã£o por corrente (3 nÃ­veis)
+
+EstratÃ©gia: **nunca desligar totalmente em condiÃ§Ã£o de fault** (motor sob carga seria danificado), exceto em EMERGENCY (curto/saturaÃ§Ã£o).
+
+| NÃ­vel | Faixa | Limite de tensÃ£o | AÃ§Ã£o |
+|-------|-------|------------------|------|
+| **NORMAL** | < 40 A | 100% | Sem limitaÃ§Ã£o |
+| **FAULT** | â‰¥ 40 A | 50% | Reduz para mÃ­nimo seguro com rate limiting |
+| **EMERGENCY** | â‰¥ 45 A | 0%* | Shutdown imediato, **bypassa rate limiting** e forÃ§a `setDuty(0)` no main loop |
+
+\* Se `ENABLE_EMERGENCY_SHUTDOWN = false`, EMERGENCY cai para 50% como fail-safe.
+
+- Histerese: **2.5 A** para retornar ao nÃ­vel anterior
+- DecisÃ£o usa `max(I_ch1, I_ch2)` (qualquer canal acima do threshold dispara)
+- Rate limiting normal: 0.05 por ciclo de 50 ms (â‰ˆ 1 s para varredura completa)
+- Override de EMERGENCY no `loop()`: mesmo se source for slave, EMERGENCY forÃ§a duty 0
+
+## ProteÃ§Ã£o por tensÃ£o de alimentaÃ§Ã£o
+
+Adaptativa por queda percentual da Vsupply medida (lida em A5):
+
+- **WARNING**: queda de 30%
+- **CRITICAL**: queda de 50%
+- Histerese: 0.5 V para evitar oscilaÃ§Ã£o
+- Faixa vÃ¡lida do sensor: 7.0â€“16.0 V (fora disso = sensor fault)
+
+## Safety externa (D7)
+
+- `ENABLE_EXTERNAL_SAFETY = true`
+- `EXTERNAL_SAFETY_ACTIVE_HIGH = false` â†’ **LOW = shutdown**, HIGH = OK (OPTO mantÃ©m HIGH em operaÃ§Ã£o normal)
+- **Bypassa rate limiting**: aÃ§Ã£o instantÃ¢nea
+- LED pisca azul (`updateExternalSafetyBlink`) enquanto ativo
+- Skipa o restante do loop de controle (prioridade mÃ¡xima)
+
+## Sensor de corrente â€” calibraÃ§Ã£o
+
+ACS758LCB-050B (bidirecional, sensitivity nominal 40 mV/A):
+
+- CalibraÃ§Ã£o de slope feita em bancada (apÃ³s filtro RC):
+  - 1.32 A â†’ 2.54 V
+  - 2.30 A â†’ 2.58 V
+  - Slope = `(2.58 âˆ’ 2.54) / (2.30 âˆ’ 1.32) = 40.8 mV/A` â‰ˆ nominal
+- Vzero derivado do slope: **2.488 V @ 0 A** (offset Voe dentro do spec Â±60 mV)
+- Multi-amostragem: **32 samples Ã— 50 Î¼s â‰ˆ 4.9 ms** (~19 ciclos de PWM a 3.9 kHz)
+- EMA `CURRENT_FILTER_ALPHA = 0.05` (constante de tempo ~1 s a 20 Hz â€” agressivo para rejeitar ripple, lento o bastante para proteÃ§Ã£o)
+
+## Temperatura (NTC 10K) â€” monitoramento
+
+- EquaÃ§Ã£o Beta: `1/T = 1/T25 + (1/Î²) Â· ln(R / R25)`, Î² = 3950
+- Mesmo rail (+5 V) para divisor e ADC â†’ `Vref` cancela: `R_NTC = R_PULLUP Ã— adc / (1023 âˆ’ adc)`
+- DetecÃ§Ã£o de falha: temp fora de [-40, 150] Â°C indica sensor aberto/curto
+- **Sem aÃ§Ã£o de proteÃ§Ã£o** â€” apenas leitura e log no status report
+
+## LED de status (NeoPixel em D2)
+
+| Cor | Significado |
+|-----|-------------|
+| Verde sÃ³lido | Normal (gradiente verdeâ†’vermelho conforme corrente sobe) |
+| Vermelho 1 Hz | FAULT |
+| Vermelho 5 Hz | EMERGENCY |
+| Azul piscando | Safety externa ativa |
+
+## ComunicaÃ§Ã£o
+
+- **Serial @ 115200 bps**:
+  - Linha compacta a 20 Hz com modo (MAP/EXTERNAL PWM), pressÃ£o ou duty externo, target, Vsupply, I1, I2, voltage limit, nÃ­vel de proteÃ§Ã£o
+  - RelatÃ³rio detalhado a 1 Hz com todas as mÃ©tricas, fault counts e estado dos inputs digitais
+- **CAN bus (MCP2515)**: stub presente (`g_can.poll()`), infra mÃ­nima â€” sem trÃ¡fego ativo nesta versÃ£o do `main`. VersÃ£o com CAN funcional segue em `develop-TempControl`.
+
+## SequÃªncia de boot
+
+1. `PowerOutputs::begin()` forÃ§a os pinos em estado seguro (HIGH = MOSFET OFF na topologia invertida) ainda como INPUT
+2. Configura como OUTPUT apÃ³s estabilizaÃ§Ã£o (100 Î¼s)
+3. Configura Timer 0 (Phase-Correct, prescaler 8) para 3.9 kHz
+4. `setDuty(0)` + 100 ms de grace period
+5. InicializaÃ§Ã£o dos sensores e da safety externa
+6. **Hold-off de 2 s** com motor OFF (`delayMicroseconds(2_000_000)` â€” nÃ£o afetado pelo prescaler)
+7. Entra no loop normal
+
+## ConfiguraÃ§Ã£o â€” flags principais (Config.h)
+
+| Flag | Default | FunÃ§Ã£o |
+|------|---------|--------|
+| `ENABLE_HIGH_FREQ_PWM` | `true` | 3.9 kHz no Timer 0 |
+| `PWM_INVERTED_BY_HARDWARE` | `true` | Compensa BC817+BC807 |
+| `ENABLE_EMERGENCY_SHUTDOWN` | `true` | 0% em EMERGENCY (false = 50%) |
+| `ENABLE_EXTERNAL_SAFETY` | `true` | D7 LOW desliga |
+| `EXTERNAL_SAFETY_ACTIVE_HIGH` | `false` | Polaridade da safety |
+| `ENABLE_EXTERNAL_PWM_MODE` | `true` | Slave mode em D8 |
+
+Ajustes finos: setpoints de pressÃ£o (`MAP_BAR_*_SETPOINT`), thresholds de corrente (`CURRENT_THRESHOLD_*`), faixa vÃ¡lida do sensor (`VOLTAGE_*_VALID`), filtros EMA.
+
+## Build
+
+- Arduino IDE 1.8+ ou PlatformIO
+- Lib: `Adafruit_NeoPixel`
+- Board: Arduino Nano (ATmega328P, Old Bootloader)
+- Sketch: `src/PumpControl/PumpControl.ino`
+
+## Notas da PCB v1.0
+
+- 5 V da host alimenta o Nano via pino 5V (VOUT); VIN deixado desconectado para evitar dropout do regulador interno
+- Conectores CN4 e CN5 podem estar com pinagem invertida
+- Sensor MAP: Vout Ã© o **pino 1** (nÃ£o pino 3)
+- Pode ser necessÃ¡rio remover componentes do pino RESET durante gravaÃ§Ã£o
+- Trilha de 5 V do USB do Arduino deve ser cortada para evitar alimentaÃ§Ã£o reversa
+- PWM_OUT_1 movido de D3 â†’ **D6** para resolver glitches por compartilhamento de Timer 2 com SPI
+
+## Estrutura do firmware
 
 ```
-PumpControl.ino
-??? MapSensor (MPX5700AP)           - Leitura e conversão de pressão
-??? PowerOutputs (PWM)              - Controle de saídas com rate limiting
-??? CurrentSensor (ACS772LCB-050B)  - Medição de corrente com multi-amostragem
-??? PowerProtection                 - Sistema de proteção multinível
-??? VoltageSensor                   - Monitoramento de tensão de alimentação
-??? VoltageProtection               - Proteção adaptativa por queda de tensão
-??? StatusLed (NeoPixel)            - Indicação visual de estado
-??? CanInterface (MCP2515)          - Comunicação CAN (preparado)
-??? Config.h                        - Parâmetros de configuração
+src/PumpControl/
+â”œâ”€â”€ PumpControl.ino       â€” main loop, source select, override de EMERGENCY
+â”œâ”€â”€ Config.h              â€” todos os parÃ¢metros de compile-time
+â”œâ”€â”€ MapSensor.{h,cpp}     â€” MPX5700AP, conversÃ£o absoluta â†’ gauge, EMA
+â”œâ”€â”€ PowerOutputs.{h,cpp}  â€” Timer 0 PWM, inversÃ£o por HW, voltage limiting
+â”œâ”€â”€ CurrentSensor.{h,cpp} â€” ACS758LCB-050B, multi-sampling, EMA
+â”œâ”€â”€ PowerProtection.h     â€” mÃ¡quina de estados NORMAL/FAULT/EMERGENCY
+â”œâ”€â”€ VoltageSensor.{h,cpp} â€” divisor 1:11, leitura de Vsupply
+â”œâ”€â”€ VoltageProtection.h   â€” proteÃ§Ã£o por queda percentual
+â”œâ”€â”€ TempSensor.h          â€” NTC 10K, equaÃ§Ã£o Beta (monitoramento)
+â”œâ”€â”€ PwmInput.h            â€” pulseIn-based, slave mode em D8
+â”œâ”€â”€ StatusLed.h           â€” NeoPixel state machine
+â””â”€â”€ CanInterface.{h,cpp}  â€” stub MCP2515
 ```
-
-## ?? Mapeamento de Pinos
-
-| Pino | Função | Descrição |
-|------|--------|-----------|
-| A4 | MAP Sensor | Entrada analógica do sensor MPX5700AP |
-| A2 | Current Ch1 | Sensor de corrente canal 1 (ACS772LCB-050B) |
-| A3 | Current Ch2 | Sensor de corrente canal 2 (ACS772LCB-050B) |
-| A5 | Supply Voltage | Medição de tensão de alimentação (divisor 1:11) |
-| D2 | Status LED | NeoPixel RGB para indicação visual |
-| D3 | PWM Out 1 | Saída PWM canal 1 (3.9 kHz) |
-| D5 | PWM Out 2 | Saída PWM canal 2 (3.9 kHz) |
-| D7 | Safety Input | Entrada de desligamento externo (ativo HIGH) |
-| D8 | Digital In 2 | Entrada digital reservada (ativo LOW) |
-
-## ??? Sistema de Proteção Multinível
-
-O sistema implementa proteção progressiva contra sobrecorrente, **nunca desligando completamente** a bomba (crítico para motores sob carga):
-
-| Nível | Faixa de Corrente | Ação | Limite de Tensão |
-|-------|-------------------|------|------------------|
-| **NORMAL** | 0 - 25A | Operação normal | 100% (sem limite) |
-| **WARNING** | 25 - 30A | Redução leve | 70% da alimentação |
-| **HIGH** | 30 - 35A | Redução moderada | 60% da alimentação |
-| **CRITICAL** | 35 - 40A | Redução agressiva | 50% da alimentação |
-| **FAULT** | 40 - 45A | Limite mínimo seguro | 50% da alimentação |
-| **EMERGENCY** | > 45A | Desligamento total* | 0% (opcional) |
-
-\* *EMERGENCY shutdown configurável via `ENABLE_EMERGENCY_SHUTDOWN` em Config.h*
-
-### Proteção por Tensão de Alimentação
-
-Sistema adaptativo que detecta quedas de tensão e ajusta limites automaticamente:
-- **WARNING**: Queda de 30% na tensão de alimentação
-- **CRITICAL**: Queda de 50% na tensão de alimentação
-- Histerese de 0.5V para evitar oscilações
-
-### Entrada de Segurança Externa
-
-Sinal digital em D7 permite desligamento remoto:
-- **Ativo HIGH** (configurável): Desliga imediatamente todas as saídas
-- Bypass de rate limiting (ação instantânea)
-- Ideal para integração com ECU ou sistemas de segurança
-
-## ?? Conversão de Pressão
-
-**Sensor MPX5700AP** (pressão absoluta):
-```
-Vout = Vs × (0.00125 × P[kPa] + 0.04)
-
-Pressão gauge = Pressão absoluta - Pressão atmosférica
-P[bar gauge] = (P[kPa] - 101.3) / 100
-```
-
-**Mapeamento Pressão ? Potência**:
-```
-0.4 bar gauge ? 70% da tensão de alimentação
-0.6 bar gauge ? 100% da tensão de alimentação
-Interpolação linear entre pontos
-```
-
-## ?? Como Usar
-
-### Requisitos
-- Arduino IDE 1.8.x ou superior / PlatformIO
-- Biblioteca Adafruit_NeoPixel (para LED RGB)
-- Placa: Arduino Nano / Arduino Uno compatible
-
-### Compilação e Upload
-
-1. **Abrir o projeto**
-   ```
-   FW/src/PumpControl/PumpControl.ino
-   ```
-
-2. **Configurar parâmetros** (opcional)
-   Editar `Config.h` para ajustar:
-   - Setpoints de pressão (`MAP_BAR_LOW_SETPOINT`, `MAP_BAR_HIGH_SETPOINT`)
-   - Thresholds de corrente (`CURRENT_THRESHOLD_*`)
-   - Habilitação de proteções (`ENABLE_EMERGENCY_SHUTDOWN`, `ENABLE_EXTERNAL_SAFETY`)
-
-3. **Selecionar placa**
-   - Tools ? Board ? Arduino Nano
-   - Tools ? Processor ? ATmega328P (Old Bootloader)
-
-4. **Upload**
-   - Conectar Arduino via USB
-   - Sketch ? Upload
-
-5. **Monitorar operação**
-   - Tools ? Serial Monitor
-   - Baud Rate: 115200
-
-### Primeira Inicialização
-
-O sistema executa sequência de inicialização segura:
-1. Todas as saídas desligadas (0% duty)
-2. Delay de 2 segundos para estabilização de sensores
-3. Início do controle proporcional
-
-**IMPORTANTE**: Durante gravação, pode ser necessário remover componentes do pino RESET (ver `Problemas placa.txt`).
-
-## ?? Monitoramento Serial
-
-### Saída Compacta (20Hz)
-```
-P:0.52bar | Vs:12.3V | T%:80% | Vo:9.8V | I1:18.5A | I2:17.2A | Lim:100% | NORMAL
-```
-
-### Relatório Detalhado (1Hz)
-```
-----------------------------------------
-STATUS REPORT
-----------------------------------------
-Pressure:        0.523 bar
-Current Ch1:     18.47 A
-Current Ch2:     17.28 A
-Max Current:     18.47 A
-Supply Voltage:  12.34 V
-Protection:      NORMAL
-Voltage Limit:   100.0 %
-Target Percent:  80.5 %
-Target Voltage:  9.94 V
-Actual Voltage:  9.92 V
-PWM Duty:        80.4 %
-Uptime:          127 s
-----------------------------------------
-```
-
-## ?? Diagnóstico e Troubleshooting
-
-### LED de Status (NeoPixel - D2)
-
-| Cor | Estado | Significado |
-|-----|--------|-------------|
-| ?? Azul | Inicialização | Sistema inicializando |
-| ?? Verde | Normal | Operação normal |
-| ?? Amarelo | Advertência | Corrente elevada (WARNING) |
-| ?? Laranja | Alto | Corrente alta (HIGH) |
-| ?? Vermelho | Crítico | Proteção ativa (CRITICAL/FAULT) |
-| ? Apagado | Desligado | Segurança externa ativa |
-
-### Problemas Comuns
-
-**Leitura de corrente instável/ruidosa**
-- Causa: Interferência de PWM no sensor
-- Solução: Sistema já implementa multi-amostragem (10 samples + filtro EMA)
-
-**Sensor MAP lê 0V**
-- Verificar: Pino correto do sensor (pino 1 = Vout)
-- Verificar: Alimentação 5V do sensor
-- Nota: Conectores CN4/CN5 podem estar invertidos na PCB v1.0
-
-**Gravação falha**
-- Remover componentes conectados ao pino RESET durante upload
-- Usar "Old Bootloader" nas configurações da IDE
-
-**Bomba não responde**
-- Verificar: Tensão de alimentação (8-16V)
-- Verificar: Conexão do gate dos MOSFETs
-- Verificar: Inversão de PWM (`PWM_INVERTED_BY_HARDWARE = true`)
-
-## ?? Notas Importantes da PCB v1.0
-
-Baseado em `Problemas placa.txt`:
-
-1. **Conectores invertidos**: CN4 e CN5 podem estar com pinagem invertida
-2. **Sensor MAP**: Pino correto de Vout é o pino 1 (não o 3)
-3. **Sensor de corrente**: Modelo real montado é **ACS772LCB-050B** (50A unidirecional)
-4. **Gravação**: Necessário remover componentes do pino RESET
-5. **Alimentação USB**: Trilha de 5V do Arduino deve ser cortada para evitar alimentação reversa
-
-## ?? Funcionalidades Futuras
-
-- [ ] Comunicação CAN bus (MCP2515) - infraestrutura já implementada
-- [ ] Saídas analógicas 0-10V (D6, D9) - requer circuito externo DAC
-- [ ] Watchdog para detecção de travamento
-- [ ] Calibração de sensores via serial
-- [ ] Datalog em SD card
-- [ ] Integração com display OLED
-
-## ?? Documentação Adicional
-
-- **Manual de Instalação**: Ver `Installation_Manual.html` (gerado automaticamente)
-- **Esquemático**: `pcb/EvoProject 1.0.pdf`
-- **Configuração de LED NeoPixel**: `FW/NEOPIXEL_SETUP.md`
-
-## ?? Licença
-
-Uso interno/educacional. Para uso comercial, consulte os autores.
-
----
-
-**Versão**: 2.0 (Janeiro 2026)  
-**Hardware**: PCB EvoProject v1.0  
-**Firmware**: PumpControl Advanced Protection System
