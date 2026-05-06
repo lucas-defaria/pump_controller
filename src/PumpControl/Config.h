@@ -142,17 +142,17 @@ namespace Config {
     // =========================================================================
     // EXTERNAL SAFETY INPUT (EMERGENCY SHUTDOWN VIA D7)
     // =========================================================================
-    
+
     // External safety input configuration
-    // When D7 receives HIGH signal, immediately shutdown outputs (same as EMERGENCY protection)
-    // This allows external systems (ECU, safety relay, etc.) to force pump shutdown
+    // When D7 (uC_IN1) is pulled LOW by the external system, immediately shutdown outputs.
+    // D7 is held HIGH by the OPTO output when the safety signal is inactive (normal operation).
     // WARNING: Unlike internal protection, external shutdown is IMMEDIATE (no rate limiting)
     constexpr bool ENABLE_EXTERNAL_SAFETY = true;  // Enable external safety shutdown via D7
-    
+
     // Signal polarity: true = HIGH triggers shutdown, false = LOW triggers shutdown
     // Set to true for active-high safety signal (HIGH = shutdown, LOW = normal)
     // Set to false for active-low safety signal (LOW = shutdown, HIGH = normal)
-    constexpr bool EXTERNAL_SAFETY_ACTIVE_HIGH = true;  // HIGH = emergency shutdown
+    constexpr bool EXTERNAL_SAFETY_ACTIVE_HIGH = false;  // LOW = emergency shutdown (HIGH = OK)
     
     // Rate limiting for voltage changes (per update cycle)
     // Prevents sudden jumps, reduces stress on pump/electrical system
@@ -239,19 +239,15 @@ namespace Config {
     // PIN ASSIGNMENTS
     // =========================================================================
     
-    // Main outputs (both on Timer 0 - no SPI conflict)
-    constexpr uint8_t PIN_PWM_OUT_1    = 6;  // D6 - OC0A (Timer 0)
-    constexpr uint8_t PIN_PWM_OUT_2    = 5;  // D5 - OC0B (Timer 0)
+    // Main sensors and outputs
+    constexpr uint8_t PIN_NTC_SENSOR   = A4; // Reserved for future NTC sensor (was MAP MPX5700AP on pump variant)
+    constexpr uint8_t PIN_PWM_OUT_1    = 6;  // D6 (SSR channel 1) // Modificado para D6 para evitar conflito com Timer 0
+    constexpr uint8_t PIN_PWM_OUT_2    = 5;  // D5 (SSR channel 2)
     
     // Status LED NeoPixel
-    // DEBUG: Set to false to disable NeoPixel updates (test SPI/Timer2 conflict isolation)
-    constexpr bool ENABLE_STATUS_LED = false;
     constexpr uint8_t PIN_STATUS_LED   = 2;  // D2 - NeoPixel RGB LED
     constexpr uint16_t STATUS_LED_COUNT = 1; // Número de LEDs NeoPixel
-    constexpr uint8_t LED_BRIGHTNESS   = 200; // Brilho do LED (0-255)
-
-    // NTC temperature sensor (future - analog input, curve TBD)
-    constexpr uint8_t PIN_NTC_SENSOR   = A4; // Reserved for future NTC sensor
+    constexpr uint8_t LED_BRIGHTNESS   = 200; // Brilho do LED (0-255, 50 = ~20%)
     
     // Current sensors (ACS758LCB-050B)
     constexpr uint8_t PIN_CURRENT_1    = A2; // Current sensor channel 1
@@ -269,40 +265,30 @@ namespace Config {
     constexpr uint8_t PIN_VCC_SENSE    = A5; // Supply voltage sense (voltage divider)
     
     // =========================================================================
-    // PWM INPUT (SLAVE MODE)
+    // PWM INPUT (EXTERNAL SOURCE)
     // =========================================================================
-    
-    // External PWM input configuration for slave mode
-    // When valid PWM signal is detected on PIN_DIG_IN_1 (D7), system enters slave mode
-    // and replicates the input PWM on both outputs (ignoring temperature control)
-    // When signal is lost/idle, system returns to normal temperature-based control
+    // External PWM input configuration
+    // When a valid PWM signal is detected on PIN_DIG_IN_2 (D8), the system uses
+    // the input duty cycle as the target for the outputs (instead of CAN/temperature).
+    // When signal is lost/idle, system falls back to CAN-based temperature control.
     //
-    // HARDWARE NOTE: the gate driver input has the µC PWM (uC_PWM1, R28=1K) and
-    // the external PWM (uC_IN1, R30=1K) summing into the same node at T4's base
-    // (R26=100K is a weak pulldown). With both 1K resistors equal, two driven
-    // sources fight in a 1:1 divider. So entering slave mode requires the µC
-    // PWM pins to go Hi-Z (pinMode INPUT) — see PowerOutputs::setHiZ(). When
-    // exiting slave (signal lost), the µC must drive HIGH (= MOSFET OFF, due
-    // to the inverted driver) before reapplying PWM, otherwise the floating
-    // base briefly turns the motor ON via R26.
-    constexpr uint8_t PIN_PWM_INPUT = PIN_DIG_IN_1;  // D7 - PWM input for slave mode
+    // HARDWARE NOTE: on this board R30 (in series with uC_IN1/D7) and R45 (in
+    // series with uC_IN2/D8) are NOT populated. So D7 and D8 are connected
+    // ONLY to the OPTO outputs — there is no electrical path from the input
+    // pins back to the base of T4/T8. The Arduino is the SOLE driver of the
+    // gate via uC_PWM1 (D6) and uC_PWM2 (D5). The external PWM at D8 is read
+    // by software (pulseIn) and replicated on both PWM outputs at 3.9 kHz.
+    constexpr uint8_t PIN_PWM_INPUT = PIN_DIG_IN_2;  // D8 - external PWM input (uC_IN2)
 
-    // Expected PWM frequency range (Hz) - typically 25Hz �10Hz tolerance
-    constexpr float PWM_INPUT_FREQ_MIN = 15.0f;      // Minimum valid frequency (Hz)
-    constexpr float PWM_INPUT_FREQ_MAX = 35.0f;      // Maximum valid frequency (Hz)
+    // Expected PWM frequency range (Hz) - typical external command is ~300 Hz
+    constexpr float PWM_INPUT_FREQ_MIN = 200.0f;     // Minimum valid frequency (Hz)
+    constexpr float PWM_INPUT_FREQ_MAX = 400.0f;     // Maximum valid frequency (Hz)
 
     // Signal timeout (milliseconds) - if no valid pulse received in this time, signal is considered lost
-    constexpr unsigned long PWM_INPUT_TIMEOUT_MS = 200; // 200ms timeout (5x period @ 25Hz)
+    constexpr unsigned long PWM_INPUT_TIMEOUT_MS = 200; // 200ms timeout (~60 periods @ 300Hz)
 
-    // Boot hold-off (milliseconds) - at startup, keep motor OFF and try to detect
-    // an external PWM signal for this long before falling back to temperature
-    // control. Useful when the external PWM source takes longer to come online
-    // than the Arduino. Each pulseIn attempt blocks up to ~100ms, so this window
-    // typically allows 4-5 detection attempts at 25Hz.
-    constexpr unsigned long PWM_INPUT_BOOT_HOLDOFF_MS = 500;
-
-    // Slave mode enable flag
-    constexpr bool  ENABLE_PWM_SLAVE_MODE = true;     // Enable external PWM slave mode
+    // External PWM mode enable flag
+    constexpr bool  ENABLE_EXTERNAL_PWM_MODE = true;  // Allow external PWM at D8 to override CAN/temperature control
     
     // =========================================================================
     // TIMING

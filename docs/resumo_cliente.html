@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>PumpControl - Resumo de Operação</title>
+<style>
+  body {
+    font-family: -apple-system, "Segoe UI", Arial, sans-serif;
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 0 24px;
+    color: #222;
+    line-height: 1.55;
+  }
+  h1 {
+    border-bottom: 3px solid #c62828;
+    padding-bottom: 8px;
+    color: #c62828;
+  }
+  h2 {
+    margin-top: 36px;
+    border-left: 5px solid #1976d2;
+    padding-left: 12px;
+    color: #1976d2;
+  }
+  h3 { margin-top: 22px; color: #333; }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 12px 0 18px;
+  }
+  th, td {
+    border: 1px solid #bbb;
+    padding: 8px 12px;
+    text-align: left;
+  }
+  th { background: #f0f0f0; }
+  .pin {
+    display: inline-block;
+    background: #fff3e0;
+    border: 1px solid #ffb74d;
+    border-radius: 4px;
+    padding: 1px 7px;
+    font-weight: bold;
+    font-family: Consolas, monospace;
+    color: #e65100;
+  }
+  .priority {
+    background: #fff8e1;
+    border-left: 4px solid #f9a825;
+    padding: 10px 14px;
+    margin: 10px 0;
+    border-radius: 4px;
+  }
+  .led-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 6px 0;
+  }
+  .led-dot {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 1px solid #555;
+    flex-shrink: 0;
+  }
+  .note {
+    font-style: italic;
+    color: #555;
+    font-size: 0.92em;
+  }
+  .diagram {
+    margin: 20px 0;
+    text-align: center;
+  }
+  .diagram svg {
+    max-width: 100%;
+    height: auto;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: #fafafa;
+  }
+  footer {
+    margin-top: 50px;
+    padding-top: 16px;
+    border-top: 1px solid #ddd;
+    font-size: 0.85em;
+    color: #777;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<h1>Modulo PumpControl - Resumo de Operacao</h1>
+<p class="note">Documento de referencia para teste em campo. Numeracao dos pinos conforme conector Molex Mini-Fit Jr. de 16 vias da traseira do modulo.</p>
+
+<!-- =================================================================== -->
+<h2>1. Modo MAP (operacao padrao)</h2>
+<p>O modulo le o sensor de pressao MPX5700AP e ajusta a saida em funcao da pressao (em bar relativos a atmosfera):</p>
+
+<table>
+  <thead>
+    <tr><th>Pressao lida</th><th>Saida na bomba</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>&le; <b>0,4 bar</b></td><td><b>50%</b> da tensao de alimentacao</td></tr>
+    <tr><td><b>0,6 bar</b> ou mais</td><td><b>100%</b> da tensao de alimentacao</td></tr>
+    <tr><td>Entre 0,4 e 0,6 bar</td><td>Rampa linear entre 50% e 100%</td></tr>
+  </tbody>
+</table>
+
+<p>A saida e proporcional a tensao <b>medida</b> (nao fixa em 12 V), entao o modulo se adapta automaticamente em qualquer faixa de 8 V a 14,5 V.</p>
+
+<!-- =================================================================== -->
+<h2>2. Modo Slave (PWM externo)</h2>
+<ul>
+  <li>O modulo monitora o <span class="pin">pino 13</span> do conector.</li>
+  <li>Se receber um sinal <b>PWM valido entre 200 e 400 Hz</b> (tipico 300 Hz, nivel logico 0&ndash;12 V), automaticamente sai do modo MAP e passa a <b>copiar o duty cycle</b> desse sinal nas duas saidas para a bomba.</li>
+  <li>Se o sinal sumir por <b>mais de 200 ms</b>, o modulo volta sozinho ao modo MAP.</li>
+  <li>Nao ha chave fisica: o "switch" e automatico, baseado na presenca/ausencia do PWM no <span class="pin">pino 13</span>.</li>
+</ul>
+
+<!-- =================================================================== -->
+<h2>3. Protecoes (em ordem de prioridade)</h2>
+
+<div class="priority">
+<h3>a) Safety externa - <span class="pin">pino 14</span></h3>
+<ul>
+  <li>Entrada normalmente em <b>aberto</b> (operacao OK).</li>
+  <li>Se o <span class="pin">pino 14</span> for <b>puxado para GND</b>, a saida e cortada <b>imediatamente</b> (sem rampa).</li>
+  <li>Prioridade maxima - sobrepoe qualquer outro modo de operacao.</li>
+</ul>
+</div>
+
+<div class="priority">
+<h3>b) Protecao de corrente</h3>
+<p>Sensores ACS758 medem corrente nas duas saidas (canais 1 e 2):</p>
+<ul>
+  <li>Acima de <b>40 A</b> &rarr; entra em <b>FAULT</b>: saida cai para 50% da tensao de alimentacao.</li>
+  <li>Acima de <b>45 A</b> &rarr; entra em <b>EMERGENCIA</b>: saida e <b>desligada</b> completamente.</li>
+  <li>Histerese de 2,5 A para evitar oscilacao entre os niveis.</li>
+</ul>
+</div>
+
+<div class="priority">
+<h3>c) Protecao da tensao de alimentacao</h3>
+<ul>
+  <li>Avisa quando a tensao cai <b>30%</b> abaixo do valor inicial.</li>
+  <li>Atua (limita potencia) quando cai <b>50%</b>.</li>
+  <li>Considera defeito de sensor se ler abaixo de 7 V ou acima de 16 V.</li>
+  <li>Histerese de 0,5 V.</li>
+</ul>
+</div>
+
+<div class="priority">
+<h3>d) Temperatura do dissipador (NTC)</h3>
+<ul>
+  <li><b>Monitorada e reportada via serial</b>, mas atualmente <b>nao corta a saida</b> &mdash; apenas registro/log.</li>
+</ul>
+</div>
+
+<!-- =================================================================== -->
+<h2>4. Indicacao no LED (NeoPixel)</h2>
+
+<div class="led-row"><span class="led-dot" style="background:#22c55e;"></span><span><b>Verde</b> &rarr; operacao normal (cor passa de verde para vermelho conforme a corrente sobe).</span></div>
+<div class="led-row"><span class="led-dot" style="background:#ef4444;"></span><span><b>Vermelho piscando 1 Hz</b> &rarr; FAULT de corrente (acima de 40 A).</span></div>
+<div class="led-row"><span class="led-dot" style="background:#b91c1c;"></span><span><b>Vermelho piscando 5 Hz</b> &rarr; EMERGENCIA (acima de 45 A).</span></div>
+<div class="led-row"><span class="led-dot" style="background:#3b82f6;"></span><span><b>Azul piscando</b> &rarr; Safety externa ativa (<span class="pin">pino 14</span> em GND).</span></div>
+
+<!-- =================================================================== -->
+<h2>5. Partida segura</h2>
+<ul>
+  <li>Ao energizar, a saida fica forcada em <b>0%</b> por aproximadamente 2 segundos enquanto os sensores estabilizam.</li>
+  <li>So depois desse intervalo o controle normal entra em operacao.</li>
+</ul>
+
+<!-- =================================================================== -->
+<h2>6. Pinagem do conector (vista traseira)</h2>
+
+<div class="diagram">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 540" font-family="Arial, sans-serif">
+  <text x="380" y="30" font-size="20" font-weight="bold" text-anchor="middle">Conector Molex Mini-Fit Jr. 16 vias - Vista TRASEIRA</text>
+  <text x="380" y="52" font-size="13" text-anchor="middle" fill="#555">(lado da fiacao - como voce ve ao crimpar os terminais)</text>
+  <rect x="60" y="90" width="640" height="240" rx="14" ry="14" fill="#f5e8c8" stroke="#5a4a2a" stroke-width="3"/>
+  <rect x="350" y="84" width="60" height="14" rx="3" fill="#5a4a2a"/>
+  <text x="380" y="76" font-size="11" text-anchor="middle" fill="#5a4a2a" font-style="italic">chave</text>
+
+  <!-- Linha de cima -->
+  <circle cx="120" cy="140" r="22" fill="#ab47bc" stroke="#000" stroke-width="2.5"/>
+  <text x="120" y="146" font-size="14" font-weight="bold" text-anchor="middle" fill="white">16</text>
+  <circle cx="200" cy="140" r="22" fill="#e0e0e0" stroke="#888" stroke-width="2"/>
+  <text x="200" y="146" font-size="14" font-weight="bold" text-anchor="middle" fill="#888">15</text>
+  <circle cx="280" cy="140" r="22" fill="#66bb6a" stroke="#000" stroke-width="2.5"/>
+  <text x="280" y="146" font-size="14" font-weight="bold" text-anchor="middle">14</text>
+  <circle cx="360" cy="140" r="22" fill="#ffd54f" stroke="#000" stroke-width="2.5"/>
+  <text x="360" y="146" font-size="14" font-weight="bold" text-anchor="middle">13</text>
+  <circle cx="440" cy="140" r="22" fill="#e0e0e0" stroke="#888" stroke-width="2"/>
+  <text x="440" y="146" font-size="14" font-weight="bold" text-anchor="middle" fill="#888">12</text>
+  <circle cx="520" cy="140" r="22" fill="#e0e0e0" stroke="#888" stroke-width="2"/>
+  <text x="520" y="146" font-size="14" font-weight="bold" text-anchor="middle" fill="#888">11</text>
+  <circle cx="600" cy="140" r="22" fill="#bdbdbd" stroke="#000" stroke-width="2.5"/>
+  <text x="600" y="146" font-size="14" font-weight="bold" text-anchor="middle">10</text>
+  <circle cx="680" cy="140" r="22" fill="#ef5350" stroke="#000" stroke-width="2.5"/>
+  <text x="680" y="146" font-size="14" font-weight="bold" text-anchor="middle" fill="white">9</text>
+
+  <!-- Linha de baixo -->
+  <circle cx="120" cy="280" r="22" fill="#ab47bc" stroke="#000" stroke-width="2.5"/>
+  <text x="120" y="286" font-size="14" font-weight="bold" text-anchor="middle" fill="white">8</text>
+  <circle cx="200" cy="280" r="22" fill="#e0e0e0" stroke="#888" stroke-width="2"/>
+  <text x="200" y="286" font-size="14" font-weight="bold" text-anchor="middle" fill="#888">7</text>
+  <circle cx="280" cy="280" r="22" fill="#e0e0e0" stroke="#888" stroke-width="2"/>
+  <text x="280" y="286" font-size="14" font-weight="bold" text-anchor="middle" fill="#888">6</text>
+  <circle cx="360" cy="280" r="22" fill="#e0e0e0" stroke="#888" stroke-width="2"/>
+  <text x="360" y="286" font-size="14" font-weight="bold" text-anchor="middle" fill="#888">5</text>
+  <circle cx="440" cy="280" r="22" fill="#e0e0e0" stroke="#888" stroke-width="2"/>
+  <text x="440" y="286" font-size="14" font-weight="bold" text-anchor="middle" fill="#888">4</text>
+  <circle cx="520" cy="280" r="22" fill="#e0e0e0" stroke="#888" stroke-width="2"/>
+  <text x="520" y="286" font-size="14" font-weight="bold" text-anchor="middle" fill="#888">3</text>
+  <circle cx="600" cy="280" r="22" fill="#bdbdbd" stroke="#000" stroke-width="2.5"/>
+  <text x="600" y="286" font-size="14" font-weight="bold" text-anchor="middle">2</text>
+  <circle cx="680" cy="280" r="22" fill="#ef5350" stroke="#000" stroke-width="2.5"/>
+  <text x="680" y="286" font-size="14" font-weight="bold" text-anchor="middle" fill="white">1</text>
+
+  <!-- Labels superiores -->
+  <line x1="120" y1="118" x2="120" y2="92" stroke="#6a1b9a" stroke-width="1.5"/>
+  <text x="120" y="80" font-size="11" font-weight="bold" text-anchor="middle" fill="#6a1b9a">CAN H</text>
+  <line x1="280" y1="118" x2="280" y2="92" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="280" y="80" font-size="11" font-weight="bold" text-anchor="middle" fill="#2e7d32">Safety</text>
+  <line x1="360" y1="118" x2="360" y2="92" stroke="#b8860b" stroke-width="1.5"/>
+  <text x="360" y="80" font-size="11" font-weight="bold" text-anchor="middle" fill="#b8860b">PWM ext (slave)</text>
+  <line x1="600" y1="118" x2="600" y2="92" stroke="#555" stroke-width="1.5"/>
+  <text x="600" y="80" font-size="11" font-weight="bold" text-anchor="middle" fill="#333">GND</text>
+  <line x1="680" y1="118" x2="680" y2="92" stroke="#c62828" stroke-width="1.5"/>
+  <text x="680" y="80" font-size="11" font-weight="bold" text-anchor="middle" fill="#c62828">+12V</text>
+
+  <!-- Labels inferiores -->
+  <line x1="120" y1="302" x2="120" y2="328" stroke="#6a1b9a" stroke-width="1.5"/>
+  <text x="120" y="345" font-size="11" font-weight="bold" text-anchor="middle" fill="#6a1b9a">CAN L</text>
+  <line x1="600" y1="302" x2="600" y2="328" stroke="#555" stroke-width="1.5"/>
+  <text x="600" y="345" font-size="11" font-weight="bold" text-anchor="middle" fill="#333">GND</text>
+  <line x1="680" y1="302" x2="680" y2="328" stroke="#c62828" stroke-width="1.5"/>
+  <text x="680" y="345" font-size="11" font-weight="bold" text-anchor="middle" fill="#c62828">+12V</text>
+
+  <!-- Legenda -->
+  <g transform="translate(60, 400)">
+    <text x="0" y="0" font-size="14" font-weight="bold">Legenda:</text>
+    <circle cx="15" cy="22" r="10" fill="#ef5350" stroke="#000" stroke-width="1.5"/>
+    <text x="32" y="26" font-size="12">+12V (positivo da bateria) - pinos 1 e 9</text>
+    <circle cx="15" cy="48" r="10" fill="#bdbdbd" stroke="#000" stroke-width="1.5"/>
+    <text x="32" y="52" font-size="12">GND (negativo da bateria) - pinos 2 e 10</text>
+    <circle cx="15" cy="74" r="10" fill="#66bb6a" stroke="#000" stroke-width="1.5"/>
+    <text x="32" y="78" font-size="12">Safety externa (pino 14) - puxar p/ GND para desligar (em aberto = OK)</text>
+    <circle cx="15" cy="100" r="10" fill="#ffd54f" stroke="#000" stroke-width="1.5"/>
+    <text x="32" y="104" font-size="12">Entrada PWM externa - modo slave (pino 13) - 200 a 400 Hz, 0 a 12V</text>
+    <circle cx="15" cy="126" r="10" fill="#ab47bc" stroke="#000" stroke-width="1.5"/>
+    <text x="32" y="130" font-size="12">Barramento CAN - CAN H (pino 16) e CAN L (pino 8)</text>
+    <circle cx="15" cy="152" r="10" fill="#e0e0e0" stroke="#888" stroke-width="1.5"/>
+    <text x="32" y="156" font-size="12">Pino nao utilizado (deixar desconectado)</text>
+  </g>
+</svg>
+</div>
+
+<h3>Tabela resumida</h3>
+<table>
+  <thead>
+    <tr><th>Pino</th><th>Funcao</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><b>1, 9</b></td><td>+12V (positivo da bateria)</td></tr>
+    <tr><td><b>2, 10</b></td><td>GND (negativo da bateria)</td></tr>
+    <tr><td><b>8</b></td><td>CAN L</td></tr>
+    <tr><td><b>13</b></td><td>Entrada PWM externa (modo slave)</td></tr>
+    <tr><td><b>14</b></td><td>Safety externa (em aberto = OK / GND = desliga)</td></tr>
+    <tr><td><b>16</b></td><td>CAN H</td></tr>
+    <tr><td>3, 4, 5, 6, 7, 11, 12, 15</td><td>Nao utilizados (deixar desconectados)</td></tr>
+  </tbody>
+</table>
+
+<footer>
+PumpControl - Documento de referencia para teste em campo
+</footer>
+
+</body>
+</html>

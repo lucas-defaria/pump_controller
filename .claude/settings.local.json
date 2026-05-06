@@ -1,7 +1,17 @@
 {
   "permissions": {
     "allow": [
-      "Bash(find /c/Users/lucas.faria/Documents/Arduino/libraries/Adafruit_NeoPixel -name *.cpp -o -name *.h)"
+      "Bash(find /c/Users/lucas.faria/Documents/Arduino/libraries/Adafruit_NeoPixel -name *.cpp -o -name *.h)",
+      "PowerShell($f = 'docs\\\\conector_pinout_cliente.png.pdf'; if \\(Test-Path $f\\) { try { Remove-Item -Force $f -ErrorAction Stop; \"removed\" } catch { \"locked: $\\($_.Exception.Message\\)\" } } else { \"absent\" })",
+      "Bash(git stash *)",
+      "Bash(git merge *)",
+      "Bash(echo \"---EXIT $?---\")",
+      "Bash(git checkout *)",
+      "Bash(git add *)",
+      "Bash(git rm *)",
+      "Bash(grep -n *)",
+      "Bash(git show *)",
+      "Read(//tmp/**)"
     ]
   }
 }

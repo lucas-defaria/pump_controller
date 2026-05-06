@@ -1,24 +1,28 @@
 /* ----------------------------------------------------------------------------
-   FanControl.ino - Transmission radiator fan control via CAN temperature
+   PumpControl.ino - Transmission radiator fan control via CAN
 
    Features:
-   - CAN bus temperature acquisition (MCP2515 - transmission oil temp)
-   - Temperature-based fan PWM control (95-100°C ramp)
+   - Transmission oil temperature read from CAN (gearbox 0x418, byte 2 in °F)
+   - Linear ramp from TEMP_FAN_OFF_C (0%) to TEMP_FAN_FULL_C (100%)
+   - External PWM input on D8 overrides CAN/temperature when valid
    - Dual ACS758LCB-050B current sensors (A2, A3)
-   - Current fault protection with multi-level response
-   - Two PWM outputs (D6, D5) for MOSFET driver
-   - CAN timeout safety: fan forced to 100% if no data received
+   - Current fault protection (FAULT 50%, EMERGENCY 0%)
+   - Two PWM outputs (D5, D6) for SSR control
+   - NeoPixel RGB LED indicating current level and protection state
+   - External safety on D7 (active LOW) - immediate shutdown
+   - Serial logging of all parameters
 
-   Temperature Control:
-   - Below 95°C:  Fan OFF (0% PWM)
-   - 95-100°C:    Linear ramp (0% to 100%)
-   - Above 100°C: Fan FULL (100% PWM)
-   - CAN Timeout:  Fan FULL (100% PWM) - safety fallback
+   LED Status Indication:
+   - NORMAL (0-40A):   Green solid (gradient green->red as current rises)
+   - FAULT (>40A):     Blinking red (1Hz)
+   - EMERGENCY (>45A): Fast blinking red (5Hz)
 
    Protection Strategy:
    - NORMAL (0-40A):   Full voltage available
-   - FAULT (>40A):     50% voltage reduction
+   - FAULT (>40A):     50% voltage reduction (minimum safe level)
    - EMERGENCY (>45A): Complete shutdown (if enabled)
+
+   Safety fallback: if CAN data is stale (timeout), fan is forced to 100%.
 
    Configuration in Config.h
 ---------------------------------------------------------------------------- */
@@ -45,9 +49,9 @@ PowerProtection g_protection(g_curr1, g_curr2);
 VoltageSensor  g_voltage(Config::PIN_VCC_SENSE);
 VoltageProtection g_voltageProtection(g_voltage);
 TempSensor     g_temp(Config::PIN_NTC_TEMP);  // Heatsink NTC 10K (monitoring only)
-CanInterface   g_can;
+CanInterface   g_can;  // Transmission oil temperature via CAN
 StatusLed      g_statusLed(Config::PIN_STATUS_LED, Config::STATUS_LED_COUNT);
-PwmInput       g_pwmInput(Config::PIN_PWM_INPUT);
+PwmInput       g_pwmInput(Config::PIN_PWM_INPUT);  // External PWM input source
 
 unsigned long g_lastUpdateMs = 0;
 unsigned long g_lastStatusMs = 0;
@@ -56,7 +60,7 @@ unsigned long g_lastStatusMs = 0;
 // Temperature to output percentage conversion
 // ============================================================================
 
-// Converts temperature (°C) to target fan output percentage (0.0 to 1.0)
+// Converts transmission oil temperature (°C) to target fan duty (0.0..1.0)
 // Below TEMP_FAN_OFF_C:  0% (fan off)
 // Linear ramp between OFF and FULL
 // Above TEMP_FAN_FULL_C: 100% (fan full speed)
@@ -83,17 +87,16 @@ void setup() {
     Serial.println(F("========================================"));
     Serial.println();
 
-    // Initialize CAN FIRST - before PowerOutputs changes Timer 0 prescaler
-    // mcp_can library uses delay() internally, which breaks if Timer 0 is modified
+    // Initialize CAN FIRST - before PowerOutputs changes Timer 0 prescaler.
+    // mcp_can library uses delay() internally, which breaks if Timer 0 is modified.
     Serial.println(F("Initializing CAN bus (MCP2515)..."));
     if (!g_can.begin()) {
         Serial.println(F("*** WARNING: CAN init failed - fan will run at 100% (safety) ***"));
-        
     }
 
     // Power outputs init changes Timer 0 prescaler (millis/delay run 8x faster after this)
     Serial.println(F("Initializing power outputs (fan OFF)..."));
-    g_power.begin();
+    g_power.begin();  // This sets fan to OFF state with safety delays
 
     Serial.println(F("Initializing sensors..."));
     g_curr1.begin();
@@ -102,14 +105,18 @@ void setup() {
     g_voltage.begin();
     g_voltageProtection.begin();
     g_temp.begin();
-    g_pwmInput.begin();
+    g_pwmInput.begin(); // External PWM input - configures PIN_PWM_INPUT (D8) as INPUT (no pullup)
 
     // Enable PWM debug for first 10 seconds (for troubleshooting)
+    // Comment out after confirming PWM detection works
     g_pwmInput.setDebug(true);
+
     Serial.println(F("Initializing status LED..."));
     g_statusLed.begin();
+
     // Configure digital inputs
-    pinMode(Config::PIN_DIG_IN_2, INPUT_PULLUP);     // D8 for external safety
+    // NOTE: PIN_DIG_IN_2 (D8) is used for external PWM input and configured by g_pwmInput.begin()
+    pinMode(Config::PIN_DIG_IN_1, INPUT_PULLUP);     // D7 for external safety (active low - HIGH = OK)
 
     // Print configuration summary
     Serial.println(F("Configuration:"));
@@ -141,27 +148,6 @@ void setup() {
     // delay() would require dividing by 64, not multiplying
     delayMicroseconds(2000000UL);  // 2 seconds = 2,000,000 microseconds
 
-    // PWM boot hold-off: if the external PWM source is slower to come online
-    // than the Arduino, give it a chance now — before the master loop starts
-    // ramping the fan from temperature. If a valid signal is detected we go
-    // straight to slave mode (outputs Hi-Z) so the external signal owns the
-    // gate driver. Each pulseIn() inside update() blocks ~100ms.
-    if (Config::ENABLE_PWM_SLAVE_MODE) {
-        Serial.println(F("Boot hold-off: looking for external PWM at D7..."));
-        unsigned long holdoffStart = millis();
-        while ((unsigned long)(millis() - holdoffStart) < MILLIS_COMPENSATED(Config::PWM_INPUT_BOOT_HOLDOFF_MS)) {
-            g_pwmInput.update();
-            if (g_pwmInput.isSignalValid()) {
-                Serial.println(F("External PWM detected -> entering SLAVE mode (Hi-Z)"));
-                g_power.setHiZ(true);
-                break;
-            }
-        }
-        if (!g_pwmInput.isSignalValid()) {
-            Serial.println(F("No external PWM at boot -> starting in MASTER (temperature) mode"));
-        }
-    }
-
     Serial.println(F("Starting normal operation"));
     Serial.println();
 }
@@ -182,7 +168,7 @@ void loop() {
         // ====================================================================
         // 1. Update PWM input reading (uses pulseIn, may block ~40-100ms)
         // ====================================================================
-        if (Config::ENABLE_PWM_SLAVE_MODE) {
+        if (Config::ENABLE_EXTERNAL_PWM_MODE) {
             g_pwmInput.update();
         }
 
@@ -191,7 +177,7 @@ void loop() {
         // ====================================================================
         bool externalSafetyActive = false;
         if (Config::ENABLE_EXTERNAL_SAFETY) {
-            int safetyInput = digitalRead(Config::PIN_DIG_IN_2);  // D8
+            int safetyInput = digitalRead(Config::PIN_DIG_IN_1);  // D7
             if (Config::EXTERNAL_SAFETY_ACTIVE_HIGH) {
                 externalSafetyActive = (safetyInput == HIGH);  // HIGH = shutdown
             } else {
@@ -200,8 +186,6 @@ void loop() {
 
             // If external safety triggered, immediately shutdown and skip normal control
             if (externalSafetyActive) {
-                // Take outputs back from any Hi-Z handoff before driving the gate
-                if (g_power.isHiZ()) g_power.setHiZ(false);
                 g_power.setDuty(0.0f);  // IMMEDIATE shutdown (no rate limiting)
                 g_statusLed.updateExternalSafetyBlink();  // Blue blinking LED
                 Serial.println(F("*** EXTERNAL SAFETY ACTIVE - OUTPUT FORCED OFF ***"));
@@ -219,27 +203,7 @@ void loop() {
         bool inEmergency = (protLevel == PowerProtection::ProtectionLevel::EMERGENCY);
 
         // ====================================================================
-        // 4. Decide mode: SLAVE (PWM input mirrored) vs MASTER (temp control)
-        //    EMERGENCY overrides slave - we MUST take back the gate driver to
-        //    shut the motor down (otherwise the external PWM keeps it running
-        //    into the fault).
-        // ====================================================================
-        bool slaveMode = (Config::ENABLE_PWM_SLAVE_MODE && g_pwmInput.isSignalValid());
-        if (inEmergency) slaveMode = false;
-
-        // Glitch-free transition between OUTPUT and Hi-Z. Source of truth is
-        // PowerOutputs::isHiZ(), so the boot-time slave entry (if any) doesn't
-        // re-fire setHiZ() on the first iteration.
-        if (slaveMode != g_power.isHiZ()) {
-            Serial.print(F("*** Mode change: "));
-            Serial.println(slaveMode ? F("master -> SLAVE (Hi-Z)")
-                                     : F("slave -> MASTER"));
-            g_power.setHiZ(slaveMode);
-            if (!slaveMode) g_power.setDuty(0.0f);  // Safe state on entry to master
-        }
-
-        // ====================================================================
-        // 5. Common readings + status LED (used by both modes)
+        // 4. Common readings + status LED
         // ====================================================================
         float supplyVoltage = g_voltage.readVoltage();
         g_power.setSupplyVoltage(supplyVoltage);
@@ -250,60 +214,63 @@ void loop() {
         float maxCurrent = max(current1, current2);
         g_statusLed.updateFromCurrent(maxCurrent, inFault, inEmergency);
 
-        if (slaveMode) {
-            // ================================================================
-            // SLAVE MODE: outputs are Hi-Z, external PWM drives the gate via
-            // R30 alone. We just observe; protection still runs and will pull
-            // us out via the EMERGENCY override above if current spikes.
-            // ================================================================
-            float inputDuty = g_pwmInput.getDutyCycle();
+        // ====================================================================
+        // 5. Source select: External PWM (if valid) vs CAN/temperature fallback
+        // ====================================================================
+        bool externalMode = (Config::ENABLE_EXTERNAL_PWM_MODE && g_pwmInput.isSignalValid());
+        float targetPercent;
+        float tempC = 0.0f;
+        bool tempFresh = false;
+        if (externalMode) {
+            targetPercent = g_pwmInput.getDutyCycle();
+        } else {
+            g_voltageProtection.update();
+            g_can.poll();
+            tempC = g_can.getTempC();
+            tempFresh = g_can.isTempFresh();
+            // CanInterface returns 110°C when stale -> ramp clamps to 100% fan (safety)
+            targetPercent = temperatureToTargetPercent(tempC);
+        }
 
-            Serial.print(F("*** SLAVE MODE *** | PWM In:"));
-            Serial.print(inputDuty * 100.0f, 1);
+        // ====================================================================
+        // 6. Apply: EMERGENCY overrides source with explicit zero duty
+        // ====================================================================
+        if (inEmergency) {
+            g_power.setDuty(0.0f);
+        } else {
+            g_power.setOutputPercent(targetPercent);
+        }
+
+        // ====================================================================
+        // 7. Status line
+        // ====================================================================
+        if (externalMode) {
+            Serial.print(F("*** EXTERNAL PWM MODE *** | PWM In:"));
+            Serial.print(g_pwmInput.getDutyCycle() * 100.0f, 1);
             Serial.print(F("% @ "));
             Serial.print(g_pwmInput.getFrequency(), 1);
-            Serial.print(F("Hz | Vs:"));
-            Serial.print(supplyVoltage, 1);
-            Serial.print(F("V | I1:"));
-            Serial.print(current1, 1);
-            Serial.print(F("A | I2:"));
-            Serial.print(current2, 1);
-            Serial.print(F("A | Lim:"));
-            Serial.print(voltageLimit * 100.0f, 0);
-            Serial.print(F("% | "));
-            Serial.println(g_protection.getLevelString());
-
+            Serial.print(F("Hz | "));
         } else {
-            // ================================================================
-            // MASTER MODE: temperature-based control via CAN
-            // ================================================================
-            g_can.poll();
-
-            float tempC = g_can.getTempC();
-            bool tempFresh = g_can.isTempFresh();
-            g_voltageProtection.update();
-
-            float targetPercent = temperatureToTargetPercent(tempC);
-            g_power.setOutputPercent(targetPercent);
-
-            Serial.print(F("T:"));
+            Serial.print(F("*** TEMP MODE *** | T:"));
             Serial.print(tempC, 1);
-            Serial.print(tempFresh ? F("C") : F("C(TIMEOUT)"));
-            Serial.print(F(" | Vs:"));
-            Serial.print(supplyVoltage, 1);
-            Serial.print(F("V | Fan:"));
+            Serial.print(F("C"));
+            if (!tempFresh) Serial.print(F(" (STALE)"));
+            Serial.print(F(" | Fan:"));
             Serial.print(targetPercent * 100.0f, 0);
             Serial.print(F("% | Vo:"));
             Serial.print(g_power.getActualOutputVoltage(), 1);
-            Serial.print(F("V | I1:"));
-            Serial.print(current1, 1);
-            Serial.print(F("A | I2:"));
-            Serial.print(current2, 1);
-            Serial.print(F("A | Lim:"));
-            Serial.print(voltageLimit * 100.0f, 0);
-            Serial.print(F("% | "));
-            Serial.println(g_protection.getLevelString());
+            Serial.print(F("V | "));
         }
+        Serial.print(F("Vs:"));
+        Serial.print(supplyVoltage, 1);
+        Serial.print(F("V | I1:"));
+        Serial.print(current1, 1);
+        Serial.print(F("A | I2:"));
+        Serial.print(current2, 1);
+        Serial.print(F("A | Lim:"));
+        Serial.print(voltageLimit * 100.0f, 0);
+        Serial.print(F("% | "));
+        Serial.println(g_protection.getLevelString());
     }
     
     // ========================================================================
@@ -316,8 +283,6 @@ void loop() {
         
         printDetailedStatus();
     }
-    
-    // CAN polling also happens inside the normal control block above
 }
 
 // ============================================================================
@@ -329,9 +294,9 @@ void printDetailedStatus() {
     Serial.println(F("STATUS REPORT"));
     Serial.println(F("----------------------------------------"));
     
-    // PWM Slave Mode Status
-    if (Config::ENABLE_PWM_SLAVE_MODE) {
-        Serial.print(F("PWM Slave Mode:  "));
+    // External PWM Status
+    if (Config::ENABLE_EXTERNAL_PWM_MODE) {
+        Serial.print(F("External PWM:    "));
         if (g_pwmInput.isSignalValid()) {
             Serial.println(F("*** ACTIVE ***"));
             Serial.print(F("  Input Duty:    "));
@@ -347,9 +312,9 @@ void printDetailedStatus() {
             Serial.print(g_pwmInput.getHighTimeUs() / 1000.0f, 2);
             Serial.println(F(" ms"));
         } else {
-            Serial.println(F("Inactive (no signal) - Normal TEMP mode"));
+            Serial.println(F("Inactive (no signal) - Normal CAN/temperature mode"));
             // Debug information
-            Serial.print(F("  Pin D7 State:  "));
+            Serial.print(F("  Pin D8 State:  "));
             Serial.println(g_pwmInput.getCurrentState() == HIGH ? "HIGH" : "LOW");
             Serial.print(F("  Pulses Det:    "));
             Serial.println(g_pwmInput.getPulsesDetected());
@@ -363,17 +328,18 @@ void printDetailedStatus() {
         Serial.println();
     }
     
-    // Temperature (CAN)
+    // CAN / Transmission temperature
     float tempC = g_can.getTempC();
     bool tempFresh = g_can.isTempFresh();
-    Serial.print(F("Temperature:     "));
+    Serial.print(F("Trans Temp:      "));
     Serial.print(tempC, 1);
-    Serial.println(tempFresh ? F(" C") : F(" C (TIMEOUT!)"));
-    Serial.print(F("Raw CAN (F):     "));
+    Serial.print(F(" C"));
+    Serial.println(tempFresh ? F("") : F(" *** STALE - safety fallback active ***"));
+    Serial.print(F("  Raw (F):       "));
     Serial.println(g_can.getData().transTemp_rawF);
-    Serial.print(F("CAN Messages:    "));
+    Serial.print(F("  CAN Msgs:      "));
     Serial.println(g_can.getMessageCount());
-    Serial.print(F("CAN Errors:      "));
+    Serial.print(F("  CAN Errors:    "));
     Serial.println(g_can.getErrorCount());
     
     // Current readings (filtered)
@@ -436,44 +402,45 @@ void printDetailedStatus() {
     // Output status
     float targetPercent = temperatureToTargetPercent(tempC);
     float targetV = targetPercent * supplyV;
-    Serial.print(F("Target Percent:  ")); 
+    Serial.print(F("Target Percent:  "));
     Serial.print(targetPercent * 100.0f, 1);
     Serial.println(F(" %"));
-    Serial.print(F("Target Voltage:  ")); 
+    Serial.print(F("Target Voltage:  "));
     Serial.print(targetV, 2);
     Serial.println(F(" V"));
-    Serial.print(F("Actual Voltage:  ")); 
+    Serial.print(F("Actual Voltage:  "));
     Serial.print(g_power.getActualOutputVoltage(), 2);
     Serial.println(F(" V"));
     Serial.print(F("PWM Duty:        "));
     Serial.print(g_power.getCurrentDuty() * 100.0f, 1);
     Serial.println(F(" %"));
-    Serial.print(F("Output Stage:    "));
-    Serial.println(g_power.isHiZ() ? F("Hi-Z (slave passthrough)") : F("OUTPUT (uC drives)"));
+    Serial.print(F("Output Source:   "));
+    Serial.println((Config::ENABLE_EXTERNAL_PWM_MODE && g_pwmInput.isSignalValid())
+                       ? F("EXTERNAL PWM") : F("CAN/TEMP"));
     
     // External safety status
     if (Config::ENABLE_EXTERNAL_SAFETY) {
-        int safetyInput = digitalRead(Config::PIN_DIG_IN_2);
-        bool safetyActive = Config::EXTERNAL_SAFETY_ACTIVE_HIGH ? 
+        int safetyInput = digitalRead(Config::PIN_DIG_IN_1);
+        bool safetyActive = Config::EXTERNAL_SAFETY_ACTIVE_HIGH ?
                            (safetyInput == HIGH) : (safetyInput == LOW);
-        Serial.print(F("External Safety: ")); 
+        Serial.print(F("External Safety: "));
         Serial.println(safetyActive ? "*** ACTIVE (SHUTDOWN) ***" : "OK");
     }
-    
+
     // Digital inputs
-    // Note: D7 (PIN_DIG_IN_1) is used for PWM input when ENABLE_PWM_SLAVE_MODE is true
-    if (Config::ENABLE_PWM_SLAVE_MODE) {
-        Serial.print(F("Digital In 1:    ")); 
-        Serial.println(F("(used for PWM input)"));
+    // Note: D8 (PIN_DIG_IN_2) is used for external PWM input when ENABLE_EXTERNAL_PWM_MODE is true
+    bool d1 = (digitalRead(Config::PIN_DIG_IN_1) == LOW);
+    Serial.print(F("Digital In 1:    "));
+    Serial.println(d1 ? "ACTIVE (LOW)" : "inactive (HIGH)");
+
+    if (Config::ENABLE_EXTERNAL_PWM_MODE) {
+        Serial.print(F("Digital In 2:    "));
+        Serial.println(F("(used for external PWM input)"));
     } else {
-        bool d1 = (digitalRead(Config::PIN_DIG_IN_1) == LOW);
-        Serial.print(F("Digital In 1:    ")); 
-        Serial.println(d1 ? "ACTIVE" : "inactive");
+        bool d2 = (digitalRead(Config::PIN_DIG_IN_2) == LOW);
+        Serial.print(F("Digital In 2:    "));
+        Serial.println(d2 ? "ACTIVE" : "inactive");
     }
-    
-    bool d2 = (digitalRead(Config::PIN_DIG_IN_2) == LOW);
-    Serial.print(F("Digital In 2:    ")); 
-    Serial.println(d2 ? "ACTIVE" : "inactive");
     
     // Runtime
     // COMPENSATED: millis() runs 64x faster, divide by prescaler factor for real time
